@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: 8092
 spring:
   datasource:
     url: jdbc:mysql://localhost:3307/user_auth_db
@@ -14,6 +14,12 @@ spring:
   security:
     user:
       name: ovidiu
+
+logging:
+  level:
+    root: INFO
+    com.poc.microservices: DEBUG
+    org.springframework.web: WARN
 
 springdoc:
   api-docs:
