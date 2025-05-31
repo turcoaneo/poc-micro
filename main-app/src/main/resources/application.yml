@@ -1,0 +1,11 @@
+server:
+  port: 8091
+spring:
+  application:
+    name: main-app
+
+logging:
+  level:
+    root: INFO
+    com.poc.microservices: DEBUG
+    org.springframework.web: WARN
