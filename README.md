@@ -1,1 +1,1 @@
-# Prood of concept for microservices
+# Proof of concept for microservices
