@@ -3,9 +3,7 @@ package com.poc.microservices.main.app.feign;
 import com.poc.microservices.main.app.model.dto.UserDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "uam-service", url = "http://localhost:8092/users")
 public interface UserClient {
@@ -15,4 +13,7 @@ public interface UserClient {
 
     @PostMapping("/login")
     ResponseEntity<String> login(@RequestParam String username, @RequestParam String password);
+
+    @GetMapping("/employer")
+    ResponseEntity<String> getEmployer(@RequestHeader("Authorization") String token);
 }
