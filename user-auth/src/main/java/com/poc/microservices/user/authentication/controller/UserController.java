@@ -8,6 +8,7 @@ import com.poc.microservices.user.authentication.model.dto.UserDTO;
 import com.poc.microservices.user.authentication.model.entity.UserRole;
 import com.poc.microservices.user.authentication.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +26,12 @@ public class UserController {
 
     @Operation(summary = "Register a new user")
     @PostMapping("/register")
-    public UserDTO registerUser(@RequestBody UserDTO user) {
-        return userService.saveUser(user);
+    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO user) {
+        UserDTO userDTO = userService.saveUser(user);
+        if (userDTO == null) {
+            return ResponseEntity.badRequest().body(new UserDTO());
+        }
+        return ResponseEntity.ok(userDTO);
     }
 
     @Operation(summary = "Fetch a user by username")
@@ -47,7 +52,13 @@ public class UserController {
 
     @Operation(summary = "Authenticate user and return JWT")
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password) {
-        return userService.authenticateUser(username, password);
+    public ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
+        String jwtToken = userService.authenticateUser(username, password);
+
+        if (jwtToken == null || jwtToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+        }
+
+        return ResponseEntity.ok(jwtToken);
     }
 }
