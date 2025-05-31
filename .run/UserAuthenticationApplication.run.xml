@@ -1,7 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="UserAuthenticationApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <envs>
+      <env name="SECRET_KEY" value="someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits" />
+    </envs>
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
-    <module name="user-auth (1)" />
+    <module name="user-auth" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.poc.microservices.user.authentication.UserAuthenticationApplication" />
     <extension name="coverage">
       <pattern>
