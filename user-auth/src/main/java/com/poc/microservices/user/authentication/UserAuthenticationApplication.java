@@ -1,13 +1,13 @@
-package com.poc.micro;
+package com.poc.microservices.user.authentication;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class PocMicroApplication {
+public class UserAuthenticationApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(PocMicroApplication.class, args);
+        SpringApplication.run(UserAuthenticationApplication.class, args);
     }
 
 }

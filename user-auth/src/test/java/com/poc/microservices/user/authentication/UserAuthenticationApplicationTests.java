@@ -1,10 +1,10 @@
-package com.poc.micro;
+package com.poc.microservices.user.authentication;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PocMicroApplicationTests {
+class UserAuthenticationApplicationTests {
 
     @Test
     void contextLoads() {
