@@ -61,9 +61,9 @@ public class MASUserController {
     @ApiResponse(responseCode = "200", description = "Employer data retrieved successfully")
     @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/fetch-employer")
-    public ResponseEntity<String> fetchEmployer(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> fetchEmployer() {
         try {
-            ResponseEntity<String> response = userClient.getEmployer(token);
+            ResponseEntity<String> response = userClient.getEmployer();
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (FeignException feignException) {
             logger.error("Feign error while fetching employer: {}", feignException.getMessage());
@@ -71,6 +71,23 @@ public class MASUserController {
         } catch (Exception exception) {
             logger.error("Unexpected error fetching employer", exception);
             return ResponseEntity.internalServerError().body("Unexpected error occurred");
+        }
+    }
+
+    @Operation(summary = "Fetch a user by username from UAM")
+    @ApiResponse(responseCode = "200", description = "User retrieved successfully")
+    @SecurityRequirement(name = "BearerAuth")
+    @GetMapping("/fetch-user/{username}")
+    public ResponseEntity<UserDTO> fetchUser(@PathVariable String username) {
+        try {
+            ResponseEntity<UserDTO> response = userClient.getUser(username);
+            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+        } catch (FeignException feignException) {
+            logger.error("Feign error while fetching user: {}", feignException.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new UserDTO());
+        } catch (Exception exception) {
+            logger.error("Unexpected error fetching user", exception);
+            return ResponseEntity.internalServerError().body(new UserDTO());
         }
     }
 
