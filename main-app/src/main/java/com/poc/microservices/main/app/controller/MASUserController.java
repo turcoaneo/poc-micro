@@ -1,6 +1,7 @@
 package com.poc.microservices.main.app.controller;
 
 import com.poc.microservices.main.app.feign.UserClient;
+import com.poc.microservices.main.app.model.dto.MASResponse;
 import com.poc.microservices.main.app.model.dto.UserDTO;
 import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -74,20 +75,19 @@ public class MASUserController {
         }
     }
 
-    @Operation(summary = "Fetch a user by username from UAM")
-    @ApiResponse(responseCode = "200", description = "User retrieved successfully")
+    @Operation(summary = "Fetch user from UAM")
     @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/fetch-user/{username}")
-    public ResponseEntity<UserDTO> fetchUser(@PathVariable String username) {
+    public ResponseEntity<MASResponse<UserDTO>> fetchUser(@PathVariable String username) {
         try {
             ResponseEntity<UserDTO> response = userClient.getUser(username);
-            return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+            return ResponseEntity.ok(new MASResponse<>(true, response.getBody(), "User retrieved successfully"));
         } catch (FeignException feignException) {
-            logger.error("Feign error while fetching user: {}", feignException.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new UserDTO());
+            logger.error("Feign error fetching user: {}", feignException.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MASResponse<>(false, null, "User retrieval failed"));
         } catch (Exception exception) {
             logger.error("Unexpected error fetching user", exception);
-            return ResponseEntity.internalServerError().body(new UserDTO());
+            return ResponseEntity.internalServerError().body(new MASResponse<>(false, null, "Unexpected error occurred"));
         }
     }
 
