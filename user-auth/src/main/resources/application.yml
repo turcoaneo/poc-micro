@@ -1,6 +1,8 @@
 server:
   port: 8092
 spring:
+  application:
+    name: uam-service
   datasource:
     url: jdbc:mysql://localhost:3307/user_auth_db
     username: root
@@ -30,3 +32,10 @@ springdoc:
 jwt:
 #  secretKey: ENV var
   expirationMinutes: 60
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
