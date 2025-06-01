@@ -61,9 +61,9 @@ public class MASUserController {
     @ApiResponse(responseCode = "200", description = "Employer data retrieved successfully")
     @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/fetch-employer")
-    public ResponseEntity<String> fetchEmployer(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> fetchEmployer() {
         try {
-            ResponseEntity<String> response = userClient.getEmployer(token);
+            ResponseEntity<String> response = userClient.getEmployer();
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (FeignException feignException) {
             logger.error("Feign error while fetching employer: {}", feignException.getMessage());

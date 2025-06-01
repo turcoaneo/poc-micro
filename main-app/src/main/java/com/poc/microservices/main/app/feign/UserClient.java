@@ -15,5 +15,5 @@ public interface UserClient {
     ResponseEntity<String> login(@RequestParam String username, @RequestParam String password);
 
     @GetMapping("/employer")
-    ResponseEntity<String> getEmployer(@RequestHeader("Authorization") String token);
+    ResponseEntity<String> getEmployer();
 }
