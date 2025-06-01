@@ -16,4 +16,7 @@ public interface UserClient {
 
     @GetMapping("/employer")
     ResponseEntity<String> getEmployer();
+
+    @GetMapping("/{username}")
+    ResponseEntity<UserDTO> getUser(@PathVariable String username);
 }
