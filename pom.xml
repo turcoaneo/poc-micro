@@ -14,6 +14,7 @@
     <modules>
         <module>main-app</module>
         <module>user-auth</module>
+        <module>eureka</module>
     </modules>
 
     <groupId>com.poc.microservices</groupId>

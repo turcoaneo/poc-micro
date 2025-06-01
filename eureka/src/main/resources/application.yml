@@ -1,0 +1,9 @@
+server:
+  port: 8761  # Default Eureka port
+
+eureka:
+  client:
+    registerWithEureka: false  # No need for Eureka itself to register
+    fetchRegistry: false
+  instance:
+    hostname: localhost
