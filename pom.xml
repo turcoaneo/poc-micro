@@ -16,6 +16,7 @@
         <module>user-auth</module>
         <module>eureka</module>
         <module>gateway</module>
+        <module>jwt-library</module>
     </modules>
 
     <groupId>com.poc.microservices</groupId>

@@ -1,6 +1,6 @@
 package com.poc.microservices.main.app.config;
 
-import com.poc.microservices.main.app.config.helper.JwtHelper;
+import com.poc.microservices.main.app.config.helper.JwtLocalHelper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,10 +21,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
+        final String keyName = "SECRET_KEY";
+        final String secretKey = System.getenv(keyName) != null ? System.getenv(keyName) : System.getProperty(keyName);
+
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.replace("Bearer ", "");
-            String role = new JwtHelper().getRoleFromToken(token); // Extract role
+            String role = new JwtLocalHelper().getRoleFromToken(token, secretKey); // Extract role
 
             Authentication auth = new UsernamePasswordAuthenticationToken(
                     role,  // Authentication principal (user role)
