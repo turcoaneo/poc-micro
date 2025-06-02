@@ -28,7 +28,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers("/mas-users/login", "/mas-users/register").permitAll() // Allow unauthenticated login & register
-                        .requestMatchers(HttpMethod.GET, "/mas-users/**").authenticated() // Require authentication for user-related endpoints
+                        .requestMatchers(HttpMethod.GET, "/mas-users/**").authenticated() // Require authentication
+                        // for user-related endpoints
                         .anyRequest().authenticated()
                 );
 

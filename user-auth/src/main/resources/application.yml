@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name: uam-service
+  mvc:
+    servlet:
+      path: /uam  # This sets the global prefix for all controllers
+    pathmatch:
+      matching-strategy: ant_path_matcher  # Ensures correct path mapping
   datasource:
     url: jdbc:mysql://localhost:3307/user_auth_db
     username: root

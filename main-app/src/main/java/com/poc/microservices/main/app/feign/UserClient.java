@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "uam-service", url = "http://localhost:8092/users")
+@FeignClient(value = "uam-service", path = "/uam/users")
 public interface UserClient {
 
     @PostMapping("/register")
