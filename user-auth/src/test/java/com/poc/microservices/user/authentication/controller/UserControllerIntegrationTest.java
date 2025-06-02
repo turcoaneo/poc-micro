@@ -4,6 +4,7 @@ import com.poc.microservices.user.authentication.model.dto.UserDTO;
 import com.poc.microservices.user.authentication.model.entity.User;
 import com.poc.microservices.user.authentication.model.entity.UserRole;
 import com.poc.microservices.user.authentication.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -39,6 +40,10 @@ public class UserControllerIntegrationTest {
     @MockitoBean
     private UserService userService;
 
+    @BeforeEach
+    public void setUp() {
+        System.setProperty("SECRET_KEY", "someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits");
+    }
 
     // Test registration endpoint
     @Test
