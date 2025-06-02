@@ -15,6 +15,7 @@
         <module>main-app</module>
         <module>user-auth</module>
         <module>eureka</module>
+        <module>gateway</module>
     </modules>
 
     <groupId>com.poc.microservices</groupId>
@@ -24,5 +25,8 @@
     <description>poc-micro</description>
     <properties>
         <java.version>21</java.version>
+        <spring-cloud.version>2025.0.0</spring-cloud.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 </project>
