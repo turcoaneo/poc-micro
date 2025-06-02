@@ -1,48 +1,36 @@
-package com.poc.microservices.user.authentication.service.helper;
+package com.poc.microservices;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 
-@Component
-@NoArgsConstructor
 public class JwtHelper {
-    @Value("${jwt.expirationMinutes: 60}")
-    private long expirationMinutes;
+    private final Long expirationMinutes;
 
-    public String generateToken(String role) {
+    public JwtHelper(Long expirationMinutes) {
+        this.expirationMinutes = Objects.requireNonNullElse(expirationMinutes, 60L);
+    }
+
+    public String generateToken(String role, String secretKeyValue) {
         return Jwts.builder()
                 .claims().subject(role).and()
                 .issuedAt(Date.from(Instant.now()))
                 .expiration(Date.from(Instant.now().plus(Duration.ofMinutes(expirationMinutes))))
-                .signWith(getSigningKey(), Jwts.SIG.HS256)
+                .signWith(getSigningKey(secretKeyValue), Jwts.SIG.HS256)
                 .compact();
     }
 
-    private static SecretKey getSigningKey() {
-        final String keyName = "SECRET_KEY";
-        final String secretKey = System.getenv(keyName) != null ? System.getenv(keyName) : System.getProperty(keyName);
-
-        if (secretKey == null || secretKey.isEmpty()) {
-            throw new IllegalStateException("SECRET_KEY environment variable is not set!");
-        }
-
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
-    }
-
-    public String getRoleFromToken(String token) {
+    public String getRoleFromToken(String token, String secretKeyValue) {
         try {
             Claims claims = Jwts.parser()
-                    .verifyWith(getSigningKey())
+                    .verifyWith(getSigningKey(secretKeyValue))
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
@@ -56,5 +44,9 @@ public class JwtHelper {
         } catch (JwtException e) {
             throw new JwtException("Invalid or expired token", e);
         }
+    }
+
+    private static SecretKey getSigningKey(String secretKeyValue) {
+        return Keys.hmacShaKeyFor(secretKeyValue.getBytes());
     }
 }

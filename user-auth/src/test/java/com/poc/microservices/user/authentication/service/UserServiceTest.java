@@ -3,7 +3,7 @@ package com.poc.microservices.user.authentication.service;
 import com.poc.microservices.user.authentication.model.entity.User;
 import com.poc.microservices.user.authentication.model.entity.UserRole;
 import com.poc.microservices.user.authentication.repository.UserRepository;
-import com.poc.microservices.user.authentication.service.helper.JwtHelper;
+import com.poc.microservices.user.authentication.service.helper.JwtLocalHelper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,21 +30,22 @@ public class UserServiceTest {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Spy
-    JwtHelper jwtHelper;
+    JwtLocalHelper jwtLocalHelper;
 
     @InjectMocks
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        Assertions.assertNotNull(jwtHelper);
+        System.setProperty("SECRET_KEY", "someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits");
+        Assertions.assertNotNull(jwtLocalHelper);
     }
 
     // Test authenticateUser() - Success Case
     @Test
     void testAuthenticateUser_Success() {
         User mockUser = new User(1L, "testUser", passwordEncoder.encode("correctPassword"), UserRole.ADMIN);
-        
+
         when(userRepository.findByUsername("testUser")).thenReturn(Optional.of(mockUser));
 
         String token = userService.authenticateUser("testUser", "correctPassword");
