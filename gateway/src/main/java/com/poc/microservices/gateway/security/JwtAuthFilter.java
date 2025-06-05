@@ -1,0 +1,70 @@
+package com.poc.microservices.gateway.security;
+
+import com.poc.microservices.gateway.security.helper.JwtLocalHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+
+@Component
+public class JwtAuthFilter implements WebFilter {
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
+    String keyName = "SECRET_KEY";
+    String secretKey = System.getenv(keyName) != null ? System.getenv(keyName) : System.getProperty(keyName);
+
+    @SuppressWarnings("NullableProblems")
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        String token = extractToken(exchange);
+        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        logger.info("Gateway received Authorization Header: {}", authHeader); // Log header before processing
+
+
+        if (token == null || !validateToken(token)) {
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+
+        //  Store authentication context
+        String role = new JwtLocalHelper().getRoleFromToken(token, secretKey);
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(role, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+
+//        exchange.getAttributes().put(SecurityContext.class.getName(), Mono.just(new SecurityContextImpl(auth)));
+        Mono<SecurityContext> securityContext = Mono.just(new SecurityContextImpl(auth));
+        exchange.getAttributes().put(SecurityContext.class.getName(), securityContext);
+
+        return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth)); // Ensures WebFlux security recognizes the user
+    }
+
+    private String extractToken(ServerWebExchange exchange) {
+        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+        if (!authHeader.startsWith("Bearer ")) {
+            logger.warn("No valid Authorization header found!");
+            return null;
+        }
+
+        return authHeader.substring(7);
+    }
+
+    private boolean validateToken(String token) {
+        try {
+            return new JwtLocalHelper().getRoleFromToken(token, secretKey) != null;
+        } catch (Exception e) {
+            logger.error("Token validation failed: {}", e.getMessage());
+            return false;
+        }
+    }
+}

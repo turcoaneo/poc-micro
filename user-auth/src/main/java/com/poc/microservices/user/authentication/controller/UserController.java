@@ -7,15 +7,20 @@ import com.poc.microservices.user.authentication.aop.UserAuthorize;
 import com.poc.microservices.user.authentication.model.dto.UserDTO;
 import com.poc.microservices.user.authentication.model.entity.UserRole;
 import com.poc.microservices.user.authentication.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User Management", description = "User authentication and management API")
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
 
@@ -47,6 +52,9 @@ public class UserController {
     @UserAuthorize({UserRole.ADMIN, UserRole.EMPLOYER})
     @GetMapping("/employer")
     public ResponseEntity<String> getTestEmployer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        logger.info(" UAM Processing Authentication: {}", authentication);
+
         return ResponseEntity.ok("Test employer");
     }
 

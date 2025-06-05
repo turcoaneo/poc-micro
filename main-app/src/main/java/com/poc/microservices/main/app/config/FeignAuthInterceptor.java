@@ -18,9 +18,9 @@ public class FeignAuthInterceptor implements RequestInterceptor {
 
         if (authentication != null && authentication.getCredentials() != null) {
             String token = authentication.getCredentials().toString();
+            logger.info("Feign request attaching Authorization: Bearer {}", token); // Log token before attaching
             requestTemplate.header("Authorization", "Bearer " + token);
         } else {
-            // Handle missing token scenario (optional logging)
             logger.error("No authentication credentials found, Authorization header NOT attached");
         }
     }
