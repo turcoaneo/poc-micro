@@ -53,7 +53,7 @@ public class UserController {
     @GetMapping("/employer")
     public ResponseEntity<String> getTestEmployer() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        logger.info(" UAM Processing Authentication: {}", authentication);
+        logger.info("UAM Processing Authentication: {}", authentication);
 
         return ResponseEntity.ok("Test employer");
     }

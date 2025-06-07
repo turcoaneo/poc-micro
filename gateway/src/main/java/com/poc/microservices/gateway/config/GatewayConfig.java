@@ -25,6 +25,8 @@ public class GatewayConfig {
                         .uri("lb://mas-service"))
                 .route("uam-service", r -> r.path("/uam/**")
                         .uri("lb://uam-service"))
+                .route("my_route", r -> r.path("/gateway/test/**")
+                        .uri("http://localhost:8090/test_service"))
                 .build();
     }
 

@@ -25,7 +25,6 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers("/users/login", "/users/register").permitAll()
-                        .requestMatchers("/users/**").authenticated() // Require authentication for user endpoints
                         .anyRequest().authenticated()
                 );
 
