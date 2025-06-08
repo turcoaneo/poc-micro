@@ -19,8 +19,8 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Component
-public class JwtAuthFilter implements WebFilter {
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilter.class);
+public class JwtAuthFilterWebflux implements WebFilter {
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilterWebflux.class);
     String keyName = "SECRET_KEY";
     String secretKey = System.getenv(keyName) != null ? System.getenv(keyName) : System.getProperty(keyName);
 
@@ -29,7 +29,7 @@ public class JwtAuthFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         String token = extractToken(exchange);
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        logger.info("Gateway received Authorization Header: {}", authHeader); // Log header before processing
+        logger.debug("Gateway received Authorization Header: {}", authHeader); // Log header before processing
 
 
         if (token == null || !validateToken(token)) {
@@ -41,7 +41,6 @@ public class JwtAuthFilter implements WebFilter {
         String role = new JwtLocalHelper().getRoleFromToken(token, secretKey);
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(role, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
 
-//        exchange.getAttributes().put(SecurityContext.class.getName(), Mono.just(new SecurityContextImpl(auth)));
         Mono<SecurityContext> securityContext = Mono.just(new SecurityContextImpl(auth));
         exchange.getAttributes().put(SecurityContext.class.getName(), securityContext);
 

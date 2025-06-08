@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration {
+public class SecurityConfigurationMAS {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -23,7 +23,7 @@ public class SecurityConfiguration {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Ensure stateless JWT auth
-                .addFilterBefore(new JwtAuthFilter(), UsernamePasswordAuthenticationFilter.class) // Apply JWT filter
+                .addFilterBefore(new JwtAuthFilterMAS(), UsernamePasswordAuthenticationFilter.class) // Apply JWT filter
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers("/mas-users/login", "/mas-users/register", "/mas-users/test").permitAll()

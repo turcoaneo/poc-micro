@@ -1,6 +1,6 @@
 package com.poc.microservices.gateway.config;
 
-import com.poc.microservices.gateway.security.JwtAuthFilter;
+import com.poc.microservices.gateway.security.JwtAuthFilterWebflux;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +37,7 @@ public class GatewayConfig {
                 .authorizeExchange(auth -> auth
                         .anyExchange().authenticated() // Debugging step—allow all traffic for testing
                 )
-                .addFilterAt(new JwtAuthFilter(), SecurityWebFiltersOrder.AUTHORIZATION) // Apply JWT before authorization
+                .addFilterAt(new JwtAuthFilterWebflux(), SecurityWebFiltersOrder.AUTHORIZATION) // Apply JWT before authorization
 //                .addFilterBefore(new JwtAuthFilter(), SecurityWebFiltersOrder.AUTHORIZATION)
                 .build();
     }
