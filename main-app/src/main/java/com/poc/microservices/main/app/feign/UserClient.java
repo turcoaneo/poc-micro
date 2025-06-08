@@ -13,10 +13,4 @@ public interface UserClient {
 
     @PostMapping("/login")
     ResponseEntity<String> login(@RequestParam String username, @RequestParam String password);
-
-    @GetMapping("/employer")
-    ResponseEntity<String> getEmployer();
-
-    @GetMapping("/{username}")
-    ResponseEntity<UserDTO> getUser(@PathVariable String username);
 }

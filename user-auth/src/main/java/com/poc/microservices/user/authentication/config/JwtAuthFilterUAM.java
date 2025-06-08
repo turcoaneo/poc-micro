@@ -1,10 +1,10 @@
-package com.poc.microservices.main.app.config;
+package com.poc.microservices.user.authentication.config;
 
-import com.poc.microservices.main.app.config.helper.JwtLocalHelper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.poc.microservices.user.authentication.service.helper.JwtLocalHelper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,7 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtAuthFilterUAM extends OncePerRequestFilter {
 
 
     @SuppressWarnings("NullableProblems")
@@ -24,17 +24,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String keyName = "SECRET_KEY";
         final String secretKey = System.getenv(keyName) != null ? System.getenv(keyName) : System.getProperty(keyName);
 
-
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.replace("Bearer ", "");
             String role = new JwtLocalHelper().getRoleFromToken(token, secretKey); // Extract role
 
-            Authentication auth = new UsernamePasswordAuthenticationToken(
-                    role,  // Authentication principal (user role)
-                    token, // Credentials - the actual JWT token!
-                    List.of(new SimpleGrantedAuthority("ROLE_" + role))
-            );
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            Authentication auth = new UsernamePasswordAuthenticationToken(role, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+            SecurityContextHolder.getContext().setAuthentication(auth); // Set authentication context
         }
 
         chain.doFilter(request, response);
