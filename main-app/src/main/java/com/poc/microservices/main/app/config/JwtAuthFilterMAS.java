@@ -1,6 +1,6 @@
 package com.poc.microservices.main.app.config;
 
-import com.poc.microservices.main.app.config.helper.JwtLocalHelper;
+import com.poc.microservices.main.app.config.helper.JwtLocalHelperMAS;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +31,7 @@ public class JwtAuthFilterMAS extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.replace("Bearer ", "");
-            String role = new JwtLocalHelper().getRoleFromToken(token, secretKey); // Extract role
+            String role = new JwtLocalHelperMAS().getRoleFromToken(token, secretKey); // Extract role
 
             Authentication auth = new UsernamePasswordAuthenticationToken(
                     role,  // Authentication principal (user role)
