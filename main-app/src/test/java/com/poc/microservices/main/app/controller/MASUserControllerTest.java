@@ -3,12 +3,12 @@ package com.poc.microservices.main.app.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.poc.microservices.main.app.feign.UserClient;
 import com.poc.microservices.main.app.model.dto.UserDTO;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import com.poc.microservices.main.app.util.TestMASHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,11 +18,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.crypto.SecretKey;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -30,6 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 public class MASUserControllerTest {
+
+    @Spy
+    TestMASHelper testMASHelper;
 
     @Autowired
     private MockMvc mockMvc;
@@ -67,22 +65,10 @@ public class MASUserControllerTest {
                         .param("username", "test user")
                         .param("password", "password"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(getValidToken()));
+                .andExpect(content().string(mockToken));
     }
 
     private String getValidToken() {
-        Instant issuedAt = Instant.now();  // Token issued now
-        Instant expiration = issuedAt.plus(1, ChronoUnit.HOURS);  // Extend expiration to 1 hour
-
-        return Jwts.builder()
-                .claims().subject("USER").and()
-                .issuedAt(Date.from(issuedAt))
-                .expiration(Date.from(expiration))
-                .signWith(this.getTestSigningKey(), Jwts.SIG.HS256)
-                .compact();
-    }
-
-    private SecretKey getTestSigningKey() {
-        return Keys.hmacShaKeyFor("someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits".getBytes());
+        return testMASHelper.getValidToken();
     }
 }

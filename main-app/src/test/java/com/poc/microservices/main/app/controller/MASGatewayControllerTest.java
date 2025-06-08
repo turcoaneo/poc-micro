@@ -2,14 +2,14 @@ package com.poc.microservices.main.app.controller;
 
 import com.poc.microservices.main.app.feign.GatewayClient;
 import com.poc.microservices.main.app.model.dto.UserDTO;
+import com.poc.microservices.main.app.util.TestMASHelper;
 import feign.FeignException;
 import feign.Request;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
@@ -19,10 +19,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import javax.crypto.SecretKey;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.HashMap;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,6 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(MASGatewayController.class)
 @ExtendWith(SpringExtension.class)
 public class MASGatewayControllerTest {
+
+    @Spy
+    TestMASHelper testMASHelper;
 
     private MockMvc mockMvc;
 
@@ -97,18 +96,6 @@ public class MASGatewayControllerTest {
     }
 
     private String getValidToken() {
-        Instant issuedAt = Instant.now();  // Token issued now
-        Instant expiration = issuedAt.plus(1, ChronoUnit.HOURS);  // Extend expiration to 1 hour
-
-        return Jwts.builder()
-                .claims().subject("USER").and()
-                .issuedAt(Date.from(issuedAt))
-                .expiration(Date.from(expiration))
-                .signWith(this.getTestSigningKey(), Jwts.SIG.HS256)
-                .compact();
-    }
-
-    private SecretKey getTestSigningKey() {
-        return Keys.hmacShaKeyFor("someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits".getBytes());
+        return testMASHelper.getValidToken();
     }
 }
