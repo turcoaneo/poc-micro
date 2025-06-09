@@ -3,7 +3,7 @@ package com.poc.microservices.user.authentication.service;
 import com.poc.microservices.user.authentication.model.entity.User;
 import com.poc.microservices.user.authentication.model.entity.UserRole;
 import com.poc.microservices.user.authentication.repository.UserRepository;
-import com.poc.microservices.user.authentication.service.helper.JwtLocalHelper;
+import com.poc.microservices.user.authentication.service.helper.JwtLocalHelperUAM;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ public class UserServiceTest {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Spy
-    JwtLocalHelper jwtLocalHelper;
+    JwtLocalHelperUAM jwtLocalHelperUAM;
 
     @InjectMocks
     private UserService userService;
@@ -38,7 +38,7 @@ public class UserServiceTest {
     @BeforeEach
     void setUp() {
         System.setProperty("SECRET_KEY", "someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits");
-        Assertions.assertNotNull(jwtLocalHelper);
+        Assertions.assertNotNull(jwtLocalHelperUAM);
     }
 
     // Test authenticateUser() - Success Case

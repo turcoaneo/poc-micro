@@ -4,7 +4,7 @@ import com.poc.microservices.user.authentication.model.dto.UserDTO;
 import com.poc.microservices.user.authentication.model.entity.User;
 import com.poc.microservices.user.authentication.model.entity.UserRole;
 import com.poc.microservices.user.authentication.repository.UserRepository;
-import com.poc.microservices.user.authentication.service.helper.JwtLocalHelper;
+import com.poc.microservices.user.authentication.service.helper.JwtLocalHelperUAM;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
 
-    private final JwtLocalHelper jwtLocalHelper;
+    private final JwtLocalHelperUAM jwtLocalHelperUAM;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -43,7 +43,7 @@ public class UserService {
             if (passwordEncoder.matches(rawPassword, user.getPassword())) {
                 final String keyName = "SECRET_KEY";
                 final String secretKey = System.getenv(keyName) != null ? System.getenv(keyName) : System.getProperty(keyName);
-                return jwtLocalHelper.generateToken(user.getUserRole().name(), secretKey); // Return JWT token
+                return jwtLocalHelperUAM.generateToken(user.getUserRole().name(), secretKey); // Return JWT token
             }
         }
         return null;

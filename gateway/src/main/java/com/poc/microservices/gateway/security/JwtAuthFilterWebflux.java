@@ -1,6 +1,6 @@
 package com.poc.microservices.gateway.security;
 
-import com.poc.microservices.gateway.security.helper.JwtLocalHelper;
+import com.poc.microservices.gateway.security.helper.JwtLocalHelperGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +38,7 @@ public class JwtAuthFilterWebflux implements WebFilter {
         }
 
         //  Store authentication context
-        String role = new JwtLocalHelper().getRoleFromToken(token, secretKey);
+        String role = new JwtLocalHelperGateway().getRoleFromToken(token, secretKey);
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(role, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
 
         Mono<SecurityContext> securityContext = Mono.just(new SecurityContextImpl(auth));
@@ -60,7 +60,7 @@ public class JwtAuthFilterWebflux implements WebFilter {
 
     private boolean validateToken(String token) {
         try {
-            return new JwtLocalHelper().getRoleFromToken(token, secretKey) != null;
+            return new JwtLocalHelperGateway().getRoleFromToken(token, secretKey) != null;
         } catch (Exception e) {
             logger.error("Token validation failed: {}", e.getMessage());
             return false;

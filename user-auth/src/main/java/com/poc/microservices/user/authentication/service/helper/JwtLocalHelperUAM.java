@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
-public class JwtLocalHelper {
+public class JwtLocalHelperUAM {
     @Value("${jwt.expirationMinutes: 60}")
     private long expirationMinutes;
 

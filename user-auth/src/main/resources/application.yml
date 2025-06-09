@@ -35,7 +35,7 @@ springdoc:
     path: /swagger-ui.html
 
 jwt:
-#  secretKey: ENV var
+#  secretKey: ENV var SECRET_KEY
   expirationMinutes: 60
 
 eureka:

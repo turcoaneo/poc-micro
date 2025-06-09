@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
-public class JwtLocalHelper {
+public class JwtLocalHelperMAS {
 
     public String getRoleFromToken(String token, String secretKey) {
         try {
