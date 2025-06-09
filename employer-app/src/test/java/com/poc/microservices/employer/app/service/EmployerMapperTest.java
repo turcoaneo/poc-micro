@@ -26,7 +26,7 @@ class EmployerMapperTest {
 
     @Test
     void testConvertEmployerDTOToEntity() {
-        EmployerDTO dto = new EmployerDTO("TechCorp", List.of(new JobDTO("Developer", "Writes code", 50.0)), List.of(new EmployeeDTO("Alice", 40)));
+        EmployerDTO dto = new EmployerDTO("TechCorp", List.of(new JobDTO("Developer", "Writes code", 50.0, List.of(new EmployeeDTO("Alice", 40)))));
 
         Employer result = employerMapper.toEntity(dto);
 
