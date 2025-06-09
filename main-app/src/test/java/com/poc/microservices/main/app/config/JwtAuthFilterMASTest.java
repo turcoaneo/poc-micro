@@ -19,8 +19,10 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -50,7 +52,8 @@ class JwtAuthFilterMASTest {
 
     @BeforeEach
     void setUp() {
-//        MockitoAnnotations.openMocks(this); // no need when using @InjectMocks
+        ReflectionTestUtils.setField(jwtAuthFilterMAS, "excludedEndpoints", Arrays.asList("/mas/mas-users/login",
+                "/mas/mas-users/register"));
         System.setProperty("SECRET_KEY", "someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits");//injecting into properties
 
         // Configure log capturing

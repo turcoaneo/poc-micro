@@ -18,6 +18,9 @@ logging:
     com.poc.microservices: DEBUG
     org.springframework.web: WARN
 
+security:
+  excludedEndpoints: "/mas/mas-users/login,/mas/mas-users/register"
+
 eureka:
   client:
     fetchRegistry: true

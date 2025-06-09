@@ -1,27 +1,39 @@
 package com.poc.microservices.main.app.config;
 
 import com.poc.microservices.main.app.config.helper.JwtLocalHelperMAS;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+@Component
 public class JwtAuthFilterMAS extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilterMAS.class);
 
-    private static final List<String> EXCLUDED_ENDPOINTS = List.of(
-            "/mas/mas-users/login", "/mas/mas-users/register"
-    );
+    @Value("#{'${security.excludedEndpoints:}'.split(',')}")
+    private List<String> excludedEndpoints = new ArrayList<>();
+
+    @PostConstruct
+    private void init() {
+        if (excludedEndpoints.isEmpty() || (excludedEndpoints.size() == 1 && excludedEndpoints.getFirst().isBlank())) {
+            excludedEndpoints.addAll(Arrays.asList("/mas/mas-users/login", "/mas/mas-users/register"));
+        }
+    }
 
 
     @SuppressWarnings("NullableProblems")
@@ -32,7 +44,7 @@ public class JwtAuthFilterMAS extends OncePerRequestFilter {
         if (requestUri == null) return;
 
         // Skip JWT validation for excluded endpoints
-        if (EXCLUDED_ENDPOINTS.contains(requestUri)) {
+        if (excludedEndpoints.contains(requestUri)) {
             logger.debug("Skipping JWT authentication for endpoint: {}", requestUri);
             chain.doFilter(request, response);
             return;
