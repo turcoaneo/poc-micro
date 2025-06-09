@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -13,4 +15,6 @@ public class JobDTO {
     private String title;
     private String description;
     private Double hourRate;
+
+    private List<EmployeeDTO> employees;
 }
