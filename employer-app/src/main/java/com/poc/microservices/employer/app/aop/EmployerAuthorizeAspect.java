@@ -1,8 +1,8 @@
-package com.poc.microservices.user.authentication.aop;
+package com.poc.microservices.employer.app.aop;
 
+import com.poc.microservices.employer.app.model.EMUserRole;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import com.poc.microservices.user.authentication.model.entity.UserRole;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,28 +12,26 @@ import java.util.Arrays;
 
 @Aspect
 @Component
-public class UserAuthorizeAspect {
+public class EmployerAuthorizeAspect {
 
-    @Before("@annotation(userAuthorize)")
-    public void checkAuthorization(UserAuthorize userAuthorize) {
+    @Before("@annotation(employerAuthorize)")
+    public void checkAuthorization(EmployerAuthorize employerAuthorize) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new UAMAuthorizationException("Unauthorized access", HttpStatus.UNAUTHORIZED);
+            throw new EMAuthorizationException("Unauthorized access", HttpStatus.UNAUTHORIZED);
         }
 
         String role = authentication.getAuthorities().stream()
                 .map(auth -> auth.getAuthority().replace("ROLE_", "")) // Extract enum-compatible role name
                 .findFirst().orElse("");
 
-        boolean hasAccess = Arrays.stream(userAuthorize.value())
-                .map(UserRole::name)
+        boolean hasAccess = Arrays.stream(employerAuthorize.value())
+                .map(EMUserRole::name)
                 .anyMatch(role::equals);
 
         if (!hasAccess) {
-            throw new UAMAuthorizationException("Forbidden access", HttpStatus.FORBIDDEN);
+            throw new EMAuthorizationException("Forbidden access", HttpStatus.FORBIDDEN);
         }
-
-
     }
 }

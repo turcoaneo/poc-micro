@@ -1,7 +1,7 @@
 package com.poc.microservices.main.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.poc.microservices.main.app.feign.UserClient;
+import com.poc.microservices.main.app.feign.MASUserClient;
 import com.poc.microservices.main.app.model.dto.UserDTO;
 import com.poc.microservices.main.app.util.TestMASHelper;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +33,7 @@ public class MASUserControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private UserClient userClient;
+    private MASUserClient MASUserClient;
 
     @BeforeEach
     void setUp() {
@@ -43,7 +43,7 @@ public class MASUserControllerTest {
     @Test
     public void testRegisterUser_Success() throws Exception {
         UserDTO mockUser = new UserDTO("test user", "password", "USER");
-        Mockito.when(userClient.registerUser(Mockito.any(UserDTO.class))).thenReturn(ResponseEntity.ok(mockUser));
+        Mockito.when(MASUserClient.registerUser(Mockito.any(UserDTO.class))).thenReturn(ResponseEntity.ok(mockUser));
 
         mockMvc.perform(post("/mas-users/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +59,7 @@ public class MASUserControllerTest {
     @Test
     public void testLoginUser_Success() throws Exception {
         String mockToken = getValidToken();
-        Mockito.when(userClient.login(Mockito.anyString(), Mockito.anyString())).thenReturn(ResponseEntity.ok(mockToken));
+        Mockito.when(MASUserClient.login(Mockito.anyString(), Mockito.anyString())).thenReturn(ResponseEntity.ok(mockToken));
 
         mockMvc.perform(post("/mas-users/login")
                         .param("username", "test user")

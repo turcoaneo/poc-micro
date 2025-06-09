@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @FeignClient(value = "uam-service", path = "/uam/users")
-public interface UserClient {
+public interface MASUserClient {
 
     @PostMapping("/register")
     ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO user);
