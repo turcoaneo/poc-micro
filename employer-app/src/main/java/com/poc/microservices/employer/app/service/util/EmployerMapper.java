@@ -77,24 +77,6 @@ public class EmployerMapper {
     }
 
     private JobDTO mapJobToDTO(Job job) {
-        JobDTO dto = new JobDTO();
-        dto.setTitle(job.getTitle());
-        dto.setDescription(job.getDescription());
-        dto.setHourRate(job.getHourRate());
-
-        if (job.getAssignedEmployees() != null) {
-            dto.setEmployees(job.getAssignedEmployees().stream()
-                    .map(this::mapEmployeeToDTO)
-                    .toList());
-        }
-
-        return dto;
-    }
-
-    private EmployeeDTO mapEmployeeToDTO(Employee employee) {
-        EmployeeDTO dto = new EmployeeDTO();
-        dto.setName(employee.getName());
-        dto.setWorkingHours(employee.getWorkingHours());
-        return dto;
+        return new JobMapper().toDTO(job);
     }
 }
