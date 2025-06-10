@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class EmployeeDTO {
+public class EmployerDTO {
+    private Long id;
     private String name;
-    private Integer workingHours;
-    private List<EmployerDTO> employers;
+    private List<JobDTO> jobs;
 }
