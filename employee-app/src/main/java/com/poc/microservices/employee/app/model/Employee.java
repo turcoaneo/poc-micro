@@ -1,4 +1,4 @@
-package com.poc.microservices.employeeapp.model;
+package com.poc.microservices.employee.app.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -17,16 +17,19 @@ import java.util.Set;
 
 @Entity
 @Table
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Job {
+@Getter
+@Setter
+public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
 
-    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
-    private Set<EmployeeJobEmployer> jobEmployees = new HashSet<>(); // New mapping
+    private String name;
+
+    private Integer workingHours;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private Set<EmployeeJobEmployer> jobEmployers = new HashSet<>(); // New mapping
 }

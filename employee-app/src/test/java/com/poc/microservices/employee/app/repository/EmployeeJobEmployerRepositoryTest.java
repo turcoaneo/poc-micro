@@ -1,9 +1,9 @@
-package com.poc.microservices.employeeapp.repository;
+package com.poc.microservices.employee.app.repository;
 
-import com.poc.microservices.employeeapp.model.Employee;
-import com.poc.microservices.employeeapp.model.EmployeeJobEmployer;
-import com.poc.microservices.employeeapp.model.Employer;
-import com.poc.microservices.employeeapp.model.Job;
+import com.poc.microservices.employee.app.model.Employee;
+import com.poc.microservices.employee.app.model.EmployeeJobEmployer;
+import com.poc.microservices.employee.app.model.Employer;
+import com.poc.microservices.employee.app.model.Job;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
