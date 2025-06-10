@@ -1,0 +1,36 @@
+server:
+  port: 8094
+spring:
+  application:
+    name: eem-service
+  mvc:
+    servlet:
+      path: /eem  # This sets the global prefix for all controllers
+    pathmatch:
+      matching-strategy: ant_path_matcher  # Ensures correct path mapping
+  datasource:
+    url: jdbc:mysql://localhost:3307/employee_db
+    username: root
+    password: Sky_Dev#*75
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    root: INFO
+    com.poc.microservices: DEBUG
+    org.springframework.web: WARN
+
+eureka:
+  client:
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 30  # Ensures regular heartbeat updates
+    leaseExpirationDurationInSeconds: 90  # Prevents premature instance removal
