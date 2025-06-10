@@ -3,10 +3,17 @@ package com.poc.microservices.employer.app.controller;
 import com.poc.microservices.employer.app.model.Employee;
 import com.poc.microservices.employer.app.model.Employer;
 import com.poc.microservices.employer.app.model.Job;
+import com.poc.microservices.employer.app.model.dto.EmployeeDTO;
+import com.poc.microservices.employer.app.model.dto.EmployerDTO;
+import com.poc.microservices.employer.app.model.dto.JobDTO;
 import com.poc.microservices.employer.app.service.EmployerService;
+import com.poc.microservices.employer.app.service.util.EmployeeMapper;
+import com.poc.microservices.employer.app.service.util.EmployerMapper;
+import com.poc.microservices.employer.app.service.util.JobMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -16,7 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.List;
+import java.util.Set;
 
 
 @WebMvcTest(controllers = EmployerController.class)
@@ -28,6 +35,13 @@ class EmployerControllerTest {
 
     @MockitoBean
     private EmployerService employerService;
+
+    @Spy
+    private EmployerMapper employerMapper;
+    @Spy
+    private JobMapper jobMapper;
+    @Spy
+    private EmployeeMapper employeeMapper;
 
     private Employer employer;
 
@@ -44,7 +58,7 @@ class EmployerControllerTest {
 
     @Test
     void testCreateEmployer() throws Exception {
-        Mockito.when(employerService.createEmployer(Mockito.any(Employer.class))).thenReturn(employer);
+        Mockito.when(employerService.createEmployer(Mockito.any(EmployerDTO.class))).thenReturn(employer);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/employers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +73,8 @@ class EmployerControllerTest {
 
     @Test
     void testUpdateEmployer() throws Exception {
-        Mockito.when(employerService.updateEmployer(Mockito.eq(1L), Mockito.any(Employer.class))).thenReturn(employer);
+        EmployerDTO dto = employerMapper.toDTO(employer);
+        Mockito.when(employerService.updateEmployer(Mockito.any(EmployerDTO.class))).thenReturn(dto);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/employers/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -77,7 +92,8 @@ class EmployerControllerTest {
         Job job = new Job();
         job.setTitle("Engineer");
 
-        Mockito.when(employerService.getJobsByEmployerId(1L)).thenReturn(List.of(job));
+        JobDTO dto = jobMapper.toDTO(job);
+        Mockito.when(employerService.getJobsByEmployerId(1L)).thenReturn(Set.of(dto));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/employers/1/jobs"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -89,7 +105,8 @@ class EmployerControllerTest {
         Employee emp = new Employee();
         emp.setName("Alice");
 
-        Mockito.when(employerService.getEmployeesByEmployerId(1L)).thenReturn(List.of(emp));
+        EmployeeDTO dto = employeeMapper.toDTO(emp);
+        Mockito.when(employerService.getEmployeesByEmployerId(1L)).thenReturn(Set.of(dto));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/employers/1/employees"))
                 .andExpect(MockMvcResultMatchers.status().isOk())

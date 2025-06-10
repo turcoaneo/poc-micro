@@ -1,6 +1,7 @@
 package com.poc.microservices.employer.app.model;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(of = {"title"})
 public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -19,8 +19,8 @@ public class Employer {
     private String name;
 
     @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL)
-    private List<Employee> employees = new ArrayList<>();
+    private Set<Employee> employees = new HashSet<>();
 
     @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL)
-    private List<Job> jobs = new ArrayList<>();  // Normalized Job entity reference
+    private Set<Job> jobs = new HashSet<>();  // Normalized Job entity reference
 }

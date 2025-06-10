@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class EmployerDTO {
+    private Long id = null;
     private String name;
     private List<JobDTO> jobs;
 }

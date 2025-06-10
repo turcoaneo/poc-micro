@@ -1,15 +1,21 @@
 package com.poc.microservices.employer.app.service;
 
-import com.poc.microservices.employer.app.model.Employee;
 import com.poc.microservices.employer.app.model.Employer;
-import com.poc.microservices.employer.app.model.Job;
+import com.poc.microservices.employer.app.model.dto.EmployeeDTO;
+import com.poc.microservices.employer.app.model.dto.EmployerDTO;
+import com.poc.microservices.employer.app.model.dto.JobDTO;
 import com.poc.microservices.employer.app.repository.EmployerRepository;
+import com.poc.microservices.employer.app.service.util.EmployeeMapper;
+import com.poc.microservices.employer.app.service.util.EmployerMapper;
+import com.poc.microservices.employer.app.service.util.JobMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -17,33 +23,45 @@ import java.util.Optional;
 public class EmployerService {
 
     private final EmployerRepository employerRepository;
+    private final EmployerMapper employerMapper;
+    private final JobMapper jobMapper;
+    private final EmployeeMapper employeeMapper;
 
-    public Employer createEmployer(Employer employer) {
+    public Employer createEmployer(EmployerDTO employerDTO) {
+        Employer employer = employerMapper.toEntity(employerDTO);
         return employerRepository.save(employer);
     }
 
-    public Employer updateEmployer(Long id, Employer updatedEmployer) {
-        return employerRepository.findById(id)
+    public EmployerDTO updateEmployer(EmployerDTO updatedEmployerDTO) {
+        return employerRepository.findById(updatedEmployerDTO.getId())
                 .map(existingEmployer -> {
-                    existingEmployer.setName(updatedEmployer.getName());
-                    return employerRepository.save(existingEmployer);
+                    existingEmployer.setName(updatedEmployerDTO.getName());
+                    Employer employer = employerRepository.save(existingEmployer);
+                    return employerMapper.toDTO(employer);
                 })
                 .orElseThrow(() -> new RuntimeException("Employer not found"));
     }
 
-    public Optional<Employer> getEmployerByName(String name) {
-        return employerRepository.findByName(name);
+    public Optional<EmployerDTO> getEmployerByName(String name) {
+        Optional<Employer> optionalEmployer = employerRepository.findByName(name);
+        return optionalEmployer.map(employerMapper::toDTO).or(() -> Optional.of(new EmployerDTO()));
     }
 
-    public List<Job> getJobsByEmployerId(Long employerId) {
-        return employerRepository.findById(employerId)
-                .map(Employer::getJobs)
+    public Set<JobDTO> getJobsByEmployerId(Long employerId) {
+        Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new RuntimeException("Employer not found"));
+
+        return employer.getJobs().stream()
+                .map(jobMapper::toDTO)
+                .collect(Collectors.toSet());
     }
 
-    public List<Employee> getEmployeesByEmployerId(Long employerId) {
-        return employerRepository.findById(employerId)
-                .map(Employer::getEmployees)
+    public Set<EmployeeDTO> getEmployeesByEmployerId(Long employerId) {
+        Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new RuntimeException("Employer not found"));
+
+        return employer.getEmployees().stream()
+                .map(employeeMapper::toDTO)
+                .collect(Collectors.toSet());
     }
 }
