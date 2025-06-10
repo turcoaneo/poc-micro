@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @FeignClient(value = "api-gateway")
-public interface GatewayClient {
+public interface MASGatewayClient {
 
     @GetMapping("/uam-service/uam/users/employer")
     ResponseEntity<String> getEmployer();

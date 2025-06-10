@@ -1,0 +1,36 @@
+{
+  "id": null,
+  "name": "TechCorp",
+  "jobs": [
+    {
+      "title": "Software Engineer",
+      "description": "Develops microservices",
+      "hourRate": 50.0,
+      "employees": [
+        {
+          "name": "Alice",
+          "workingHours": 40
+        },
+        {
+          "name": "Bob",
+          "workingHours": 35
+        }
+      ]
+    },
+    {
+      "title": "Data Scientist",
+      "description": "Analyzes data",
+      "hourRate": 55.0,
+      "employees": [
+        {
+          "name": "Bob",
+          "workingHours": 35
+        },
+        {
+          "name": "Charlie",
+          "workingHours": 42
+        }
+      ]
+    }
+  ]
+}

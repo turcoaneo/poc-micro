@@ -1,15 +1,15 @@
 server:
-  port: 8092
+  port: 8093
 spring:
   application:
-    name: uam-service
+    name: em-service
   mvc:
     servlet:
-      path: /uam  # This sets the global prefix for all controllers
+      path: /em  # This sets the global prefix for all controllers
     pathmatch:
       matching-strategy: ant_path_matcher  # Ensures correct path mapping
   datasource:
-    url: jdbc:mysql://localhost:3307/user_auth_db
+    url: jdbc:mysql://localhost:3307/employer_db
     username: root
     password: Sky_Dev#*75
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -25,18 +25,9 @@ logging:
     com.poc.microservices: DEBUG
     org.springframework.web: WARN
 
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    path: /swagger-ui.html
-
-jwt:
-#  secretKey: ENV var SECRET_KEY
-  expirationMinutes: 60
-
 eureka:
   client:
+    fetchRegistry: true
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
   instance:

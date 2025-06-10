@@ -1,6 +1,6 @@
 package com.poc.microservices.main.app.controller;
 
-import com.poc.microservices.main.app.feign.GatewayClient;
+import com.poc.microservices.main.app.feign.MASGatewayClient;
 import com.poc.microservices.main.app.model.dto.MASResponse;
 import com.poc.microservices.main.app.model.dto.UserDTO;
 import feign.FeignException;
@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MASGatewayController {
     private static final Logger logger = LoggerFactory.getLogger(MASGatewayController.class);
 
-    private final GatewayClient gatewayClient;
+    private final MASGatewayClient MASGatewayClient;
 
     @Autowired
-    public MASGatewayController(GatewayClient gatewayClient) {
-        this.gatewayClient = gatewayClient;
+    public MASGatewayController(MASGatewayClient MASGatewayClient) {
+        this.MASGatewayClient = MASGatewayClient;
     }
 
     @Operation(summary = "Fetch employer data from UAM")
@@ -35,7 +35,7 @@ public class MASGatewayController {
     @GetMapping("/fetch-employer")
     public ResponseEntity<String> fetchEmployer() {
         try {
-            ResponseEntity<String> response = gatewayClient.getEmployer();
+            ResponseEntity<String> response = MASGatewayClient.getEmployer();
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (FeignException feignException) {
             logger.error("Feign error while fetching employer: {}", feignException.getMessage());
@@ -51,7 +51,7 @@ public class MASGatewayController {
     @GetMapping("/fetch-user/{username}")
     public ResponseEntity<MASResponse<UserDTO>> fetchUser(@PathVariable String username) {
         try {
-            ResponseEntity<UserDTO> response = gatewayClient.getUser(username);
+            ResponseEntity<UserDTO> response = MASGatewayClient.getUser(username);
             return ResponseEntity.ok(new MASResponse<>(true, response.getBody(), "User retrieved successfully"));
         } catch (FeignException feignException) {
             logger.error("Feign error fetching user: {}", feignException.getMessage());

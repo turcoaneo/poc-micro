@@ -1,6 +1,6 @@
 package com.poc.microservices.main.app.controller;
 
-import com.poc.microservices.main.app.feign.GatewayClient;
+import com.poc.microservices.main.app.feign.MASGatewayClient;
 import com.poc.microservices.main.app.model.dto.UserDTO;
 import com.poc.microservices.main.app.util.TestMASHelper;
 import feign.FeignException;
@@ -37,7 +37,7 @@ public class MASGatewayControllerTest {
     private MASGatewayController masGatewayController;
 
     @MockitoBean
-    private GatewayClient gatewayClient;
+    private MASGatewayClient MASGatewayClient;
 
     @BeforeEach
     void setUp() {
@@ -49,7 +49,7 @@ public class MASGatewayControllerTest {
 
     @Test
     public void testFetchEmployer_Success() throws Exception {
-        Mockito.when(gatewayClient.getEmployer()).thenReturn(ResponseEntity.ok("Test employer"));
+        Mockito.when(MASGatewayClient.getEmployer()).thenReturn(ResponseEntity.ok("Test employer"));
 
         mockMvc.perform(get("/mas-gateway/fetch-employer")
                         .header("Authorization", "Bearer " + getValidToken()))
@@ -59,7 +59,7 @@ public class MASGatewayControllerTest {
 
     @Test
     public void testFetchEmployer_Unauthorized() throws Exception {
-        Mockito.when(gatewayClient.getEmployer())
+        Mockito.when(MASGatewayClient.getEmployer())
                 .thenReturn(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to fetch employer data"));
 
         mockMvc.perform(get("/mas-gateway/fetch-employer")
@@ -71,7 +71,7 @@ public class MASGatewayControllerTest {
     @Test
     public void testFetchUser_Success() throws Exception {
         UserDTO mockUser = new UserDTO("test user", "password", "USER");
-        Mockito.when(gatewayClient.getUser("testuser")).thenReturn(ResponseEntity.ok(mockUser));
+        Mockito.when(MASGatewayClient.getUser("testuser")).thenReturn(ResponseEntity.ok(mockUser));
 
         mockMvc.perform(get("/mas-gateway/fetch-user/testuser")
                         .header("Authorization", "Bearer " + getValidToken()))
@@ -84,7 +84,7 @@ public class MASGatewayControllerTest {
 
     @Test
     public void testFetchUser_Unauthorized() throws Exception {
-        Mockito.when(gatewayClient.getUser("wronguser"))
+        Mockito.when(MASGatewayClient.getUser("wronguser"))
                 .thenThrow(new FeignException.Unauthorized("msg",
                         Request.create(Request.HttpMethod.GET, "", new HashMap<>(), null, null, null),
                         null,
