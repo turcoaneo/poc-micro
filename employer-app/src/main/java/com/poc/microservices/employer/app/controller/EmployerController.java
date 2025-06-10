@@ -2,7 +2,6 @@ package com.poc.microservices.employer.app.controller;
 
 import com.poc.microservices.employer.app.aop.EmployerAuthorize;
 import com.poc.microservices.employer.app.model.EMUserRole;
-import com.poc.microservices.employer.app.model.Employer;
 import com.poc.microservices.employer.app.model.dto.EmployeeDTO;
 import com.poc.microservices.employer.app.model.dto.EmployerDTO;
 import com.poc.microservices.employer.app.model.dto.JobDTO;
@@ -26,10 +25,18 @@ public class EmployerController {
         this.employerService = employerService;
     }
 
-    @PostMapping
-    @EmployerAuthorize({EMUserRole.ADMIN, EMUserRole.EMPLOYER})
+    @DeleteMapping("/{employerId}")
+    @EmployerAuthorize({EMUserRole.ADMIN})
     @SecurityRequirement(name = "BearerAuth")
-    public ResponseEntity<Employer> createEmployer(@RequestBody EmployerDTO employerDTO) {
+    public ResponseEntity<Void> deleteEmployer(@PathVariable Long employerId) {
+        employerService.deleteEmployer(employerId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping
+    @EmployerAuthorize({EMUserRole.ADMIN})
+    @SecurityRequirement(name = "BearerAuth")
+    public ResponseEntity<EmployerDTO> createEmployer(@RequestBody EmployerDTO employerDTO) {
         return ResponseEntity.ok(employerService.createEmployer(employerDTO));
     }
 

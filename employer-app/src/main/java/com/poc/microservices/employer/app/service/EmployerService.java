@@ -27,9 +27,9 @@ public class EmployerService {
     private final JobMapper jobMapper;
     private final EmployeeMapper employeeMapper;
 
-    public Employer createEmployer(EmployerDTO employerDTO) {
-        Employer employer = employerMapper.toEntity(employerDTO);
-        return employerRepository.save(employer);
+    public EmployerDTO createEmployer(EmployerDTO employerDTO) {
+        Employer employer = employerRepository.save(employerMapper.toEntity(employerDTO));
+        return employerMapper.toDTO(employer);
     }
 
     public EmployerDTO updateEmployer(EmployerDTO updatedEmployerDTO) {
@@ -63,5 +63,9 @@ public class EmployerService {
         return employer.getEmployees().stream()
                 .map(employeeMapper::toDTO)
                 .collect(Collectors.toSet());
+    }
+
+    public void deleteEmployer(Long employerId) {
+        employerRepository.deleteById(employerId);
     }
 }

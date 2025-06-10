@@ -23,6 +23,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Set;
 
 
@@ -57,8 +59,24 @@ class EmployerControllerTest {
     }
 
     @Test
+    void testCreateEmployerFromJson() throws Exception {
+        String jsonContent = Files.readString(Path.of("src/test/resources/employer_dto.json"));
+
+
+        EmployerDTO dto = employerMapper.toDTO(employer);
+        Mockito.when(employerService.createEmployer(Mockito.any(EmployerDTO.class))).thenReturn(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/employers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent)) // Inject external JSON file
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("TestCorp"));
+    }
+
+    @Test
     void testCreateEmployer() throws Exception {
-        Mockito.when(employerService.createEmployer(Mockito.any(EmployerDTO.class))).thenReturn(employer);
+        EmployerDTO dto = employerMapper.toDTO(employer);
+        Mockito.when(employerService.createEmployer(Mockito.any(EmployerDTO.class))).thenReturn(dto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/employers")
                         .contentType(MediaType.APPLICATION_JSON)
