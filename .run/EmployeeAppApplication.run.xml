@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="EmployeeAppApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <envs>
+      <env name="SECRET_KEY" value="someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits" />
+    </envs>
+    <module name="employee-app" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.poc.microservices.employee.app.EmployeeAppApplication" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.poc.microservices.employee.app.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

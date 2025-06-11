@@ -6,6 +6,8 @@ import com.poc.microservices.employee.app.model.dto.EmployerDTO;
 import com.poc.microservices.employee.app.model.dto.JobDTO;
 import com.poc.microservices.employee.app.repository.EmployeeJobEmployerRepository;
 import com.poc.microservices.employee.app.repository.EmployeeRepository;
+import com.poc.microservices.employee.app.repository.EmployerRepository;
+import com.poc.microservices.employee.app.repository.JobRepository;
 import com.poc.microservices.employee.app.service.util.EmployeeMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +21,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceTest {
+
+    @Mock
+    private EmployerRepository employerRepository;
+
+
+    @Mock
+    private JobRepository jobRepository;
 
     @Mock
     private EmployeeRepository employeeRepository;
@@ -39,6 +49,8 @@ class EmployeeServiceTest {
     @BeforeEach
     void setUp() {
         Assertions.assertNotNull(employeeMapper);
+        Assertions.assertNotNull(jobRepository);
+        Assertions.assertNotNull(employerRepository);
     }
 
     @Test
@@ -50,9 +62,10 @@ class EmployeeServiceTest {
 
         Employee mappedEntity = employeeMapper.toEntity(dto);
 
-        Employee entity = new Employee(null, "Alice", 40, mappedEntity.getJobEmployers());
+        Employee entity = new Employee(0L, "Alice", 40, mappedEntity.getJobEmployers());
 
         Mockito.when(employeeRepository.save(Mockito.any(Employee.class))).thenReturn(entity);
+        Mockito.when(employeeRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
 
         EmployeeDTO result = employeeService.createEmployee(dto);
 
