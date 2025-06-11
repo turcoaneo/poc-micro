@@ -82,5 +82,34 @@ class EmployeeControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value("Alice"));
     }
 
+    @Test
+    void testGetEmployeesByJobId() throws Exception {
+        List<EmployeeDTO> employees = List.of(
+                new EmployeeDTO("Alice", 40, List.of()),
+                new EmployeeDTO("Bob", 35, List.of())
+        );
+
+        Mockito.when(employeeService.getEmployeesByJobId(101L)).thenReturn(employees);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/employees/job/101"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Alice"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].name").value("Bob"));
+    }
+
+    @Test
+    void testGetEmployeesByEmployerId() throws Exception {
+        List<EmployeeDTO> employees = List.of(
+                new EmployeeDTO("Charlie", 42, List.of())
+        );
+
+        Mockito.when(employeeService.getEmployeesByEmployerId(1L)).thenReturn(employees);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/employees/employer/1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Charlie"));
+    }
 
 }

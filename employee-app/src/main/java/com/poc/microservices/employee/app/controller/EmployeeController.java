@@ -40,4 +40,15 @@ public class EmployeeController {
         List<EmployeeDTO> employees = employeeService.getEmployeesByName(name);
         return ResponseEntity.ok(employees);
     }
+
+    @GetMapping("/job/{jobId}")
+    public ResponseEntity<List<EmployeeDTO>> getEmployeesByJobId(@PathVariable Long jobId) {
+        return ResponseEntity.ok(employeeService.getEmployeesByJobId(jobId));
+    }
+
+    @GetMapping("/employer/{employerId}")
+    public ResponseEntity<List<EmployeeDTO>> getEmployeesByEmployerId(@PathVariable Long employerId) {
+        return ResponseEntity.ok(employeeService.getEmployeesByEmployerId(employerId));
+    }
+
 }

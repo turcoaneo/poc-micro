@@ -4,6 +4,7 @@ import com.poc.microservices.employee.app.model.Employee;
 import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
 import com.poc.microservices.employee.app.model.dto.EmployerDTO;
 import com.poc.microservices.employee.app.model.dto.JobDTO;
+import com.poc.microservices.employee.app.repository.EmployeeJobEmployerRepository;
 import com.poc.microservices.employee.app.repository.EmployeeRepository;
 import com.poc.microservices.employee.app.service.util.EmployeeMapper;
 import org.junit.jupiter.api.Assertions;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -27,6 +29,9 @@ class EmployeeServiceTest {
 
     @Spy
     private EmployeeMapper employeeMapper;
+
+    @Mock
+    private EmployeeJobEmployerRepository employeeJobEmployerRepository;
 
     @InjectMocks
     private EmployeeService employeeService;
@@ -56,5 +61,32 @@ class EmployeeServiceTest {
         Assertions.assertEquals(2, result.getEmployers().size()); // Two employers
         Assertions.assertEquals(2, result.getEmployers().getFirst().getJobs().size()); // Two jobs at first employer
     }
+
+        @Test
+        void testGetEmployeesByJobId() {
+            List<Employee> employees = List.of(new Employee(null, "Alice", 40, new HashSet<>()),
+                    new Employee(null, "Bob", 35, new HashSet<>()));
+
+            Mockito.when(employeeJobEmployerRepository.findEmployeesByJobId(101L)).thenReturn(employees);
+
+            List<EmployeeDTO> result = employeeService.getEmployeesByJobId(101L);
+
+            Assertions.assertEquals(2, result.size());
+            Assertions.assertEquals("Alice", result.get(0).getName());
+            Assertions.assertEquals("Bob", result.get(1).getName());
+        }
+
+        @Test
+        void testGetEmployeesByEmployerId() {
+            List<Employee> employees = List.of(new Employee(null, "Charlie", 42, new HashSet<>()));
+
+            Mockito.when(employeeJobEmployerRepository.findEmployeesByEmployerId(1L)).thenReturn(employees);
+
+            List<EmployeeDTO> result = employeeService.getEmployeesByEmployerId(1L);
+
+            Assertions.assertEquals(1, result.size());
+            Assertions.assertEquals("Charlie", result.getFirst().getName());
+        }
+
 
 }

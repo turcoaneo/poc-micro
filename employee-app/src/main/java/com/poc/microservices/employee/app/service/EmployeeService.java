@@ -2,6 +2,7 @@ package com.poc.microservices.employee.app.service;
 
 import com.poc.microservices.employee.app.model.Employee;
 import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
+import com.poc.microservices.employee.app.repository.EmployeeJobEmployerRepository;
 import com.poc.microservices.employee.app.repository.EmployeeRepository;
 import com.poc.microservices.employee.app.service.util.EmployeeMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,8 @@ public class EmployeeService {
 
     private final EmployeeMapper employeeMapper;
 
+    private final EmployeeJobEmployerRepository employeeJobEmployerRepository;
+
     public EmployeeDTO createEmployee(EmployeeDTO dto) {
         Employee employee = employeeMapper.toEntity(dto);
         Employee savedEmployee = employeeRepository.save(employee);
@@ -35,4 +38,18 @@ public class EmployeeService {
                 .map(employeeMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    public List<EmployeeDTO> getEmployeesByJobId(Long jobId) {
+        return employeeJobEmployerRepository.findEmployeesByJobId(jobId).stream()
+                .map(employeeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EmployeeDTO> getEmployeesByEmployerId(Long employerId) {
+        return employeeJobEmployerRepository.findEmployeesByEmployerId(employerId).stream()
+                .map(employeeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
 }
