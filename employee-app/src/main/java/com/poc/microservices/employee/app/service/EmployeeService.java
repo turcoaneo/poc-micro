@@ -8,6 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmployeeService {
@@ -20,5 +24,15 @@ public class EmployeeService {
         Employee employee = employeeMapper.toEntity(dto);
         Employee savedEmployee = employeeRepository.save(employee);
         return employeeMapper.toDTO(savedEmployee);
+    }
+
+    public Optional<EmployeeDTO> getEmployeeById(Long id) {
+        return employeeRepository.findById(id).map(employeeMapper::toDTO);
+    }
+
+    public List<EmployeeDTO> getEmployeesByName(String name) {
+        return employeeRepository.findByName(name).stream()
+                .map(employeeMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }
