@@ -52,7 +52,8 @@ class EmployeeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(dto)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$").value(0)); // Two employers assigned
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(0))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Employee successfully created"));
     }
 
     @Test
