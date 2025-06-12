@@ -43,6 +43,7 @@ public class EmployeeMapper {
     public EmployeeDTO toDTO(Employee employee) {
         EmployeeDTO dto = new EmployeeDTO();
         dto.setName(employee.getName());
+        dto.setId(employee.getEmployeeId());
         dto.setWorkingHours(employee.getWorkingHours());
 
         Map<Long, EmployerDTO> employerMap = new HashMap<>();
@@ -51,9 +52,9 @@ public class EmployeeMapper {
             Employer employer = jobEmployer.getEmployer();
             Job job = jobEmployer.getJob();
 
-            employerMap.computeIfAbsent(employer.getId(), id ->
+            employerMap.computeIfAbsent(employer.getEmployerId(), id ->
                     new EmployerDTO(id, employer.getName(),
-                            new ArrayList<>())).getJobs().add(new JobDTO(job.getId(), job.getTitle()));
+                            new ArrayList<>())).getJobs().add(new JobDTO(job.getJobId(), job.getTitle()));
         }
 
         dto.setEmployers(new ArrayList<>(employerMap.values()));

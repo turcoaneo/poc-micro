@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +54,7 @@ class EmployeeServiceTest {
 
     @Test
     void testCreateEmployeeWithEmployersAndJobs() {
-        EmployeeDTO dto = new EmployeeDTO("Alice", 40, List.of(
+        EmployeeDTO dto = new EmployeeDTO(null, "Alice", 40, List.of(
                 new EmployerDTO(1L, "TechCorp", List.of(new JobDTO(101L, "Developer"), new JobDTO(102L, "Architect"))),
                 new EmployerDTO(2L, "DataLabs", List.of(new JobDTO(201L, "Analyst"), new JobDTO(202L, "ML Engineer")))
         ));
@@ -65,14 +64,10 @@ class EmployeeServiceTest {
         Employee entity = new Employee(0L, "Alice", 40, mappedEntity.getJobEmployers());
 
         Mockito.when(employeeRepository.save(Mockito.any(Employee.class))).thenReturn(entity);
-        Mockito.when(employeeRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
 
-        EmployeeDTO result = employeeService.createEmployee(dto);
+        Long employeeId = employeeService.createEmployee(dto);
 
-        Assertions.assertEquals("Alice", result.getName());
-        Assertions.assertEquals(40, result.getWorkingHours());
-        Assertions.assertEquals(2, result.getEmployers().size()); // Two employers
-        Assertions.assertEquals(2, result.getEmployers().getFirst().getJobs().size()); // Two jobs at first employer
+        Assertions.assertEquals(0L, employeeId);
     }
 
         @Test

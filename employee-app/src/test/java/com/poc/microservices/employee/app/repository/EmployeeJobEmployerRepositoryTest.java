@@ -47,11 +47,17 @@ class EmployeeJobEmployerRepositoryTest {
                 new EmployeeJobEmployer(null, bob, dataJob, employer2) // Bob works at DataLabs too
         ));
 
-        List<Employee> employeesAtTechCorpDev = employeeJobEmployerRepository.findEmployeesByJobAndEmployer(devJob.getId(), employer1.getId());
-        List<Employee> employeesAtDataLabsData = employeeJobEmployerRepository.findEmployeesByJobAndEmployer(dataJob.getId(), employer2.getId());
+        List<Employee> employeesAtTechCorpDev = employeeJobEmployerRepository.findEmployeesByJobAndEmployer(devJob.getJobId(), employer1.getEmployerId());
+        List<Employee> employeesAtDataLabsData = employeeJobEmployerRepository.findEmployeesByJobAndEmployer(dataJob.getJobId(), employer2.getEmployerId());
 
         assertEquals(2, employeesAtTechCorpDev.size()); // Alice & Bob work at TechCorp as Developers
         assertEquals(1, employeesAtDataLabsData.size()); // Only Bob works at DataLabs as a Data Scientist
+
+        assertEquals("Alice", employeesAtTechCorpDev.getFirst().getName());
+        assertEquals("Bob", employeesAtTechCorpDev.get(1).getName());
+
+        assertEquals("Bob", employeesAtDataLabsData.getFirst().getName());
+        assertEquals(1, employeesAtDataLabsData.size()); // Only Bob works at DataLabs
     }
 
     @Test
@@ -69,7 +75,7 @@ class EmployeeJobEmployerRepositoryTest {
                 new EmployeeJobEmployer(null, bob, dataJob, employer2) // Bob works at DataLabs too
         ));
 
-        List<Job> bobJobs = employeeJobEmployerRepository.findJobsByEmployeeId(bob.getId());
+        List<Job> bobJobs = employeeJobEmployerRepository.findJobsByEmployeeId(bob.getEmployeeId());
 
         assertEquals(2, bobJobs.size()); // Bob should have two jobs across two employers
     }

@@ -30,8 +30,19 @@ public class EmployeeService {
     private final EmployerRepository employerRepository;
     private final EmployeeJobEmployerRepository employeeJobEmployerRepository;
 
-    public EmployeeDTO createEmployee(EmployeeDTO dto) {
+    public Long createEmployee(EmployeeDTO dto) {
         Employee employee = employeeMapper.toEntity(dto);
+        Set<EmployeeJobEmployer> jobEmployers = getEmployeeJobEmployers(dto, employee);
+        employee.setJobEmployers(new HashSet<>());
+        Employee saved = employeeRepository.save(employee);
+        Long employeeId = saved.getEmployeeId();
+
+        employeeJobEmployerRepository.saveAll(jobEmployers);
+        employeeJobEmployerRepository.flush();
+        return employeeId;
+    }
+
+    private Set<EmployeeJobEmployer> getEmployeeJobEmployers(EmployeeDTO dto, Employee employee) {
         Set<EmployeeJobEmployer> jobEmployers = new HashSet<>();
         dto.getEmployers().forEach(employerDTO -> {
             Employer employer = new Employer(null, employerDTO.getName(), new HashSet<>());
@@ -43,11 +54,11 @@ public class EmployeeService {
                 jobEmployers.add(jobEmployer);
             });
         });
-        employee.setJobEmployers(new HashSet<>());
-        Employee saved = employeeRepository.save(employee);
+        return jobEmployers;
+    }
 
-        employeeJobEmployerRepository.saveAll(jobEmployers);
-        saved = employeeRepository.findById(saved.getId()).orElse(null);
+    public EmployeeDTO getEmployeeDTOById(Long employeeId) {
+        Employee saved = employeeRepository.findById(employeeId).orElse(null);
         if (saved == null) {
             throw new RuntimeException("Message in a bottle...neck. Could not save employee!");
         }
@@ -77,4 +88,17 @@ public class EmployeeService {
     }
 
 
+    public void deleteEmployee(Long employeeId) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(employeeId);
+        optionalEmployee.ifPresent(employee -> {
+            Set<Long> jobIds = employee.getJobEmployers().stream().map(EmployeeJobEmployer::getJob).map(Job::getJobId)
+                    .collect(Collectors.toSet());
+            Set<Long> employerIds = employee.getJobEmployers().stream().map(EmployeeJobEmployer::getEmployer)
+                    .map(Employer::getEmployerId).collect(Collectors.toSet());
+            employeeRepository.deleteById(employeeId);
+            employeeRepository.flush();
+            jobRepository.deleteByIds(jobIds);
+            employerRepository.deleteByIds(employerIds);
+        });
+    }
 }

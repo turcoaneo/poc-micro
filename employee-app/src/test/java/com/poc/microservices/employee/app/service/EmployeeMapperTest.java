@@ -30,7 +30,7 @@ class EmployeeMapperTest {
 
     @Test
     void testToEntity() {
-        EmployeeDTO dto = new EmployeeDTO("Alice", 40, List.of(
+        EmployeeDTO dto = new EmployeeDTO(null, "Alice", 40, List.of(
                 new EmployerDTO(1L, "TechCorp", List.of(new JobDTO(101L, "Developer"), new JobDTO(102L, "Architect"))),
                 new EmployerDTO(2L, "DataLabs", List.of(new JobDTO(201L, "Analyst"), new JobDTO(202L, "ML Engineer")))
         ));

@@ -24,7 +24,7 @@ import java.util.Set;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long employeeId;
 
     private String name;
 

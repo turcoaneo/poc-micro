@@ -24,7 +24,7 @@ import java.util.Set;
 public class Employer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long employerId;
     private String name;
 
     @OneToMany(mappedBy = "employer", cascade = CascadeType.ALL)
