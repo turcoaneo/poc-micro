@@ -57,10 +57,10 @@ class EmployerServiceTest {
     void testCreateEmployer() {
         when(employerRepository.save(Mockito.any(Employer.class))).thenReturn(employer);
 
-        EmployerDTO result = employerService.createEmployer(employerMapper.toDTO(employer));
+        Long result = employerService.createEmployer(employerMapper.toDTO(employer));
 
         assertNotNull(result);
-        assertEquals("TestCorp", result.getName());
+        assertEquals(1L, result);
     }
 
     @Test
