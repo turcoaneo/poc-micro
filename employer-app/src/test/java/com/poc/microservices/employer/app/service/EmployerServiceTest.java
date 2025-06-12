@@ -46,7 +46,7 @@ class EmployerServiceTest {
     @BeforeEach
     void setUp() {
         employer = new Employer();
-        employer.setId(1L);
+        employer.setEmployerId(1L);
         employer.setName("TestCorp");
 
         assertNotNull(jobMapper);
@@ -66,7 +66,7 @@ class EmployerServiceTest {
     @Test
     void testUpdateEmployer_WhenExists() {
         Employer updated = new Employer();
-        updated.setId(2L);
+        updated.setEmployerId(2L);
         updated.setName("UpdatedCorp");
 
         when(employerRepository.findById(2L)).thenReturn(Optional.of(employer));
@@ -89,9 +89,7 @@ class EmployerServiceTest {
 
     @Test
     void testGetJobsByEmployerId() {
-        Job job = new Job();
-        job.setTitle("Engineer");
-        job.setId(1L);
+        Job job = getJob();
         employer.setJobs(Set.of(job));
 
         when(employerRepository.findById(1L)).thenReturn(Optional.of(employer));
@@ -104,14 +102,23 @@ class EmployerServiceTest {
     @Test
     void testGetEmployeesByEmployerId() {
         Employee employee = new Employee();
-        employee.setId(1L);
+        employee.setEmployeeId(1L);
         employee.setName("Alice");
-        employer.setEmployees(Set.of(employee));
+        Job job = getJob();
+        job.getEmployees().add(employee);
+        employer.setJobs(Set.of(job));
 
         when(employerRepository.findById(1L)).thenReturn(Optional.of(employer));
 
         Set<EmployeeDTO> employees = employerService.getEmployeesByEmployerId(1L);
 
         assertEquals(1, employees.size());
+    }
+
+    private static Job getJob() {
+        Job job = new Job();
+        job.setTitle("Engineer");
+        job.setJobId(1L);
+        return job;
     }
 }

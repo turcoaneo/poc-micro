@@ -50,7 +50,7 @@ class EmployerControllerTest {
     @BeforeEach
     void setUp() {
         employer = new Employer();
-        employer.setId(1L);
+        employer.setEmployerId(1L);
         employer.setName("TestCorp");
         this.mockMvc = MockMvcBuilders
                 .standaloneSetup(employerController)

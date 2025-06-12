@@ -60,7 +60,7 @@ public class EmployerService {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new RuntimeException("Employer not found"));
 
-        return employer.getEmployees().stream()
+        return employer.getJobs().stream().flatMap(job -> job.getEmployees().stream())
                 .map(employeeMapper::toDTO)
                 .collect(Collectors.toSet());
     }

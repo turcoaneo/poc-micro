@@ -17,8 +17,8 @@ public class JobMapper {
         dto.setDescription(job.getDescription());
         dto.setHourRate(job.getHourRate());
 
-        if (job.getAssignedEmployees() != null) {
-            dto.setEmployees(job.getAssignedEmployees().stream()
+        if (job.getEmployees() != null) {
+            dto.setEmployees(job.getEmployees().stream()
                     .map(this::mapEmployeeToDTO)
                     .toList());
         }
@@ -33,7 +33,7 @@ public class JobMapper {
         job.setHourRate(dto.getHourRate());
 
         if (dto.getEmployees() != null) {
-            job.setAssignedEmployees(dto.getEmployees().stream()
+            job.getEmployees().addAll(dto.getEmployees().stream()
                     .map(this::mapEmployeeToEntity)
                     .toList());
         }
@@ -44,14 +44,12 @@ public class JobMapper {
     private EmployeeDTO mapEmployeeToDTO(Employee employee) {
         EmployeeDTO dto = new EmployeeDTO();
         dto.setName(employee.getName());
-        dto.setWorkingHours(employee.getWorkingHours());
         return dto;
     }
 
     private Employee mapEmployeeToEntity(EmployeeDTO dto) {
         Employee employee = new Employee();
         employee.setName(dto.getName());
-        employee.setWorkingHours(dto.getWorkingHours());
         return employee;
     }
 }
