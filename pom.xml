@@ -18,6 +18,7 @@
         <module>gateway</module>
         <module>jwt-library</module>
         <module>employer-app</module>
+        <module>employee-app</module>
     </modules>
 
     <groupId>com.poc.microservices</groupId>
