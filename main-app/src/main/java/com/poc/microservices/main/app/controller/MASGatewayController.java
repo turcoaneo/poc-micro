@@ -32,10 +32,10 @@ public class MASGatewayController {
     @Operation(summary = "Fetch employer data from UAM")
     @ApiResponse(responseCode = "200", description = "Employer data retrieved successfully")
     @SecurityRequirement(name = "BearerAuth")
-    @GetMapping("/fetch-employer")
-    public ResponseEntity<String> fetchEmployer() {
+    @GetMapping("/test-employer-role")
+    public ResponseEntity<String> testEmployerRole() {
         try {
-            ResponseEntity<String> response = MASGatewayClient.getEmployer();
+            ResponseEntity<String> response = MASGatewayClient.getTestEmployerRole();
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (FeignException feignException) {
             logger.error("Feign error while fetching employer: {}", feignException.getMessage());

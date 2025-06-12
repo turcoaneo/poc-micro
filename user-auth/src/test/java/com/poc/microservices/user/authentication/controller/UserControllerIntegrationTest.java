@@ -89,15 +89,15 @@ public class UserControllerIntegrationTest {
         when(mockAuth.getAuthorities()).thenAnswer(invocation -> Collections.singletonList(new SimpleGrantedAuthority("ROLE_EMPLOYER")));
         SecurityContextHolder.getContext().setAuthentication(mockAuth);
 
-        mvc.perform(get("/users/employer"))
+        mvc.perform(get("/users/test-employer-role"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Test employer"));
+                .andExpect(content().string("Test EMPLOYER"));
     }
 
     // Test employer authorization failure (missing JWT)
     @Test
     void testGetEmployer_Unauthorized() throws Exception {
-        mvc.perform(get("/users/employer"))
+        mvc.perform(get("/users/test-employer-role"))
                 .andExpect(status().isForbidden()); // Expect HTTP 403
     }
 }
