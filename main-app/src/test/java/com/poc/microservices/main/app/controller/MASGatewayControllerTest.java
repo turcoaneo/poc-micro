@@ -49,9 +49,9 @@ public class MASGatewayControllerTest {
 
     @Test
     public void testFetchEmployer_Success() throws Exception {
-        Mockito.when(MASGatewayClient.getEmployer()).thenReturn(ResponseEntity.ok("Test employer"));
+        Mockito.when(MASGatewayClient.getTestEmployerRole()).thenReturn(ResponseEntity.ok("Test employer"));
 
-        mockMvc.perform(get("/mas-gateway/fetch-employer")
+        mockMvc.perform(get("/mas-gateway/test-employer-role")
                         .header("Authorization", "Bearer " + getValidToken()))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Test employer"));
@@ -59,10 +59,10 @@ public class MASGatewayControllerTest {
 
     @Test
     public void testFetchEmployer_Unauthorized() throws Exception {
-        Mockito.when(MASGatewayClient.getEmployer())
+        Mockito.when(MASGatewayClient.getTestEmployerRole())
                 .thenReturn(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Failed to fetch employer data"));
 
-        mockMvc.perform(get("/mas-gateway/fetch-employer")
+        mockMvc.perform(get("/mas-gateway/test-employer-role")
                         .header("Authorization", "Bearer " + getValidToken()))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("Failed to fetch employer data"));

@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 @FeignClient(value = "api-gateway")
 public interface EMGatewayClient {
 
-    @GetMapping("/uam-service/uam/users/employer")
-    ResponseEntity<String> getEmployer();
+    @GetMapping("/uam-service/uam/users/test-employer-role")
+    ResponseEntity<String> getTestEmployerRole();
 }

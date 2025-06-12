@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient(value = "api-gateway")
 public interface MASGatewayClient {
 
-    @GetMapping("/uam-service/uam/users/employer")
-    ResponseEntity<String> getEmployer();
+    @GetMapping("/uam-service/uam/users/test-employer-role")
+    ResponseEntity<String> getTestEmployerRole();
 
     @GetMapping("/uam-service/uam/users/{username}")
     ResponseEntity<UserDTO> getUser(@PathVariable String username);

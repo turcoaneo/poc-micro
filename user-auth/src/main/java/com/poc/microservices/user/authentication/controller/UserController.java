@@ -50,12 +50,12 @@ public class UserController {
     @Operation(summary = "Test Employer and Admin roles authorization")
     @SecurityRequirement(name = "BearerAuth")
     @UserAuthorize({UserRole.ADMIN, UserRole.EMPLOYER})
-    @GetMapping("/employer")
+    @GetMapping("/test-employer-role")
     public ResponseEntity<String> getTestEmployer() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         logger.info("UAM Processing Authentication: {}", authentication);
 
-        return ResponseEntity.ok("Test employer");
+        return ResponseEntity.ok("Test EMPLOYER");
     }
 
     @Operation(summary = "Authenticate user and return JWT")
