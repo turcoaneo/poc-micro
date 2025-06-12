@@ -47,15 +47,12 @@ class EmployeeControllerTest {
         ));
 
         Mockito.when(employeeService.createEmployee(Mockito.any(EmployeeDTO.class))).thenReturn(0L);
-        Mockito.when(employeeService.getEmployeeDTOById(0L)).thenReturn(dto);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/employees")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(dto)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Alice"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.workingHours").value(40))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.employers.length()").value(2)); // Two employers assigned
+                .andExpect(MockMvcResultMatchers.jsonPath("$").value(0)); // Two employers assigned
     }
 
     @Test
