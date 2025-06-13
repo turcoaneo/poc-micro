@@ -1,8 +1,13 @@
 package com.poc.microservices.main.app.controller;
 
+import com.poc.microservices.main.app.aop.MainAppAuthorize;
 import com.poc.microservices.main.app.feign.MASGatewayClient;
+import com.poc.microservices.main.app.model.MASUserRole;
+import com.poc.microservices.main.app.model.dto.MASEmployeeDTO;
+import com.poc.microservices.main.app.model.dto.MASGenericResponseDTO;
 import com.poc.microservices.main.app.model.dto.MASResponse;
 import com.poc.microservices.main.app.model.dto.UserDTO;
+import com.poc.microservices.main.app.model.dto.MASEmployerDTO;
 import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,11 +29,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MASGatewayController {
     private static final Logger logger = LoggerFactory.getLogger(MASGatewayController.class);
 
-    private final MASGatewayClient MASGatewayClient;
+    private final MASGatewayClient masGatewayClient;
 
     @Autowired
     public MASGatewayController(MASGatewayClient MASGatewayClient) {
-        this.MASGatewayClient = MASGatewayClient;
+        this.masGatewayClient = MASGatewayClient;
     }
 
     @Operation(summary = "Fetch employer data from UAM")
@@ -35,7 +42,7 @@ public class MASGatewayController {
     @GetMapping("/test-employer-role")
     public ResponseEntity<String> testEmployerRole() {
         try {
-            ResponseEntity<String> response = MASGatewayClient.getTestEmployerRole();
+            ResponseEntity<String> response = masGatewayClient.getTestEmployerRole();
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
         } catch (FeignException feignException) {
             logger.error("Feign error while fetching employer: {}", feignException.getMessage());
@@ -48,10 +55,10 @@ public class MASGatewayController {
 
     @Operation(summary = "Fetch user from UAM")
     @SecurityRequirement(name = "BearerAuth")
-    @GetMapping("/fetch-user/{username}")
+    @GetMapping("/fetch-user-role/{username}")
     public ResponseEntity<MASResponse<UserDTO>> fetchUser(@PathVariable String username) {
         try {
-            ResponseEntity<UserDTO> response = MASGatewayClient.getUser(username);
+            ResponseEntity<UserDTO> response = masGatewayClient.getUser(username);
             return ResponseEntity.ok(new MASResponse<>(true, response.getBody(), "User retrieved successfully"));
         } catch (FeignException feignException) {
             logger.error("Feign error fetching user: {}", feignException.getMessage());
@@ -61,4 +68,21 @@ public class MASGatewayController {
             return ResponseEntity.internalServerError().body(new MASResponse<>(false, null, "Unexpected error occurred"));
         }
     }
+
+    @PostMapping("/create-employer")
+    @MainAppAuthorize({MASUserRole.ADMIN})
+    @SecurityRequirement(name = "BearerAuth")
+    public ResponseEntity<MASGenericResponseDTO> createEmployer(@RequestBody MASEmployerDTO employerDTO) {
+        ResponseEntity<MASGenericResponseDTO> employerResponse = masGatewayClient.createEmployer(employerDTO);
+        return ResponseEntity.status(employerResponse.getStatusCode()).body(employerResponse.getBody());
+    }
+
+    @PostMapping("/create-employee")
+    @MainAppAuthorize({MASUserRole.ADMIN, MASUserRole.EMPLOYER})
+    @SecurityRequirement(name = "BearerAuth")
+    public ResponseEntity<MASGenericResponseDTO> createEmployee(@RequestBody MASEmployeeDTO employeeDTO) {
+        ResponseEntity<MASGenericResponseDTO> employeeResponse = masGatewayClient.createEmployee(employeeDTO);
+        return ResponseEntity.status(employeeResponse.getStatusCode()).body(employeeResponse.getBody());
+    }
+
 }

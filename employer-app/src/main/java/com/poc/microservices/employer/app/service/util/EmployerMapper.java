@@ -8,6 +8,7 @@ import com.poc.microservices.employer.app.model.dto.EmployerDTO;
 import com.poc.microservices.employer.app.model.dto.JobDTO;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class EmployerMapper {
         job.setHourRate(dto.getHourRate());
         job.setEmployer(employer);
 
-        if (!dto.getEmployees().isEmpty()) {
+        if (!CollectionUtils.isEmpty(dto.getEmployees())) {
             dto.getEmployees().forEach(employeeDTO -> {
                 Employee employee = employeeMap.computeIfAbsent(employeeDTO.getName(),
                         name -> this.mapEmployee(employeeDTO));

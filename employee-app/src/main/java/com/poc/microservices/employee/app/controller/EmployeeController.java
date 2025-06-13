@@ -1,6 +1,6 @@
 package com.poc.microservices.employee.app.controller;
 
-import com.poc.microservices.employee.app.aop.EmployerAuthorize;
+import com.poc.microservices.employee.app.aop.EmployeeAuthorize;
 import com.poc.microservices.employee.app.model.EEMUserRole;
 import com.poc.microservices.employee.app.model.dto.EEMGenericResponseDTO;
 import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
@@ -30,7 +30,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @DeleteMapping("/{employeeId}")
-    @EmployerAuthorize({EEMUserRole.ADMIN})
+    @EmployeeAuthorize({EEMUserRole.ADMIN})
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long employeeId) {
         employeeService.deleteEmployee(employeeId);
@@ -38,7 +38,7 @@ public class EmployeeController {
     }
 
     @PostMapping
-    @EmployerAuthorize({EEMUserRole.ADMIN})
+    @EmployeeAuthorize({EEMUserRole.ADMIN, EEMUserRole.EMPLOYER})
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<EEMGenericResponseDTO> createEmployee(@RequestBody EmployeeDTO employeeDTO) {
         Long employeeId = employeeService.createEmployee(employeeDTO);
