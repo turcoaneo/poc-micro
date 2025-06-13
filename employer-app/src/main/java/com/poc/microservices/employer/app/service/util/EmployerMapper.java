@@ -55,9 +55,7 @@ public class EmployerMapper {
     }
 
     private Employee mapEmployee(EmployeeDTO dto) {
-        Employee employee = new Employee();
-        employee.setName(dto.getName());
-        return employee;
+        return new EmployeeMapper().toEntity(dto);
     }
 
     public EmployerDTO toDTO(Employer employer) {

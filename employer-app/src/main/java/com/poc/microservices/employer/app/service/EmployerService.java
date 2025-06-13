@@ -1,9 +1,14 @@
 package com.poc.microservices.employer.app.service;
 
+import com.poc.microservices.employer.app.model.Employee;
 import com.poc.microservices.employer.app.model.Employer;
+import com.poc.microservices.employer.app.model.Job;
+import com.poc.microservices.employer.app.model.dto.EMGenericResponseDTO;
 import com.poc.microservices.employer.app.model.dto.EmployeeDTO;
 import com.poc.microservices.employer.app.model.dto.EmployerDTO;
+import com.poc.microservices.employer.app.model.dto.EmployerEmployeeAssignmentPatchDTO;
 import com.poc.microservices.employer.app.model.dto.JobDTO;
+import com.poc.microservices.employer.app.repository.EmployeeRepository;
 import com.poc.microservices.employer.app.repository.EmployerRepository;
 import com.poc.microservices.employer.app.service.util.EmployeeMapper;
 import com.poc.microservices.employer.app.service.util.EmployerMapper;
@@ -23,6 +28,7 @@ import java.util.stream.Collectors;
 public class EmployerService {
 
     private final EmployerRepository employerRepository;
+    private final EmployeeRepository employeeRepository;
     private final EmployerMapper employerMapper;
     private final JobMapper jobMapper;
     private final EmployeeMapper employeeMapper;
@@ -63,6 +69,36 @@ public class EmployerService {
         return employer.getJobs().stream().flatMap(job -> job.getEmployees().stream())
                 .map(employeeMapper::toDTO)
                 .collect(Collectors.toSet());
+    }
+
+    public EMGenericResponseDTO assignEmployeeToJobs(EmployerEmployeeAssignmentPatchDTO patchDTO) {
+        Long employerId = patchDTO.getEmployerId();
+        Optional<Employer> optionalEmployer = employerRepository.findById(employerId);
+        if (optionalEmployer.isEmpty()) return new EMGenericResponseDTO(employerId, "Employer not found");
+
+        Employer employer = optionalEmployer.get();
+
+        for (Long dtoId : patchDTO.getJobIds()) {
+            Optional<Job> maybeJob = employer.getJobs().stream()
+                    .filter(job -> job.getJobId().equals(dtoId))
+                    .findFirst();
+
+            if (maybeJob.isEmpty()) {
+                return new EMGenericResponseDTO(dtoId, "Job not found by this id");
+            }
+
+            Job job = maybeJob.get();
+            Employee employeeRef = new Employee();
+            employeeRef.setEmployeeId(patchDTO.getEmployee().getId());
+            employeeRef.setName(patchDTO.getEmployee().getName());
+
+            job.getEmployees().add(employeeRef);
+            employeeRef.getJobs().add(job);
+            employeeRepository.save(employeeRef);
+        }
+
+        employerRepository.save(employer);
+        return new EMGenericResponseDTO(patchDTO.getEmployee().getId(), "Added employee");
     }
 
     public void deleteEmployer(Long employerId) {

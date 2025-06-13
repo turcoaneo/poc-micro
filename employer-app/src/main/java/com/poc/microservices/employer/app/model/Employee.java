@@ -23,6 +23,7 @@ import java.util.Set;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long localId;
     private Long employeeId;
     private String name;
 

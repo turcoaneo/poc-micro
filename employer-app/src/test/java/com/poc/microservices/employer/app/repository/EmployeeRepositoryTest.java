@@ -43,7 +43,7 @@ class EmployeeRepositoryTest {
         testEntityManager.persist(employer);
 
 
-        Employee alice = new Employee(null, "Alice", new HashSet<>());
+        Employee alice = new Employee(null, 33L, "Alice", new HashSet<>());
         alice.getJobs().add(job1);
         job1.getEmployees().add(alice);
         Employee employee = employeeRepository.save(alice);
