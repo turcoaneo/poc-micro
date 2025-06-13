@@ -1,6 +1,10 @@
 server:
   port: 8091
 spring:
+  cloud:
+    openfeign:
+      okhttp:
+        enabled: true
   application:
     name: mas-service
   mvc:

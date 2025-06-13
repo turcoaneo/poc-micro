@@ -26,6 +26,7 @@ public class Employee {
     private Long localId;
     private Long employeeId;
     private String name;
+    private Boolean active = Boolean.TRUE;
 
     @ManyToMany(mappedBy = "employees")
     private Set<Job> jobs = new HashSet<>();

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.poc.microservices.main.app.feign.MASGatewayClient;
 import com.poc.microservices.main.app.model.dto.MASEmployeeDTO;
 import com.poc.microservices.main.app.model.dto.MASEmployerDTO;
+import com.poc.microservices.main.app.model.dto.MASEmployerEmployeeAssignmentPatchDTO;
 import com.poc.microservices.main.app.model.dto.MASGenericResponseDTO;
 import com.poc.microservices.main.app.model.dto.MASJobDTO;
 import com.poc.microservices.main.app.model.dto.UserDTO;
@@ -121,7 +122,7 @@ public class MASGatewayControllerTest {
 
     @Test
     void testCreateEmployee_Unauthorized() throws Exception {
-        MASEmployeeDTO dto = new MASEmployeeDTO(null, "John", 20);
+        MASEmployeeDTO dto = new MASEmployeeDTO(null, "John", 20, false);
         MASGenericResponseDTO response = new MASGenericResponseDTO(null, "Employee not created");
 
         Mockito.when(masGatewayClient.createEmployee(Mockito.any(MASEmployeeDTO.class)))
@@ -134,6 +135,31 @@ public class MASGatewayControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").doesNotExist())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Employee not created"));
+    }
+
+    @Test
+    void testPatchAssignEmployeeThroughGateway() throws Exception {
+        MASEmployerEmployeeAssignmentPatchDTO patchDTO = new MASEmployerEmployeeAssignmentPatchDTO();
+        patchDTO.setEmployerId(1L);
+
+        MASEmployeeDTO employeeDTO = new MASEmployeeDTO();
+        employeeDTO.setId(100L);
+        employeeDTO.setName("Alice");
+        employeeDTO.setActive(true);
+        patchDTO.setEmployee(employeeDTO);
+        patchDTO.setJobIds(List.of(10L));
+
+        MASGenericResponseDTO responseDTO = new MASGenericResponseDTO(100L, "Added employee");
+
+        Mockito.when(masGatewayClient.assignEmployeeToJobs(Mockito.any()))
+                .thenReturn(ResponseEntity.ok(responseDTO));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/mas-gateway/assign-employee")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(patchDTO)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(100L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Added employee"));
     }
 
     private String getValidToken() {

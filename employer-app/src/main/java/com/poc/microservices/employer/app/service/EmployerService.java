@@ -78,27 +78,45 @@ public class EmployerService {
 
         Employer employer = optionalEmployer.get();
 
-        for (Long dtoId : patchDTO.getJobIds()) {
+        for (Long patchJobId : patchDTO.getJobIds()) {
             Optional<Job> maybeJob = employer.getJobs().stream()
-                    .filter(job -> job.getJobId().equals(dtoId))
+                    .filter(job -> job.getJobId().equals(patchJobId))
                     .findFirst();
 
             if (maybeJob.isEmpty()) {
-                return new EMGenericResponseDTO(dtoId, "Job not found by this id");
+                return new EMGenericResponseDTO(patchJobId, "Job not found by this id");
             }
 
             Job job = maybeJob.get();
-            Employee employeeRef = new Employee();
-            employeeRef.setEmployeeId(patchDTO.getEmployee().getId());
-            employeeRef.setName(patchDTO.getEmployee().getName());
-
-            job.getEmployees().add(employeeRef);
-            employeeRef.getJobs().add(job);
-            employeeRepository.save(employeeRef);
+            Optional<Employee> existingEmployee = job.getEmployees().stream()
+                    .filter(employee -> employee.getEmployeeId().equals(patchDTO.getEmployee().getId())).findAny();
+            if (existingEmployee.isPresent()) {
+                setEmployee(patchDTO, existingEmployee.get());
+            } else {
+                Employee employeeRef = setNewEmployee(patchDTO, job);
+                employeeRepository.save(employeeRef);
+            }
         }
 
         employerRepository.save(employer);
         return new EMGenericResponseDTO(patchDTO.getEmployee().getId(), "Added employee");
+    }
+
+    private static Employee setNewEmployee(EmployerEmployeeAssignmentPatchDTO patchDTO, Job job) {
+        Employee employeeRef = new Employee();
+        setEmployee(patchDTO, employeeRef);
+
+        job.getEmployees().add(employeeRef);
+        employeeRef.getJobs().add(job);
+        return employeeRef;
+    }
+
+    private static void setEmployee(EmployerEmployeeAssignmentPatchDTO patchDTO, Employee employeeRef) {
+        employeeRef.setEmployeeId(patchDTO.getEmployee().getId());
+        employeeRef.setName(patchDTO.getEmployee().getName());
+        if (patchDTO.getEmployee().getActive() != null) {
+            employeeRef.setActive(patchDTO.getEmployee().getActive());
+        }
     }
 
     public void deleteEmployer(Long employerId) {

@@ -76,7 +76,7 @@ class EmployerServiceTest {
 
         Mockito.when(employerRepository.findById(employerId)).thenReturn(Optional.of(employer));
 
-        EmployeeDTO employee = new EmployeeDTO(employeeId, "Alice");
+        EmployeeDTO employee = new EmployeeDTO(employeeId, "Alice", false);
 
         EmployerEmployeeAssignmentPatchDTO patchDTO = new EmployerEmployeeAssignmentPatchDTO();
         patchDTO.setEmployerId(employerId);
@@ -95,6 +95,47 @@ class EmployerServiceTest {
     }
 
     @Test
+    void testAssignEmployeeToJobs_existingEmployeeUpdated() {
+        Long employerId = 1L;
+        Long employeeId = 100L;
+
+        Employer employer = new Employer(employerId, "Acme Corp", new HashSet<>());
+
+        Job job = new Job(10L, "Dev", employer, "Legacy wizard", 99.0, new HashSet<>());
+        Employee existingEmployee = new Employee();
+        existingEmployee.setEmployeeId(employeeId);
+        existingEmployee.setName("Old Alice"); // intentionally outdated name
+        job.getEmployees().add(existingEmployee);
+
+        employer.getJobs().add(job);
+
+        Mockito.when(employerRepository.findById(employerId)).thenReturn(Optional.of(employer));
+
+        EmployeeDTO incomingPatch = new EmployeeDTO(employeeId, "Updated Alice", true);
+
+        EmployerEmployeeAssignmentPatchDTO patchDTO = new EmployerEmployeeAssignmentPatchDTO();
+        patchDTO.setEmployerId(employerId);
+        patchDTO.setEmployee(incomingPatch);
+        patchDTO.setJobIds(List.of(job.getJobId()));
+
+        EMGenericResponseDTO result = employerService.assignEmployeeToJobs(patchDTO);
+
+        Assertions.assertEquals(employeeId, result.getId());
+        Assertions.assertEquals("Added employee", result.getMessage());
+
+        // Confirm that the existing employee was updated
+        Employee patchedEmployee = job.getEmployees().stream()
+                .filter(e -> e.getEmployeeId().equals(employeeId))
+                .findFirst()
+                .orElseThrow();
+        Assertions.assertEquals("Updated Alice", patchedEmployee.getName());
+
+        // No new employee should have been saved
+        Mockito.verify(employeeRepository, Mockito.never()).save(Mockito.any());
+        Mockito.verify(employerRepository).save(Mockito.any());
+    }
+
+    @Test
     void testAssignEmployeeToJobs_invalidJobId() {
         Long employerId = 1L;
         Long employeeId = 100L;
@@ -107,7 +148,7 @@ class EmployerServiceTest {
 
         EmployerEmployeeAssignmentPatchDTO patchDTO = new EmployerEmployeeAssignmentPatchDTO();
         patchDTO.setEmployerId(employerId);
-        patchDTO.setEmployee(new EmployeeDTO(employeeId, "John"));
+        patchDTO.setEmployee(new EmployeeDTO(employeeId, "John", false));
         patchDTO.setJobIds(List.of(42L)); // Invalid job ID
 
         EMGenericResponseDTO result = employerService.assignEmployeeToJobs(patchDTO);
@@ -127,7 +168,7 @@ class EmployerServiceTest {
 
         EmployerEmployeeAssignmentPatchDTO patchDTO = new EmployerEmployeeAssignmentPatchDTO();
         patchDTO.setEmployerId(employerId);
-        patchDTO.setEmployee(new EmployeeDTO(100L, "Ghost"));
+        patchDTO.setEmployee(new EmployeeDTO(100L, "Ghost", false));
         patchDTO.setJobIds(List.of(1L));
 
         EMGenericResponseDTO result = employerService.assignEmployeeToJobs(patchDTO);

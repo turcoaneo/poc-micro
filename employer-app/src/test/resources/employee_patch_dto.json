@@ -1,0 +1,9 @@
+{
+  "employerId": 1,
+  "employee": {
+    "id": 100,
+    "name": "Alice",
+    "active": true
+  },
+  "jobIds": [10, 20]
+}
