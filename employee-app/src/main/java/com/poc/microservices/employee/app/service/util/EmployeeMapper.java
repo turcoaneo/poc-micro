@@ -36,7 +36,7 @@ public class EmployeeMapper {
             }
         }
 
-        employee.setJobEmployers(jobEmployers);
+        employee.getJobEmployers().addAll(jobEmployers);
         return employee;
     }
 

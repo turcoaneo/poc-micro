@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD) // Apply to methods
 @Retention(RetentionPolicy.RUNTIME) // Available at runtime
-public @interface EmployerAuthorize {
+public @interface EmployeeAuthorize {
     EEMUserRole[] value(); // Role required
 }

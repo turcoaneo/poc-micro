@@ -27,9 +27,9 @@ public class EmployerService {
     private final JobMapper jobMapper;
     private final EmployeeMapper employeeMapper;
 
-    public EmployerDTO createEmployer(EmployerDTO employerDTO) {
+    public Long createEmployer(EmployerDTO employerDTO) {
         Employer employer = employerRepository.save(employerMapper.toEntity(employerDTO));
-        return employerMapper.toDTO(employer);
+        return employer.getEmployerId();
     }
 
     public EmployerDTO updateEmployer(EmployerDTO updatedEmployerDTO) {
@@ -60,7 +60,7 @@ public class EmployerService {
         Employer employer = employerRepository.findById(employerId)
                 .orElseThrow(() -> new RuntimeException("Employer not found"));
 
-        return employer.getEmployees().stream()
+        return employer.getJobs().stream().flatMap(job -> job.getEmployees().stream())
                 .map(employeeMapper::toDTO)
                 .collect(Collectors.toSet());
     }

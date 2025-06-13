@@ -5,6 +5,7 @@ import com.poc.microservices.employee.app.model.EmployeeJobEmployer;
 import com.poc.microservices.employee.app.model.Employer;
 import com.poc.microservices.employee.app.model.Job;
 import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
+import com.poc.microservices.employee.app.model.dto.EmployerDTO;
 import com.poc.microservices.employee.app.repository.EmployeeJobEmployerRepository;
 import com.poc.microservices.employee.app.repository.EmployeeRepository;
 import com.poc.microservices.employee.app.repository.EmployerRepository;
@@ -13,6 +14,7 @@ import com.poc.microservices.employee.app.service.util.EmployeeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -43,8 +45,10 @@ public class EmployeeService {
     }
 
     private Set<EmployeeJobEmployer> getEmployeeJobEmployers(EmployeeDTO dto, Employee employee) {
+        List<EmployerDTO> employers = dto.getEmployers();
+        if (CollectionUtils.isEmpty(employers)) return new HashSet<>();
         Set<EmployeeJobEmployer> jobEmployers = new HashSet<>();
-        dto.getEmployers().forEach(employerDTO -> {
+        employers.forEach(employerDTO -> {
             Employer employer = new Employer(null, employerDTO.getName(), new HashSet<>());
             employerRepository.save(employer);
             employerDTO.getJobs().forEach(jobDTO -> {

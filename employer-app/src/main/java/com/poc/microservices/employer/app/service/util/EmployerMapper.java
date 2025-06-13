@@ -8,6 +8,7 @@ import com.poc.microservices.employer.app.model.dto.EmployerDTO;
 import com.poc.microservices.employer.app.model.dto.JobDTO;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class EmployerMapper {
 
     public Employer toEntity(EmployerDTO dto) {
         Employer employer = new Employer();
-        employer.setId(dto.getId());
+        employer.setEmployerId(dto.getId());
         employer.setName(dto.getName());
 
         Map<String, Employee> employeeMap = new HashMap<>(); // Store existing employees
@@ -40,31 +41,28 @@ public class EmployerMapper {
         job.setHourRate(dto.getHourRate());
         job.setEmployer(employer);
 
-        if (!dto.getEmployees().isEmpty()) {
+        if (!CollectionUtils.isEmpty(dto.getEmployees())) {
             dto.getEmployees().forEach(employeeDTO -> {
                 Employee employee = employeeMap.computeIfAbsent(employeeDTO.getName(),
-                        name -> this.mapEmployee(employeeDTO, employer));
+                        name -> this.mapEmployee(employeeDTO));
 
-                employee.getAssignedJobs().add(job);
-                job.getAssignedEmployees().add(employee);
+                employee.getJobs().add(job);
+                job.getEmployees().add(employee);
             });
         }
 
         return job;
     }
 
-    private Employee mapEmployee(EmployeeDTO dto, Employer employer) {
+    private Employee mapEmployee(EmployeeDTO dto) {
         Employee employee = new Employee();
         employee.setName(dto.getName());
-        employee.setWorkingHours(dto.getWorkingHours());
-        employee.setEmployer(employer);
-        employer.getEmployees().add(employee);
         return employee;
     }
 
     public EmployerDTO toDTO(Employer employer) {
         EmployerDTO dto = new EmployerDTO();
-        dto.setId(employer.getId());
+        dto.setId(employer.getEmployerId());
         dto.setName(employer.getName());
 
         if (employer.getJobs() != null) {

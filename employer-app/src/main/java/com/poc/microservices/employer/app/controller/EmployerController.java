@@ -2,12 +2,14 @@ package com.poc.microservices.employer.app.controller;
 
 import com.poc.microservices.employer.app.aop.EmployerAuthorize;
 import com.poc.microservices.employer.app.model.EMUserRole;
+import com.poc.microservices.employer.app.model.dto.EMGenericResponseDTO;
 import com.poc.microservices.employer.app.model.dto.EmployeeDTO;
 import com.poc.microservices.employer.app.model.dto.EmployerDTO;
 import com.poc.microservices.employer.app.model.dto.JobDTO;
 import com.poc.microservices.employer.app.service.EmployerService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +38,10 @@ public class EmployerController {
     @PostMapping
     @EmployerAuthorize({EMUserRole.ADMIN})
     @SecurityRequirement(name = "BearerAuth")
-    public ResponseEntity<EmployerDTO> createEmployer(@RequestBody EmployerDTO employerDTO) {
-        return ResponseEntity.ok(employerService.createEmployer(employerDTO));
+    public ResponseEntity<EMGenericResponseDTO> createEmployer(@RequestBody EmployerDTO employerDTO) {
+        Long employerId = employerService.createEmployer(employerDTO);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new EMGenericResponseDTO(employerId, "Employer successfully created"));
     }
 
     @PutMapping("/{id}")

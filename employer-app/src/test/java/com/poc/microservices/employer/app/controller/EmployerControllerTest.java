@@ -50,7 +50,7 @@ class EmployerControllerTest {
     @BeforeEach
     void setUp() {
         employer = new Employer();
-        employer.setId(1L);
+        employer.setEmployerId(1L);
         employer.setName("TestCorp");
         this.mockMvc = MockMvcBuilders
                 .standaloneSetup(employerController)
@@ -63,20 +63,19 @@ class EmployerControllerTest {
         String jsonContent = Files.readString(Path.of("src/test/resources/employer_dto.json"));
 
 
-        EmployerDTO dto = employerMapper.toDTO(employer);
-        Mockito.when(employerService.createEmployer(Mockito.any(EmployerDTO.class))).thenReturn(dto);
+        Mockito.when(employerService.createEmployer(Mockito.any(EmployerDTO.class))).thenReturn(0L);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/employers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonContent)) // Inject external JSON file
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("TestCorp"));
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(0L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Employer successfully created"));
     }
 
     @Test
     void testCreateEmployer() throws Exception {
-        EmployerDTO dto = employerMapper.toDTO(employer);
-        Mockito.when(employerService.createEmployer(Mockito.any(EmployerDTO.class))).thenReturn(dto);
+        Mockito.when(employerService.createEmployer(Mockito.any(EmployerDTO.class))).thenReturn(0L);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/employers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -85,8 +84,8 @@ class EmployerControllerTest {
                                         "name": "TestCorp"
                                     }
                                 """))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("TestCorp"));
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(0L));
     }
 
     @Test

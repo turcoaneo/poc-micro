@@ -1,7 +1,6 @@
 package com.poc.microservices.main.app.config;
 
 import com.poc.microservices.main.app.config.helper.JwtLocalHelperMAS;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,11 +24,11 @@ import java.util.List;
 public class JwtAuthFilterMAS extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilterMAS.class);
 
-    @Value("#{'${security.excludedEndpoints:}'.split(',')}")
+    @Value("#{'${security.excludedEndpoints:/mas/mas-users/login,/mas/mas-users/register}'.split(',')}")
     private List<String> excludedEndpoints = new ArrayList<>();
 
-    @PostConstruct
-    private void init() {
+    public JwtAuthFilterMAS() {
+        super();
         if (excludedEndpoints.isEmpty() || (excludedEndpoints.size() == 1 && excludedEndpoints.getFirst().isBlank())) {
             excludedEndpoints.addAll(Arrays.asList("/mas/mas-users/login", "/mas/mas-users/register"));
         }
