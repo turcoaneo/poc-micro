@@ -5,13 +5,22 @@ import com.poc.microservices.employer.app.model.EMUserRole;
 import com.poc.microservices.employer.app.model.dto.EMGenericResponseDTO;
 import com.poc.microservices.employer.app.model.dto.EmployeeDTO;
 import com.poc.microservices.employer.app.model.dto.EmployerDTO;
+import com.poc.microservices.employer.app.model.dto.EmployerEmployeeAssignmentPatchDTO;
 import com.poc.microservices.employer.app.model.dto.JobDTO;
 import com.poc.microservices.employer.app.service.EmployerService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 import java.util.Set;
@@ -49,6 +58,14 @@ public class EmployerController {
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<EmployerDTO> updateEmployer(@RequestBody EmployerDTO employerDTO) {
         return ResponseEntity.ok(employerService.updateEmployer(employerDTO));
+    }
+
+    @PatchMapping("/employer/employees")
+    @EmployerAuthorize({EMUserRole.ADMIN, EMUserRole.EMPLOYER})
+    @SecurityRequirement(name = "BearerAuth")
+    public ResponseEntity<EMGenericResponseDTO> assignEmployeeToJobs(@RequestBody EmployerEmployeeAssignmentPatchDTO patchDTO) {
+        EMGenericResponseDTO updated = employerService.assignEmployeeToJobs(patchDTO);
+        return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/name/{name}")

@@ -11,6 +11,7 @@ public class EmployeeMapper {
 
     public EmployeeDTO toDTO(Employee employee) {
         EmployeeDTO dto = new EmployeeDTO();
+        dto.setId(employee.getEmployeeId());
         dto.setName(employee.getName());
         return dto;
     }
@@ -18,6 +19,7 @@ public class EmployeeMapper {
     public Employee toEntity(EmployeeDTO dto) {
         Employee employee = new Employee();
         employee.setName(dto.getName());
+        employee.setEmployeeId(dto.getId());
         return employee;
     }
 }

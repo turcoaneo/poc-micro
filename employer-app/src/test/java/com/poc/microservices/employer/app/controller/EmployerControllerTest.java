@@ -3,6 +3,7 @@ package com.poc.microservices.employer.app.controller;
 import com.poc.microservices.employer.app.model.Employee;
 import com.poc.microservices.employer.app.model.Employer;
 import com.poc.microservices.employer.app.model.Job;
+import com.poc.microservices.employer.app.model.dto.EMGenericResponseDTO;
 import com.poc.microservices.employer.app.model.dto.EmployeeDTO;
 import com.poc.microservices.employer.app.model.dto.EmployerDTO;
 import com.poc.microservices.employer.app.model.dto.JobDTO;
@@ -56,6 +57,22 @@ class EmployerControllerTest {
                 .standaloneSetup(employerController)
                 .build();
         System.setProperty("SECRET_KEY", "someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits");
+    }
+
+    @Test
+    void testPatchAssignEmployeeFromJson() throws Exception {
+        String jsonContent = Files.readString(Path.of("src/test/resources/employee_patch_dto.json"));
+
+        // You may adjust the mock behavior depending on what your controller calls
+        Mockito.when(employerService.assignEmployeeToJobs(Mockito.any()))
+                .thenReturn(new EMGenericResponseDTO(100L, "Added employee"));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/api/employers/employer/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(100L))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Added employee"));
     }
 
     @Test
