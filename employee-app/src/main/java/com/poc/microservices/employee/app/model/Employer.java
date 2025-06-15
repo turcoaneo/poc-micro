@@ -24,6 +24,7 @@ import java.util.Set;
 public class Employer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long localEmployerId;
     private Long employerId;
     private String name;
 

@@ -31,7 +31,7 @@ class EmployeeRepositoryTest {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    private Long localId;
+    private Long localEmployeeId;
 
     @BeforeEach
     public void setUp() {
@@ -47,23 +47,23 @@ class EmployeeRepositoryTest {
         alice.getJobs().add(job1);
         job1.getEmployees().add(alice);
         Employee employee = employeeRepository.save(alice);
-        localId = employee.getLocalId();
+        localEmployeeId = employee.getLocalEmployeeId();
         testEntityManager.clear();
     }
 
     @Test
     void testSaveAndFindEmployee() {
-        Optional<Employee> retrievedEmployee = employeeRepository.findById(localId);
+        Optional<Employee> retrievedEmployee = employeeRepository.findById(localEmployeeId);
         Assertions.assertTrue(retrievedEmployee.isPresent());
         Assertions.assertEquals("Alice", retrievedEmployee.get().getName());
     }
 
     @Test
     void testDeleteEmployee() {
-        employeeRepository.deleteById(localId);
+        employeeRepository.deleteById(localEmployeeId);
         employeeRepository.flush();
 
-        Optional<Employee> deletedEmployee = employeeRepository.findById(localId);
+        Optional<Employee> deletedEmployee = employeeRepository.findById(localEmployeeId);
         Assertions.assertTrue(deletedEmployee.isEmpty());
     }
 }

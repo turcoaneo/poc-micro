@@ -49,10 +49,10 @@ public class EmployeeService {
         if (CollectionUtils.isEmpty(employers)) return new HashSet<>();
         Set<EmployeeJobEmployer> jobEmployers = new HashSet<>();
         employers.forEach(employerDTO -> {
-            Employer employer = new Employer(null, employerDTO.getName(), new HashSet<>());
+            Employer employer = new Employer(null, dto.getId(), employerDTO.getName(), new HashSet<>());
             employerRepository.save(employer);
             employerDTO.getJobs().forEach(jobDTO -> {
-                Job job = jobRepository.save(new Job(null, jobDTO.getTitle(), new HashSet<>()));
+                Job job = jobRepository.save(new Job(null, jobDTO.getId(), jobDTO.getTitle(), new HashSet<>()));
                 jobRepository.save(job);
                 EmployeeJobEmployer jobEmployer = new EmployeeJobEmployer(null, employee, job, employer);
                 jobEmployers.add(jobEmployer);

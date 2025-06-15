@@ -27,10 +27,10 @@ public class EmployeeMapper {
 
         if (dto.getEmployers() != null) {
             for (EmployerDTO employerDTO : dto.getEmployers()) {
-                Employer employer = new Employer(employerDTO.getId(), employerDTO.getName(), new HashSet<>());
+                Employer employer = new Employer(null, employerDTO.getId(), employerDTO.getName(), new HashSet<>());
 
                 for (JobDTO jobDTO : employerDTO.getJobs()) {
-                    Job job = new Job(jobDTO.getId(), jobDTO.getTitle(), new HashSet<>());
+                    Job job = new Job(null, jobDTO.getId(), jobDTO.getTitle(), new HashSet<>());
                     jobEmployers.add(new EmployeeJobEmployer(null, employee, job, employer));
                 }
             }

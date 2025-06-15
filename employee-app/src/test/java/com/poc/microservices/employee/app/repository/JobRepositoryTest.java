@@ -29,21 +29,21 @@ class JobRepositoryTest {
 
     @Test
     void testDeleteByIds() {
-        Job job1 = jobRepository.save(new Job(null, "Developer", new HashSet<>()));
-        Job job2 = jobRepository.save(new Job(null, "Data Scientist", new HashSet<>()));
-        Job job3 = jobRepository.save(new Job(null, "Architect", new HashSet<>()));
+        Job job1 = jobRepository.save(new Job(null, 11L,"Developer", new HashSet<>()));
+        Job job2 = jobRepository.save(new Job(null, 12L,"Data Scientist", new HashSet<>()));
+        Job job3 = jobRepository.save(new Job(null, 13L,"Architect", new HashSet<>()));
 
-        Set<Long> jobIdsToDelete = Set.of(job1.getJobId(), job2.getJobId());
+        Set<Long> jobIdsToDelete = Set.of(job1.getJobId(), job2.getLocalJobId());
 
         jobRepository.deleteByIds(jobIdsToDelete);
         jobRepository.flush();
 
         entityManager.clear();
 
-        Optional<Job> removedEmployer = jobRepository.findById(job1.getJobId());
+        Optional<Job> removedEmployer = jobRepository.findById(job1.getLocalJobId());
         Assertions.assertTrue(removedEmployer.isEmpty()); // Employer should be deleted
 
-        Optional<Job> remainingEmployer = jobRepository.findById(job3.getJobId());
+        Optional<Job> remainingEmployer = jobRepository.findById(job3.getLocalJobId());
         Assertions.assertFalse(remainingEmployer.isEmpty());
     }
 }

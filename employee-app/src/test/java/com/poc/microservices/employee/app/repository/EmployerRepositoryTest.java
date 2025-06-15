@@ -29,9 +29,9 @@ class EmployerRepositoryTest {
 
     @Test
     void testDeleteByIds() {
-        Employer employer1 = employerRepository.save(new Employer(null, "TechCorp", new HashSet<>()));
-        Employer employer2 = employerRepository.save(new Employer(null, "DataLabs", new HashSet<>()));
-        Employer employer3 = employerRepository.save(new Employer(null, "InnovateX", new HashSet<>()));
+        Employer employer1 = employerRepository.save(new Employer(null, 1L,"TechCorp", new HashSet<>()));
+        Employer employer2 = employerRepository.save(new Employer(null, 2L,"DataLabs", new HashSet<>()));
+        Employer employer3 = employerRepository.save(new Employer(null, 3L,"InnovateX", new HashSet<>()));
 
         Set<Long> employerIdsToDelete = Set.of(employer1.getEmployerId(), employer2.getEmployerId());
 
@@ -40,10 +40,10 @@ class EmployerRepositoryTest {
 
         entityManager.clear();
 
-        Optional<Employer> removedEmployer = employerRepository.findById(employer1.getEmployerId());
+        Optional<Employer> removedEmployer = employerRepository.findById(employer1.getLocalEmployerId());
         Assertions.assertTrue(removedEmployer.isEmpty()); // Employer should be deleted
 
-        Optional<Employer> remainingEmployer = employerRepository.findById(employer3.getEmployerId());
+        Optional<Employer> remainingEmployer = employerRepository.findById(employer3.getLocalEmployerId());
         Assertions.assertFalse(remainingEmployer.isEmpty());
     }
 }
