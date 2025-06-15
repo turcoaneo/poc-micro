@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3307/employee_db_test
+    username: root
+    password: Sky_Dev#*75
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # fresh schema every run
