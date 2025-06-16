@@ -23,7 +23,7 @@ import java.util.Set;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long localId;
+    private Long localEmployeeId;
     private Long employeeId;
     private String name;
     private Boolean active = Boolean.TRUE;

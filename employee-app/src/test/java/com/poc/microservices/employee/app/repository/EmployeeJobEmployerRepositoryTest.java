@@ -32,11 +32,11 @@ class EmployeeJobEmployerRepositoryTest {
 
     @Test
     void testFindEmployeesByJobAndEmployer() {
-        Employer employer1 = employerRepository.save(new Employer(null, "TechCorp", new HashSet<>()));
-        Employer employer2 = employerRepository.save(new Employer(null, "DataLabs", new HashSet<>()));
+        Employer employer1 = employerRepository.save(new Employer(null, 1L, "TechCorp", new HashSet<>()));
+        Employer employer2 = employerRepository.save(new Employer(null, 2L,"DataLabs", new HashSet<>()));
 
-        Job devJob = jobRepository.save(new Job(null, "Developer", new HashSet<>()));
-        Job dataJob = jobRepository.save(new Job(null, "Data Scientist", new HashSet<>()));
+        Job devJob = jobRepository.save(new Job(null, 11L,"Developer", new HashSet<>()));
+        Job dataJob = jobRepository.save(new Job(null, 12L,"Data Scientist", new HashSet<>()));
 
         Employee alice = employeeRepository.save(new Employee(null, "Alice", 40, new HashSet<>()));
         Employee bob = employeeRepository.save(new Employee(null, "Bob", 35, new HashSet<>()));
@@ -62,11 +62,11 @@ class EmployeeJobEmployerRepositoryTest {
 
     @Test
     void testFindJobsByEmployee() {
-        Employer employer1 = employerRepository.save(new Employer(null, "TechCorp", new HashSet<>()));
-        Employer employer2 = employerRepository.save(new Employer(null, "DataLabs", new HashSet<>()));
+        Employer employer1 = employerRepository.save(new Employer(null, 1L,"TechCorp", new HashSet<>()));
+        Employer employer2 = employerRepository.save(new Employer(null, 2L,"DataLabs", new HashSet<>()));
 
-        Job devJob = jobRepository.save(new Job(null, "Developer", new HashSet<>()));
-        Job dataJob = jobRepository.save(new Job(null, "Data Scientist", new HashSet<>()));
+        Job devJob = jobRepository.save(new Job(null, 11L,"Developer", new HashSet<>()));
+        Job dataJob = jobRepository.save(new Job(null, 12L,"Data Scientist", new HashSet<>()));
 
         Employee bob = employeeRepository.save(new Employee(null, "Bob", 35, new HashSet<>()));
 

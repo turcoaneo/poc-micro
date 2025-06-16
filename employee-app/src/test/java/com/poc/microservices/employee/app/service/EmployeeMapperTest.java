@@ -60,13 +60,13 @@ class EmployeeMapperTest {
     }
 
     private static Set<EmployeeJobEmployer> getEmployeeJobEmployers(Employee employee) {
-        Employer employer1 = new Employer(1L, "TechCorp", new HashSet<>());
-        Employer employer2 = new Employer(2L, "DataLabs", new HashSet<>());
+        Employer employer1 = new Employer(1L, 1L,"TechCorp", new HashSet<>());
+        Employer employer2 = new Employer(2L, 2L,"DataLabs", new HashSet<>());
 
-        Job devJob = new Job(101L, "Developer", new HashSet<>());
-        Job archJob = new Job(102L, "Architect", new HashSet<>());
-        Job analystJob = new Job(201L, "Analyst", new HashSet<>());
-        Job mlEngineerJob = new Job(202L, "ML Engineer", new HashSet<>());
+        Job devJob = new Job(101L, 101L, "Developer", new HashSet<>());
+        Job archJob = new Job(102L, 102L, "Architect", new HashSet<>());
+        Job analystJob = new Job(201L, 201L, "Analyst", new HashSet<>());
+        Job mlEngineerJob = new Job(202L, 202L,"ML Engineer", new HashSet<>());
 
         return Set.of(
                 new EmployeeJobEmployer(null, employee, devJob, employer1),
