@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3307/employee_db_test
+    url: jdbc:mysql://localhost:3307/employer_db_test
     username: root
     password: Sky_Dev#*75
   jpa:
