@@ -27,6 +27,7 @@ public class SecurityConfigurationEEM {
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers("/eem-users/login", "/eem-users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/employees/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/greet/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
