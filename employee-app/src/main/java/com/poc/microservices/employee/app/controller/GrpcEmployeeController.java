@@ -10,13 +10,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "EEM GRPC", description = "Connection to EM")
 @RestController("/grpc")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class GreeterController {
+public class GrpcEmployeeController {
 
     private final GrpcClientGreeterService greeterClient;
     private final GrpcClientService grpcClientService;
@@ -31,10 +32,8 @@ public class GreeterController {
 
     @EmployeeAuthorize({EEMUserRole.ADMIN})
     @SecurityRequirement(name = "BearerAuth")
-    @GetMapping("/getEmployerJobs")
-    public GrpcEmployerJobDto getEmployerJobs(@RequestParam int employeeId) {
+    @GetMapping("/employee/{employeeId}/employer-jobs")
+    public GrpcEmployerJobDto getEmployerJobs(@PathVariable int employeeId) {
         return grpcClientService.getEmployerJobInfo(employeeId);
     }
-
-
 }
