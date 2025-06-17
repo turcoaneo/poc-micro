@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.Objects;
@@ -22,15 +21,14 @@ public class GrpcConfig {
 
     @Bean
     public GrpcServerConfigurer tlsConfigurer() throws Exception {
-        String folder = "D:\\WORKSPACE\\IntelliJ\\proof-of-concept-micro\\poc-micro\\employer-app\\src\\main" +
-                "\\resources\\em-server\\";
+        String folder = "em-server/";
         String keystoreFile = folder + "server.jks";
         String truststoreFile = folder + "server-truststore.jks";
         char[] storePass = "changeit".toCharArray();
 
         // Load server keystore (JKS) containing private key and certificate
         KeyStore keyStore = KeyStore.getInstance("JKS");
-        try (InputStream ksInput = new FileInputStream(keystoreFile)) {
+        try (InputStream ksInput = getClass().getClassLoader().getResourceAsStream(keystoreFile)) {
             keyStore.load(ksInput, storePass);
         }
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -38,7 +36,7 @@ public class GrpcConfig {
 
         // Load truststore (JKS) containing trusted certificates
         KeyStore trustStore = KeyStore.getInstance("JKS");
-        try (InputStream tsInput = new FileInputStream(truststoreFile)) {
+        try (InputStream tsInput = getClass().getClassLoader().getResourceAsStream(truststoreFile)) {
             trustStore.load(tsInput, storePass);
         }
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());

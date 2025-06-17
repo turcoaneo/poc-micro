@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 
@@ -22,13 +21,12 @@ public class GrpcClientService {
     private final GreeterGrpc.GreeterBlockingStub greeterStub;
 
     public GrpcClientService() throws Exception {
-        String folder = "D:\\WORKSPACE\\IntelliJ\\proof-of-concept-micro\\poc-micro\\employee-app\\src\\main" +
-                "\\resources\\eem-client\\";
+        String folder = "eem-client/";
         char[] storePass = "changeit".toCharArray();
 
         // Load the client's keystore (JKS) holding its private key and certificate
         KeyStore clientKeyStore = KeyStore.getInstance("JKS");
-        try (InputStream ksInput = new FileInputStream(folder + "client.jks")) {
+        try (InputStream ksInput = getClass().getClassLoader().getResourceAsStream(folder + "server.jks");) {
             clientKeyStore.load(ksInput, storePass);
         }
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -36,7 +34,7 @@ public class GrpcClientService {
 
         // Load the client's truststore (JKS) that trusts the server certificate
         KeyStore clientTrustStore = KeyStore.getInstance("JKS");
-        try (InputStream tsInput = new FileInputStream(folder + "client-truststore.jks")) {
+        try (InputStream tsInput = getClass().getClassLoader().getResourceAsStream(folder + "client-truststore.jks")) {
             clientTrustStore.load(tsInput, storePass);
         }
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -52,7 +50,6 @@ public class GrpcClientService {
         // Create a ManagedChannel with the SslContext
         ManagedChannel channel = NettyChannelBuilder.forAddress("localhost", 9093)
                 .sslContext(sslContext)
-                .overrideAuthority("localhost") // Bypasses hostname verification
                 .build();
 
 
