@@ -2,17 +2,18 @@ package com.poc.microservices.employee.app.controller;
 
 import com.poc.microservices.employee.app.aop.EmployeeAuthorize;
 import com.poc.microservices.employee.app.model.EEMUserRole;
-import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDto;
+import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDtoList;
 import com.poc.microservices.employee.app.proto.GrpcClientGreeterService;
-import com.poc.microservices.employee.app.proto.GrpcClientService;
+import com.poc.microservices.employee.app.proto.GrpcEmployeeClientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Tag(name = "EEM GRPC", description = "Connection to EM")
 @RestController("/grpc")
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GrpcEmployeeController {
 
     private final GrpcClientGreeterService greeterClient;
-    private final GrpcClientService grpcClientService;
+    private final GrpcEmployeeClientService grpcEmployeeClientService;
 
 
     @EmployeeAuthorize({EEMUserRole.ADMIN})
@@ -32,8 +33,10 @@ public class GrpcEmployeeController {
 
     @EmployeeAuthorize({EEMUserRole.ADMIN})
     @SecurityRequirement(name = "BearerAuth")
-    @GetMapping("/employee/{employeeId}/employer-jobs")
-    public GrpcEmployerJobDto getEmployerJobs(@PathVariable int employeeId) {
-        return grpcClientService.getEmployerJobInfo(employeeId);
+    @GetMapping("/employer-jobs")
+    public GrpcEmployerJobDtoList getEmployerJobs(@RequestParam List<Integer> employeeIds) {
+        return grpcEmployeeClientService.getEmployerJobInfo(employeeIds);
     }
+
+
 }

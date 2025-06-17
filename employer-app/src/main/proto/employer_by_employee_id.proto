@@ -6,8 +6,8 @@ option java_outer_classname = "EmployerProto";
 
 package employer;
 
-message EmployeeRequest {
-  int32 employeeId = 1;
+message EmployeeListRequest {
+  repeated int32 employeeIds = 1; // Accept multiple employee IDs
 }
 
 message EmployerJobInfo {
@@ -15,6 +15,10 @@ message EmployerJobInfo {
   repeated int32 jobIds = 2;
 }
 
+message EmployerJobInfoList {
+  repeated EmployerJobInfo jobInfos = 1; // Return multiple EmployerJobInfo objects
+}
+
 service EmployerService {
-  rpc GetEmployerJobInfo(EmployeeRequest) returns (EmployerJobInfo);
+  rpc GetEmployerJobInfo(EmployeeListRequest) returns (EmployerJobInfoList);
 }
