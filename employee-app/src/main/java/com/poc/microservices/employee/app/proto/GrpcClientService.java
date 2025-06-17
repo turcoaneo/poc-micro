@@ -1,8 +1,10 @@
 package com.poc.microservices.employee.app.proto;
 
-import com.poc.microservices.proto.GreeterGrpc;
-import com.poc.microservices.proto.HelloRequest;
-import com.poc.microservices.proto.HelloResponse;
+import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDto;
+import com.poc.microservices.employee.app.proto.util.EmployerJobMapper;
+import com.poc.microservices.proto.EmployeeRequest;
+import com.poc.microservices.proto.EmployerJobInfo;
+import com.poc.microservices.proto.EmployerServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
@@ -17,53 +19,46 @@ import java.security.KeyStore;
 
 @Service
 public class GrpcClientService {
-    final String jksKeyName = "JKS_KEY";
-    final String jksStorePass = System.getenv(jksKeyName) != null ? System.getenv(jksKeyName) :
-            System.getProperty(jksKeyName);
 
-    private final GreeterGrpc.GreeterBlockingStub greeterStub;
+    private final EmployerServiceGrpc.EmployerServiceBlockingStub employerStub;
 
     public GrpcClientService() throws Exception {
         String folder = "eem-client/";
-        char[] storePass = jksStorePass.toCharArray();
+        char[] storePass = "changeit".toCharArray();
 
-        // Load the client's keystore (JKS) holding its private key and certificate
-        KeyStore clientKeyStore = KeyStore.getInstance("JKS");
-        try (InputStream ksInput = getClass().getClassLoader().getResourceAsStream(folder + "server.jks")) {
-            clientKeyStore.load(ksInput, storePass);
+        // Load client keystore (JKS) containing private key and certificate
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        try (InputStream ksInput = getClass().getClassLoader().getResourceAsStream(folder + "client.jks")) {
+            keyStore.load(ksInput, storePass);
         }
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        kmf.init(clientKeyStore, storePass);
+        kmf.init(keyStore, storePass);
 
-        // Load the client's truststore (JKS) that trusts the server certificate
-        KeyStore clientTrustStore = KeyStore.getInstance("JKS");
+        // Load truststore (JKS) containing trusted server certificate
+        KeyStore trustStore = KeyStore.getInstance("JKS");
         try (InputStream tsInput = getClass().getClassLoader().getResourceAsStream(folder + "client-truststore.jks")) {
-            clientTrustStore.load(tsInput, storePass);
+            trustStore.load(tsInput, storePass);
         }
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(clientTrustStore);
+        tmf.init(trustStore);
 
-        // Build the SslContext for the client using the loaded key and trust stores
-        SslContext sslContext = GrpcSslContexts
-                .configure(SslContextBuilder.forClient())
+        // Build SSL context for secure connection
+        SslContext sslContext = GrpcSslContexts.configure(SslContextBuilder.forClient())
                 .keyManager(kmf)
                 .trustManager(tmf)
                 .build();
 
-        // Create a ManagedChannel with the SslContext
+        // Create a secured gRPC channel
         ManagedChannel channel = NettyChannelBuilder.forAddress("localhost", 9093)
                 .sslContext(sslContext)
                 .build();
 
-
-
-        // Create the blocking stub for the Greeter service
-        greeterStub = GreeterGrpc.newBlockingStub(channel);
+        employerStub = EmployerServiceGrpc.newBlockingStub(channel);
     }
 
-    public String sayHello(String name) {
-        HelloRequest request = HelloRequest.newBuilder().setName(name).build();
-        HelloResponse response = greeterStub.sayHello(request);
-        return response.getMessage();
+    public GrpcEmployerJobDto getEmployerJobInfo(int employeeId) {
+        EmployeeRequest request = EmployeeRequest.newBuilder().setEmployeeId(employeeId).build();
+        EmployerJobInfo employerJobInfo = employerStub.getEmployerJobInfo(request);
+        return EmployerJobMapper.mapToDto(employerJobInfo);
     }
 }

@@ -2,6 +2,8 @@ package com.poc.microservices.employee.app.controller;
 
 import com.poc.microservices.employee.app.aop.EmployeeAuthorize;
 import com.poc.microservices.employee.app.model.EEMUserRole;
+import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDto;
+import com.poc.microservices.employee.app.proto.GrpcClientGreeterService;
 import com.poc.microservices.employee.app.proto.GrpcClientService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GreeterController {
 
-    private final GrpcClientService greeterClient;
+    private final GrpcClientGreeterService greeterClient;
+    private final GrpcClientService grpcClientService;
 
 
     @EmployeeAuthorize({EEMUserRole.ADMIN})
@@ -25,4 +28,13 @@ public class GreeterController {
     public String greet(@RequestParam String name) {
         return greeterClient.sayHello(name);
     }
+
+    @EmployeeAuthorize({EEMUserRole.ADMIN})
+    @SecurityRequirement(name = "BearerAuth")
+    @GetMapping("/getEmployerJobs")
+    public GrpcEmployerJobDto getEmployerJobs(@RequestParam int employeeId) {
+        return grpcClientService.getEmployerJobInfo(employeeId);
+    }
+
+
 }

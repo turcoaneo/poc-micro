@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.poc.microservices.proto";
+option java_outer_classname = "EmployerProto";
+
+package employer;
+
+message EmployeeRequest {
+  int32 employeeId = 1;
+}
+
+message EmployerJobInfo {
+  int32 employerId = 1;
+  repeated int32 jobIds = 2;
+}
+
+service EmployerService {
+  rpc GetEmployerJobInfo(EmployeeRequest) returns (EmployerJobInfo);
+}
