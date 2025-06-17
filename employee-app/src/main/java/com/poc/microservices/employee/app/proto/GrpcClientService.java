@@ -17,16 +17,19 @@ import java.security.KeyStore;
 
 @Service
 public class GrpcClientService {
+    final String jksKeyName = "JKS_KEY";
+    final String jksStorePass = System.getenv(jksKeyName) != null ? System.getenv(jksKeyName) :
+            System.getProperty(jksKeyName);
 
     private final GreeterGrpc.GreeterBlockingStub greeterStub;
 
     public GrpcClientService() throws Exception {
         String folder = "eem-client/";
-        char[] storePass = "changeit".toCharArray();
+        char[] storePass = jksStorePass.toCharArray();
 
         // Load the client's keystore (JKS) holding its private key and certificate
         KeyStore clientKeyStore = KeyStore.getInstance("JKS");
-        try (InputStream ksInput = getClass().getClassLoader().getResourceAsStream(folder + "server.jks");) {
+        try (InputStream ksInput = getClass().getClassLoader().getResourceAsStream(folder + "server.jks")) {
             clientKeyStore.load(ksInput, storePass);
         }
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
