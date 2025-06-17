@@ -1,0 +1,80 @@
+package com.poc.microservices.employer.app.config;
+
+import io.grpc.ServerBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import net.devh.boot.grpc.server.serverfactory.GrpcServerConfigurer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.util.Objects;
+import java.util.function.Consumer;
+
+@Configuration
+public class GrpcConfig {
+
+    @Bean
+    public GrpcServerConfigurer tlsConfigurer() throws Exception {
+        String folder = "D:\\WORKSPACE\\IntelliJ\\proof-of-concept-micro\\poc-micro\\employer-app\\src\\main" +
+                "\\resources\\em-server\\";
+        String keystoreFile = folder + "server.jks";
+        String truststoreFile = folder + "server-truststore.jks";
+        char[] storePass = "changeit".toCharArray();
+
+        // Load server keystore (JKS) containing private key and certificate
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        try (InputStream ksInput = new FileInputStream(keystoreFile)) {
+            keyStore.load(ksInput, storePass);
+        }
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(keyStore, storePass);
+
+        // Load truststore (JKS) containing trusted certificates
+        KeyStore trustStore = KeyStore.getInstance("JKS");
+        try (InputStream tsInput = new FileInputStream(truststoreFile)) {
+            trustStore.load(tsInput, storePass);
+        }
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(trustStore);
+
+        // Build the Netty SslContext using the KeyManagerFactory and TrustManagerFactory
+        SslContext sslContext = GrpcSslContexts.configure(SslContextBuilder.forServer(kmf))
+                .trustManager(tmf)
+                .build();
+
+        // Return a GrpcServerConfigurer that applies the SSL configuration.
+        //noinspection NullableProblems
+        return new GrpcServerConfigurer() {
+            public void configure(ServerBuilder<?> serverBuilder) {
+                if (serverBuilder instanceof NettyServerBuilder) {
+                    ((NettyServerBuilder) serverBuilder).sslContext(sslContext);
+                }
+            }
+
+            @Override
+            public void accept(ServerBuilder<?> serverBuilder) {
+                // Delegate to configure(serverBuilder)
+                configure(serverBuilder);
+            }
+
+            @Override
+            public GrpcServerConfigurer andThen(Consumer<? super ServerBuilder<?>> after) {
+                Objects.requireNonNull(after);
+                // Chain this configurer with another Consumer.
+                return serverBuilder -> {
+                    // Apply the SSL configuration first.
+                    accept(serverBuilder);
+                    // Then, apply the additional configuration.
+                    after.accept(serverBuilder);
+                };
+            }
+        };
+    }
+}
