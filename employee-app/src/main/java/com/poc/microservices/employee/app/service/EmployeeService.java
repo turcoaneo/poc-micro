@@ -6,11 +6,13 @@ import com.poc.microservices.employee.app.model.Employer;
 import com.poc.microservices.employee.app.model.Job;
 import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
 import com.poc.microservices.employee.app.model.dto.EmployerDTO;
+import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDto;
 import com.poc.microservices.employee.app.repository.EmployeeJobEmployerRepository;
 import com.poc.microservices.employee.app.repository.EmployeeRepository;
 import com.poc.microservices.employee.app.repository.EmployerRepository;
 import com.poc.microservices.employee.app.repository.JobRepository;
 import com.poc.microservices.employee.app.service.util.EmployeeMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,40 @@ public class EmployeeService {
         employeeJobEmployerRepository.saveAll(jobEmployers);
         employeeJobEmployerRepository.flush();
         return employeeId;
+    }
+
+    @Transactional
+    public void updateEmployee(GrpcEmployerJobDto dto) {
+        Employee employee = employeeRepository.findById((long) dto.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        Set<EmployeeJobEmployer> existingMappings = employee.getJobEmployers();
+
+        // Fetch or create employer
+        Employer employer = existingMappings.stream()
+                .map(EmployeeJobEmployer::getEmployer)
+                .filter(e -> e.getEmployerId().equals((long) dto.getEmployerId()))
+                .findFirst()
+                .orElseGet(() -> employerRepository.save(new Employer(null, (long) dto.getEmployerId(), "New Employer", new HashSet<>())));
+
+        employer.setName("Updated Employer Name"); // Patch if needed
+
+        Set<EmployeeJobEmployer> updatedMappings = dto.getJobIds().stream()
+                .map(jobId -> {
+                    Job job = existingMappings.stream()
+                            .map(EmployeeJobEmployer::getJob)
+                            .filter(j -> j.getJobId().equals((long) jobId))
+                            .findFirst()
+                            .orElseGet(() -> jobRepository.save(new Job(null, (long) jobId, "New Job", new HashSet<>())));
+
+                    job.setTitle("Updated Job Title"); // Patch if needed
+
+                    return new EmployeeJobEmployer(null, employee, job, employer);
+                }).collect(Collectors.toSet());
+
+        employee.setJobEmployers(updatedMappings);
+        employeeRepository.save(employee);
+        employeeJobEmployerRepository.saveAll(updatedMappings);
     }
 
     private Set<EmployeeJobEmployer> getEmployeeJobEmployers(EmployeeDTO dto, Employee employee) {
