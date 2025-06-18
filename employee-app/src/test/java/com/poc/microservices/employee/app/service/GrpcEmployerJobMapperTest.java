@@ -16,11 +16,13 @@ class GrpcEmployerJobMapperTest {
     void testMapToDto() {
         // Simulated gRPC response (hard-coded proto object)
         EmployerJobInfo protoJob1 = EmployerJobInfo.newBuilder()
+                .setEmployeeId(1)
                 .setEmployerId(12345)
                 .addAllJobIds(List.of(101, 102, 103))
                 .build();
 
         EmployerJobInfo protoJob2 = EmployerJobInfo.newBuilder()
+                .setEmployeeId(2)
                 .setEmployerId(67890)
                 .addAllJobIds(List.of(201, 202, 203))
                 .build();
@@ -38,10 +40,12 @@ class GrpcEmployerJobMapperTest {
 
         GrpcEmployerJobDto dto1 = dtoList.getEmployerJobDtos().getFirst();
         Assertions.assertEquals(12345, dto1.getEmployerId());
+        Assertions.assertEquals(1, dto1.getEmployeeId());
         Assertions.assertEquals(List.of(101, 102, 103), dto1.getJobIds());
 
         GrpcEmployerJobDto dto2 = dtoList.getEmployerJobDtos().get(1);
         Assertions.assertEquals(67890, dto2.getEmployerId());
+        Assertions.assertEquals(2, dto2.getEmployeeId());
         Assertions.assertEquals(List.of(201, 202, 203), dto2.getJobIds());
     }
 }

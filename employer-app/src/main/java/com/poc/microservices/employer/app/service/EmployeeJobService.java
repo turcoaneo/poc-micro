@@ -5,6 +5,7 @@ import com.poc.microservices.employer.app.model.Employer;
 import com.poc.microservices.employer.app.model.Job;
 import com.poc.microservices.employer.app.model.dto.EmployeeJobDto;
 import com.poc.microservices.employer.app.repository.EmployeeRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class EmployeeJobService {
         this.employeeRepository = employeeRepository;
     }
 
+    @Transactional
     public List<EmployeeJobDto> getEmployeeJobInfo(List<Long> employeeIds) {
         List<Employee> employees = employeeRepository.findEmployeesByEmployeeIdIn(employeeIds);
 

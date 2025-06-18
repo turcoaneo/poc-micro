@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class GrpcEmployerJobDto {
+    private int employeeId;
     private int employerId;
     private List<Integer> jobIds;
 }

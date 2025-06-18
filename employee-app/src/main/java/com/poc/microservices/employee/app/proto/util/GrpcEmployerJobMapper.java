@@ -11,6 +11,7 @@ public class GrpcEmployerJobMapper {
         GrpcEmployerJobDtoList result = new GrpcEmployerJobDtoList();
         for (EmployerJobInfo employerJobInfo : proto.getJobInfosList()) {
             result.getEmployerJobDtos().add(new GrpcEmployerJobDto(
+                    Math.toIntExact(employerJobInfo.getEmployeeId()), // missing
                     employerJobInfo.getEmployerId(),
                     employerJobInfo.getJobIdsList() // Converts repeated field from proto to List<Integer>
             ));

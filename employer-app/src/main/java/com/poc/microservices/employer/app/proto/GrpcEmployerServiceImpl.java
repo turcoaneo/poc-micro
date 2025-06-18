@@ -29,8 +29,9 @@ public class GrpcEmployerServiceImpl extends EmployerServiceGrpc.EmployerService
         EmployerJobInfoList response = EmployerJobInfoList.newBuilder()
                 .addAllJobInfos(employeeJobDtos.stream()
                         .map(dto -> EmployerJobInfo.newBuilder()
-                                .setEmployerId(Math.toIntExact(dto.getEmployerId())) // Fix single ID
-                                .addAllJobIds(dto.getJobIds().stream().map(Math::toIntExact).toList()) // Fix list conversion
+                                .setEmployeeId(Math.toIntExact(dto.getEmployeeId()))
+                                .setEmployerId(Math.toIntExact(dto.getEmployerId()))
+                                .addAllJobIds(dto.getJobIds().stream().map(Math::toIntExact).toList())
                                 .build())
                         .toList())
                 .build();

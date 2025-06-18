@@ -43,8 +43,8 @@ class GrpcEmployeeControllerTest {
     void testGetEmployerJobs() throws Exception {
         GrpcEmployerJobDtoList dto = new GrpcEmployerJobDtoList();
         dto.setEmployerJobDtos(List.of(
-                new GrpcEmployerJobDto(12345, List.of(101, 102, 103)),
-                new GrpcEmployerJobDto(67890, List.of(201, 202, 203))
+                new GrpcEmployerJobDto(1, 12345, List.of(101, 102, 103)),
+                new GrpcEmployerJobDto(2, 67890, List.of(201, 202, 203))
         ));
 
         Mockito.when(grpcEmployeeClientService.getEmployerJobInfo(Mockito.anyList())).thenReturn(dto);

@@ -11,8 +11,9 @@ message EmployeeListRequest {
 }
 
 message EmployerJobInfo {
-  int32 employerId = 1;
-  repeated int32 jobIds = 2;
+  int32 employeeId = 1;
+  int32 employerId = 2;
+  repeated int32 jobIds = 3;
 }
 
 message EmployerJobInfoList {

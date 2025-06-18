@@ -13,9 +13,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeJobServiceTest {
@@ -62,6 +62,9 @@ class EmployeeJobServiceTest {
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(1001L, result.getFirst().getEmployeeId());
         Assertions.assertEquals(5001L, result.getFirst().getEmployerId());
-        Assertions.assertEquals(Arrays.asList(2001L, 2002L), result.getFirst().getJobIds());
+        Assertions.assertEquals(
+                Stream.of(2001L, 2002L).sorted().toList(),
+                result.getFirst().getJobIds().stream().sorted().toList()
+        );
     }
 }
