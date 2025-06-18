@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Tag(name = "EEM User Management", description = "User authentication API")
+@Tag(name = "EEM Management", description = "Employee API")
 @RestController
 @RequestMapping("/api/employees")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
