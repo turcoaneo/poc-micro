@@ -1,6 +1,8 @@
 package com.poc.microservices.employer.app.repository;
 
+import com.poc.microservices.employer.app.model.Employee;
 import com.poc.microservices.employer.app.model.Employer;
+import com.poc.microservices.employer.app.model.Job;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
@@ -21,6 +25,41 @@ class EmployerRepositoryTest {
 
     @Autowired
     private EmployerRepository employerRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Test
+    void testFindByEmployeeIds() {
+        Employee employee = new Employee();
+        employee.setEmployeeId(1001L);
+        employee.setName("Alice");
+
+        Employer employer = new Employer();
+        employer.setName("TechCorp");
+
+        Job job1 = new Job();
+        job1.setTitle("Developer");
+        job1.setEmployer(employer);
+
+        Job job2 = new Job();
+        job2.setTitle("Architect");
+        job2.setEmployer(employer);
+
+        employee.getJobs().addAll(Set.of(job1, job2));
+
+        employeeRepository.save(employee);
+
+        List<Employee> result = employeeRepository.findEmployeesByEmployeeIdIn(List.of(1001L));
+        Assertions.assertEquals(1, result.size());
+        Assertions.assertEquals("Alice", result.getFirst().getName());
+        //noinspection OptionalGetWithoutIsPresent
+        Assertions.assertEquals("TechCorp",
+                result.getFirst().getJobs().stream().findFirst().get().getEmployer().getName());
+        Assertions.assertEquals(2, result.getFirst().getJobs().size());
+    }
+
+
 
     @Test
     void testSaveAndFindEmployer() {

@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -77,33 +79,40 @@ public class EmployerService {
         if (optionalEmployer.isEmpty()) return new EMGenericResponseDTO(employerId, "Employer not found");
 
         Employer employer = optionalEmployer.get();
+        Optional<Employee> existingEmployee =
+                employer.getJobs().stream().flatMap(eJob -> eJob.getEmployees().stream())
+                        .filter(employee -> employee.getEmployeeId().equals(patchDTO.getEmployee().getId())).findAny();
+        if (existingEmployee.isPresent()) {
+            setEmployee(patchDTO, existingEmployee.get());
+        } else {
+            Employee employeeRef = null;
+            Map<Long, Employee> reusableEmployeeMap = new HashMap<>();
+            for (Long patchJobId : patchDTO.getJobIds()) {
+                Optional<Job> maybeJob = employer.getJobs().stream()
+                        .filter(job -> job.getJobId().equals(patchJobId))
+                        .findFirst();
 
-        for (Long patchJobId : patchDTO.getJobIds()) {
-            Optional<Job> maybeJob = employer.getJobs().stream()
-                    .filter(job -> job.getJobId().equals(patchJobId))
-                    .findFirst();
+                if (maybeJob.isEmpty()) {
+                    return new EMGenericResponseDTO(patchJobId, "Job not found by this id");
+                }
 
-            if (maybeJob.isEmpty()) {
-                return new EMGenericResponseDTO(patchJobId, "Job not found by this id");
+                Job job = maybeJob.get();
+                employeeRef = setNewEmployee(patchDTO, job, reusableEmployeeMap);
             }
-
-            Job job = maybeJob.get();
-            Optional<Employee> existingEmployee = job.getEmployees().stream()
-                    .filter(employee -> employee.getEmployeeId().equals(patchDTO.getEmployee().getId())).findAny();
-            if (existingEmployee.isPresent()) {
-                setEmployee(patchDTO, existingEmployee.get());
-            } else {
-                Employee employeeRef = setNewEmployee(patchDTO, job);
-                employeeRepository.save(employeeRef);
-            }
+            if (employeeRef != null) employeeRepository.save(employeeRef);
         }
 
         employerRepository.save(employer);
         return new EMGenericResponseDTO(patchDTO.getEmployee().getId(), "Added employee");
     }
 
-    private static Employee setNewEmployee(EmployerEmployeeAssignmentPatchDTO patchDTO, Job job) {
-        Employee employeeRef = new Employee();
+    private Employee setNewEmployee(EmployerEmployeeAssignmentPatchDTO patchDTO, Job job, Map<Long, Employee> reusableEmployeeMap) {
+        Long employeeGlobalId = patchDTO.getEmployee().getId();
+        Employee employeeRef = reusableEmployeeMap.get(employeeGlobalId);
+        if (employeeRef == null) {
+            employeeRef = new Employee();
+            reusableEmployeeMap.put(employeeGlobalId, employeeRef);
+        }
         setEmployee(patchDTO, employeeRef);
 
         job.getEmployees().add(employeeRef);
@@ -111,7 +120,7 @@ public class EmployerService {
         return employeeRef;
     }
 
-    private static void setEmployee(EmployerEmployeeAssignmentPatchDTO patchDTO, Employee employeeRef) {
+    private void setEmployee(EmployerEmployeeAssignmentPatchDTO patchDTO, Employee employeeRef) {
         employeeRef.setEmployeeId(patchDTO.getEmployee().getId());
         employeeRef.setName(patchDTO.getEmployee().getName());
         if (patchDTO.getEmployee().getActive() != null) {

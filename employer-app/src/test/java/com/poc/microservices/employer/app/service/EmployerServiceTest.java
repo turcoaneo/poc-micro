@@ -81,14 +81,14 @@ class EmployerServiceTest {
         EmployerEmployeeAssignmentPatchDTO patchDTO = new EmployerEmployeeAssignmentPatchDTO();
         patchDTO.setEmployerId(employerId);
         patchDTO.setEmployee(employee);
-        patchDTO.setJobIds(List.of(job1.getJobId()));
+        patchDTO.setJobIds(List.of(job1.getJobId(), job2.getJobId()));
 
         EMGenericResponseDTO result = employerService.assignEmployeeToJobs(patchDTO);
 
         Assertions.assertEquals(employeeId, result.getId());
         Assertions.assertEquals("Added employee", result.getMessage());
         Assertions.assertTrue(job1.getEmployees().stream().anyMatch(e -> e.getEmployeeId().equals(employeeId)));
-        Assertions.assertTrue(job2.getEmployees().isEmpty());
+        Assertions.assertFalse(job2.getEmployees().isEmpty());
 
         Mockito.verify(employerRepository).save(Mockito.any());
         Mockito.verify(employeeRepository).save(Mockito.any());

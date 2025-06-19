@@ -9,10 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -29,6 +32,62 @@ class EmployeeJobEmployerRepositoryTest {
 
     @Autowired
     private EmployerRepository employerRepository;
+
+    @Test
+    void testReconciliationShouldNotDuplicateMappings() {
+        // Step 1: Setup - as you have it
+        Employee employee = new Employee();
+        employee.setName("Employee X");
+        employeeRepository.save(employee);
+
+        Employer employer = new Employer(null, 12345L, "Initial Employer", new HashSet<>());
+        employerRepository.save(employer);
+
+        Job job1 = new Job(null, 101L, "Initial Job 1", new HashSet<>());
+        Job job2 = new Job(null, 102L, "Initial Job 2", new HashSet<>());
+        jobRepository.saveAll(Arrays.asList(job1, job2));
+
+        EmployeeJobEmployer eje1 = new EmployeeJobEmployer(null, employee, job1, employer);
+        EmployeeJobEmployer eje2 = new EmployeeJobEmployer(null, employee, job2, employer);
+        employee.getJobEmployers().addAll(List.of(eje1, eje2));
+        employer.getEmployeesJobs().addAll(List.of(eje1, eje2));
+        job1.getJobEmployees().add(eje1);
+        job2.getJobEmployees().add(eje2);
+        employeeJobEmployerRepository.saveAll(List.of(eje1, eje2));
+
+        employerRepository.save(employer);
+        // Sanity check before update
+        assertEquals(2, employee.getJobEmployers().size());
+        assertEquals(2, employer.getEmployeesJobs().size());
+        assertEquals(1, job1.getJobEmployees().size());
+        assertEquals(1, job2.getJobEmployees().size());
+
+        // Step 2: Fetch fresh instance and simulate name/title patch
+        Employee fetched = employeeRepository.findById(employee.getEmployeeId()).orElseThrow();
+        for (EmployeeJobEmployer eje : fetched.getJobEmployers()) {
+            eje.getEmployer().setName("Updated Employer");
+            eje.getJob().setTitle("Updated " + eje.getJob().getLocalJobId());
+        }
+
+        // Step 3: Save employee (with cascade updates)
+        employeeRepository.save(fetched);
+
+        // Step 4: Verify that employer/job names were updated, and no duplicates were introduced
+        Employee reloaded = employeeRepository.findById(fetched.getEmployeeId()).orElseThrow();
+        Set<EmployeeJobEmployer> updatedMappings = reloaded.getJobEmployers();
+
+        assertEquals(2, updatedMappings.size(), "Should still have 2 mappings after update");
+
+        for (EmployeeJobEmployer eje : updatedMappings) {
+            assertEquals("Updated Employer", eje.getEmployer().getName());
+            assertTrue(eje.getJob().getTitle().startsWith("Updated"), "Job title should be updated");
+        }
+
+        List<EmployeeJobEmployer> all = employeeJobEmployerRepository.findAll();
+        assertEquals(2, all.size(), "No duplicate EJE entries should be created");
+    }
+
+
 
     @Test
     void testFindEmployeesByJobAndEmployer() {

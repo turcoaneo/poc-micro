@@ -1,3 +1,6 @@
+grpc:
+  server:
+    port: 9093
 server:
   port: 8093
 spring:
