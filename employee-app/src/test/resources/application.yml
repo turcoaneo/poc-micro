@@ -6,3 +6,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop  # fresh schema every run
+
+eem:
+  scheduler:
+    cron: "*/1 * * * * *"

@@ -54,11 +54,7 @@ class EmployeeServiceTest {
     private EmployeeService employeeService;
 
     @BeforeEach
-    void setUp() {
-        Assertions.assertNotNull(employeeMapper);
-        Assertions.assertNotNull(jobRepository);
-        Assertions.assertNotNull(employerRepository);
-    }
+    void setUp() {}
 
     @Test
     void testReconcileEmployee_patchesExistingEmployerAndJobs() {

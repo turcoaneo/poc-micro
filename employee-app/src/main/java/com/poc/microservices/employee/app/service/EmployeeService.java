@@ -48,6 +48,43 @@ public class EmployeeService {
         return employeeId;
     }
 
+    public Optional<EmployeeDTO> getEmployeeById(Long id) {
+        return employeeRepository.findById(id).map(employeeMapper::toDTO);
+    }
+
+    public List<EmployeeDTO> getEmployeesByName(String name) {
+        return employeeRepository.findByName(name).stream()
+                .map(employeeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EmployeeDTO> getEmployeesByJobId(Long jobId) {
+        return employeeJobEmployerRepository.findEmployeesByJobId(jobId).stream()
+                .map(employeeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<EmployeeDTO> getEmployeesByEmployerId(Long employerId) {
+        return employeeJobEmployerRepository.findEmployeesByEmployerId(employerId).stream()
+                .map(employeeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    public void deleteEmployee(Long employeeId) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(employeeId);
+        optionalEmployee.ifPresent(employee -> {
+            Set<Long> jobIds = employee.getJobEmployers().stream().map(EmployeeJobEmployer::getJob).map(Job::getJobId)
+                    .collect(Collectors.toSet());
+            Set<Long> employerIds = employee.getJobEmployers().stream().map(EmployeeJobEmployer::getEmployer)
+                    .map(Employer::getEmployerId).collect(Collectors.toSet());
+            employeeRepository.deleteById(employeeId);
+            employeeRepository.flush();
+            jobRepository.deleteByIds(jobIds);
+            employerRepository.deleteByIds(employerIds);
+        });
+    }
+
     @Transactional
     public EEMGenericResponseDTO reconcileEmployee(GrpcEmployerJobDto dto) {
         Employee employee = employeeRepository.findById(dto.getEmployeeId())
@@ -134,42 +171,5 @@ public class EmployeeService {
             });
         });
         return jobEmployers;
-    }
-
-    public Optional<EmployeeDTO> getEmployeeById(Long id) {
-        return employeeRepository.findById(id).map(employeeMapper::toDTO);
-    }
-
-    public List<EmployeeDTO> getEmployeesByName(String name) {
-        return employeeRepository.findByName(name).stream()
-                .map(employeeMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<EmployeeDTO> getEmployeesByJobId(Long jobId) {
-        return employeeJobEmployerRepository.findEmployeesByJobId(jobId).stream()
-                .map(employeeMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    public List<EmployeeDTO> getEmployeesByEmployerId(Long employerId) {
-        return employeeJobEmployerRepository.findEmployeesByEmployerId(employerId).stream()
-                .map(employeeMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-
-    public void deleteEmployee(Long employeeId) {
-        Optional<Employee> optionalEmployee = employeeRepository.findById(employeeId);
-        optionalEmployee.ifPresent(employee -> {
-            Set<Long> jobIds = employee.getJobEmployers().stream().map(EmployeeJobEmployer::getJob).map(Job::getJobId)
-                    .collect(Collectors.toSet());
-            Set<Long> employerIds = employee.getJobEmployers().stream().map(EmployeeJobEmployer::getEmployer)
-                    .map(Employer::getEmployerId).collect(Collectors.toSet());
-            employeeRepository.deleteById(employeeId);
-            employeeRepository.flush();
-            jobRepository.deleteByIds(jobIds);
-            employerRepository.deleteByIds(employerIds);
-        });
     }
 }

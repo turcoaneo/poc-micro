@@ -37,3 +37,7 @@ eureka:
     preferIpAddress: true
     leaseRenewalIntervalInSeconds: 30  # Ensures regular heartbeat updates
     leaseExpirationDurationInSeconds: 90  # Prevents premature instance removal
+
+eem:
+  scheduler:
+    cron: "0 */20 * * * *"
