@@ -10,3 +10,7 @@ spring:
 eem:
   scheduler:
     cron: "*/1 * * * * *"
+
+grpc:
+  server:
+    port: 0  # Dynamically allocates a free port

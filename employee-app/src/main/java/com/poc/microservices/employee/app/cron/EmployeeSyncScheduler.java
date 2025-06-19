@@ -31,6 +31,11 @@ public class EmployeeSyncScheduler {
         List<Integer> ids = List.of(employeeId);
         GrpcEmployerJobDtoList dtoList = grpcService.getEmployerJobInfo(ids);
 
+        if (dtoList == null) {
+            logger.warn("Reconciliation failed for [employeeId={}]", employeeId);
+            return;
+        }
+
         dtoList.getEmployerJobDtos().forEach(dto -> {
             try {
                 logger.info("Reconciliation triggered for [employee ID: {}]", dto.getEmployeeId());
