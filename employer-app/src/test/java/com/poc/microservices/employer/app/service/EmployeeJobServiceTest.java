@@ -64,7 +64,7 @@ class EmployeeJobServiceTest {
         Assertions.assertEquals(5001L, result.getFirst().getEmployerId());
         Assertions.assertEquals(
                 Stream.of(2001L, 2002L).sorted().toList(),
-                result.getFirst().getJobIds().stream().sorted().toList()
+                result.getFirst().getJobIdToTitle().keySet().stream().sorted().toList()
         );
     }
 }

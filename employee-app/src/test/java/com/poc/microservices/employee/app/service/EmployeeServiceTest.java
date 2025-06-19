@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -58,23 +59,28 @@ class EmployeeServiceTest {
 
     @Test
     void testUpdateEmployeeWithNames() {
-        int employeeId = 9;
+        long employeeId = 9;
         String employeeName = "Alice";
-        int employerId = 1;
+        long employerId = 1;
         String employerName = "TechCorp";
         List<Integer> jobIds = List.of(11, 12);
         List<String> jobTitles = List.of("Developer", "Data Scientist");
 
-        GrpcEmployerJobDto dto = new GrpcEmployerJobDto(employeeId, employerId, jobIds);
+
+        HashMap<Long, String> jobIdToTitle = new HashMap<>();
+        jobIdToTitle.put(11L, "Job 1");
+        jobIdToTitle.put(12L, "Job 2");
+
+        GrpcEmployerJobDto dto = new GrpcEmployerJobDto(employeeId, "Employee", employerId, "Employer", jobIdToTitle);
 
         Employee employee = new Employee();
-        employee.setEmployeeId((long) employeeId);
+        employee.setEmployeeId(employeeId);
         employee.setName(employeeName);
         employee.setJobEmployers(new HashSet<>());
 
-        Mockito.when(employeeRepository.findById((long) employeeId)).thenReturn(Optional.of(employee));
+        Mockito.when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
 
-        Employer savedEmployer = new Employer(null, (long) employerId, employerName, new HashSet<>());
+        Employer savedEmployer = new Employer(null, employerId, employerName, new HashSet<>());
         Mockito.when(employerRepository.save(Mockito.any(Employer.class))).thenReturn(savedEmployer);
 
         for (int i = 0; i < jobIds.size(); i++) {

@@ -48,7 +48,7 @@ public class EmployeeService {
 
     @Transactional
     public void updateEmployee(GrpcEmployerJobDto dto) {
-        Employee employee = employeeRepository.findById((long) dto.getEmployeeId())
+        Employee employee = employeeRepository.findById(dto.getEmployeeId())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         Set<EmployeeJobEmployer> existingMappings = employee.getJobEmployers();
@@ -56,19 +56,19 @@ public class EmployeeService {
         // Fetch or create employer
         Employer employer = existingMappings.stream()
                 .map(EmployeeJobEmployer::getEmployer)
-                .filter(e -> e.getEmployerId().equals((long) dto.getEmployerId()))
+                .filter(e -> e.getEmployerId().equals(dto.getEmployerId()))
                 .findFirst()
-                .orElseGet(() -> employerRepository.save(new Employer(null, (long) dto.getEmployerId(), "New Employer", new HashSet<>())));
+                .orElseGet(() -> employerRepository.save(new Employer(null, dto.getEmployerId(), "New Employer", new HashSet<>())));
 
         employer.setName("Updated Employer Name"); // Patch if needed
 
-        Set<EmployeeJobEmployer> updatedMappings = dto.getJobIds().stream()
+        Set<EmployeeJobEmployer> updatedMappings = dto.getJobIdToTitle().keySet().stream()
                 .map(jobId -> {
                     Job job = existingMappings.stream()
                             .map(EmployeeJobEmployer::getJob)
-                            .filter(j -> j.getJobId().equals((long) jobId))
+                            .filter(j -> j.getJobId().equals(jobId))
                             .findFirst()
-                            .orElseGet(() -> jobRepository.save(new Job(null, (long) jobId, "New Job", new HashSet<>())));
+                            .orElseGet(() -> jobRepository.save(new Job(null, jobId, "New Job", new HashSet<>())));
 
                     job.setTitle("Updated Job Title"); // Patch if needed
 
@@ -95,14 +95,6 @@ public class EmployeeService {
             });
         });
         return jobEmployers;
-    }
-
-    public EmployeeDTO getEmployeeDTOById(Long employeeId) {
-        Employee saved = employeeRepository.findById(employeeId).orElse(null);
-        if (saved == null) {
-            throw new RuntimeException("Message in a bottle...neck. Could not save employee!");
-        }
-        return employeeMapper.toDTO(saved);
     }
 
     public Optional<EmployeeDTO> getEmployeeById(Long id) {

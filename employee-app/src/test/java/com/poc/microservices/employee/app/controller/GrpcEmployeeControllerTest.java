@@ -4,6 +4,7 @@ import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDto;
 import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDtoList;
 import com.poc.microservices.employee.app.proto.GrpcClientGreeterService;
 import com.poc.microservices.employee.app.proto.GrpcEmployeeClientService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,10 +16,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.HashMap;
 import java.util.List;
+
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(GrpcEmployeeController.class)
@@ -41,11 +45,7 @@ class GrpcEmployeeControllerTest {
 
     @Test
     void testGetEmployerJobs() throws Exception {
-        GrpcEmployerJobDtoList dto = new GrpcEmployerJobDtoList();
-        dto.setEmployerJobDtos(List.of(
-                new GrpcEmployerJobDto(1, 12345, List.of(101, 102, 103)),
-                new GrpcEmployerJobDto(2, 67890, List.of(201, 202, 203))
-        ));
+        GrpcEmployerJobDtoList dto = getGrpcEmployerJobDtoList();
 
         Mockito.when(grpcEmployeeClientService.getEmployerJobInfo(Mockito.anyList())).thenReturn(dto);
 
@@ -53,16 +53,30 @@ class GrpcEmployeeControllerTest {
                         .param("employeeIds", "3,5")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[0].employerId").value(12345))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[0].jobIds[0]").value(101))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[0].jobIds[1]").value(102))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[0].jobIds[2]").value(103))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[0].employerName").value("Employer 1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[0].jobIdToTitle", Matchers.hasEntry("101", "Job 1")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[1].employerId").value(67890))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[1].jobIds[0]").value(201))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[1].jobIds[1]").value(202))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[1].jobIds[2]").value(203));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[1].employeeId").value(2))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.employerJobDtos[1].jobIdToTitle", Matchers.hasEntry("201", "Job 1")));
     }
 
+    private static GrpcEmployerJobDtoList getGrpcEmployerJobDtoList() {
+        GrpcEmployerJobDtoList dto = new GrpcEmployerJobDtoList();
+
+        HashMap<Long, String> jobIdToTitle1 = new HashMap<>();
+        jobIdToTitle1.put(101L, "Job 1");
+        jobIdToTitle1.put(102L, "Job 2");
+
+        HashMap<Long, String> jobIdToTitle2 = new HashMap<>();
+        jobIdToTitle2.put(201L, "Job 1");
+        dto.setEmployerJobDtos(List.of(
+                new GrpcEmployerJobDto(1L, "Employee 1", 12345L, "Employer 1", jobIdToTitle1),
+                new GrpcEmployerJobDto(2L, "Employee 2", 67890L, "Employer 2", jobIdToTitle2)
+        ));
+        return dto;
+    }
 
 
     @Test

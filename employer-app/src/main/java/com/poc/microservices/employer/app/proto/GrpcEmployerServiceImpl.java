@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @GrpcService
@@ -30,8 +31,12 @@ public class GrpcEmployerServiceImpl extends EmployerServiceGrpc.EmployerService
                 .addAllJobInfos(employeeJobDtos.stream()
                         .map(dto -> EmployerJobInfo.newBuilder()
                                 .setEmployeeId(Math.toIntExact(dto.getEmployeeId()))
+                                .setEmployeeName(dto.getEmployeeName())
                                 .setEmployerId(Math.toIntExact(dto.getEmployerId()))
-                                .addAllJobIds(dto.getJobIds().stream().map(Math::toIntExact).toList())
+                                .setEmployerName(dto.getEmployerName())
+                                .addAllJobIds(dto.getJobIdToTitle().keySet().stream()
+                                        .map(Long::intValue).toList())
+                                .addAllJobTitles(new ArrayList<>(dto.getJobIdToTitle().values()))
                                 .build())
                         .toList())
                 .build();

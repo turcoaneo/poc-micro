@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -35,8 +36,11 @@ class GrpcEmployerServiceImplTest {
 
     @Test
     void testGetEmployerJobInfo() {
+        HashMap<Long, String> jobIdToTitle = new HashMap<>();
+        jobIdToTitle.put(2001L, "Job 1");
+        jobIdToTitle.put(2002L, "Job 2");
         List<EmployeeJobDto> mockDtos = List.of(
-                new EmployeeJobDto(1001L, 5001L, List.of(2001L, 2002L))
+                new EmployeeJobDto(1001L, "Employee", 5001L, "Employer", jobIdToTitle)
         );
 
         Mockito.when(employeeJobService.getEmployeeJobInfo(Mockito.anyList())).thenReturn(mockDtos);

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -13,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class EmployeeJobDto {
     private Long employeeId;
+    private String employeeName;
     private Long employerId;
-    private List<Long> jobIds;
+    private String employerName;
+    private Map<Long, String> jobIdToTitle;
 }

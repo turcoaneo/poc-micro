@@ -12,8 +12,11 @@ message EmployeeListRequest {
 
 message EmployerJobInfo {
   int32 employeeId = 1;
-  int32 employerId = 2;
-  repeated int32 jobIds = 3;
+  string employeeName = 2;
+  int32 employerId = 3;
+  string employerName = 4;
+  repeated int32 jobIds = 5;
+  repeated string jobTitles = 6;
 }
 
 message EmployerJobInfoList {
