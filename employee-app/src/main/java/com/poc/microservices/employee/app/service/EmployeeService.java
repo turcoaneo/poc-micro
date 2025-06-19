@@ -4,6 +4,7 @@ import com.poc.microservices.employee.app.model.Employee;
 import com.poc.microservices.employee.app.model.EmployeeJobEmployer;
 import com.poc.microservices.employee.app.model.Employer;
 import com.poc.microservices.employee.app.model.Job;
+import com.poc.microservices.employee.app.model.dto.EEMGenericResponseDTO;
 import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
 import com.poc.microservices.employee.app.model.dto.EmployerDTO;
 import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDto;
@@ -20,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,37 +49,66 @@ public class EmployeeService {
     }
 
     @Transactional
-    public void updateEmployee(GrpcEmployerJobDto dto) {
+    public EEMGenericResponseDTO reconcileEmployee(GrpcEmployerJobDto dto) {
         Employee employee = employeeRepository.findById(dto.getEmployeeId())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         Set<EmployeeJobEmployer> existingMappings = employee.getJobEmployers();
 
-        // Fetch or create employer
+        // Fetch or create Employer
         Employer employer = existingMappings.stream()
                 .map(EmployeeJobEmployer::getEmployer)
-                .filter(e -> e.getEmployerId().equals(dto.getEmployerId()))
+                .filter(e -> e.getLocalEmployerId().equals(dto.getEmployerId()))
                 .findFirst()
-                .orElseGet(() -> employerRepository.save(new Employer(null, dto.getEmployerId(), "New Employer", new HashSet<>())));
+                .orElseGet(() -> {
+                    Employer newEmp = new Employer(null, dto.getEmployerId(), dto.getEmployerName(), new HashSet<>());
+                    employerRepository.save(newEmp);
+                    return newEmp;
+                });
 
-        employer.setName("Updated Employer Name"); // Patch if needed
+        employer.setName(dto.getEmployerName());
 
-        Set<EmployeeJobEmployer> updatedMappings = dto.getJobIdToTitle().keySet().stream()
-                .map(jobId -> {
-                    Job job = existingMappings.stream()
-                            .map(EmployeeJobEmployer::getJob)
-                            .filter(j -> j.getJobId().equals(jobId))
-                            .findFirst()
-                            .orElseGet(() -> jobRepository.save(new Job(null, jobId, "New Job", new HashSet<>())));
+        Set<EmployeeJobEmployer> newMappings = new HashSet<>();
+        for (Map.Entry<Long, String> entry : dto.getJobIdToTitle().entrySet()) {
+            Long jobId = entry.getKey();
+            String title = entry.getValue();
 
-                    job.setTitle("Updated Job Title"); // Patch if needed
+            // Fetch or create Job
+            Job job = existingMappings.stream()
+                    .map(EmployeeJobEmployer::getJob)
+                    .filter(j -> j.getLocalJobId() != null && j.getLocalJobId().equals(jobId))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        Job newJob = new Job(null, jobId, title, new HashSet<>());
+                        jobRepository.save(newJob);
+                        return newJob;
+                    });
 
-                    return new EmployeeJobEmployer(null, employee, job, employer);
-                }).collect(Collectors.toSet());
+            job.setTitle(title);
 
-        employee.setJobEmployers(updatedMappings);
+            // Check if mapping already exists
+            boolean mappingExists = existingMappings.stream()
+                    .anyMatch(m -> m.getJob().getLocalJobId() != null && m.getJob().getLocalJobId().equals(jobId)
+                            && m.getEmployer().getLocalEmployerId().equals(dto.getEmployerId()));
+
+            if (!mappingExists) {
+                EmployeeJobEmployer mapping = new EmployeeJobEmployer(null, employee, job, employer);
+
+                // Bidirectional links (needed only on first patch / new mapping)
+                employee.getJobEmployers().add(mapping);
+                employer.getEmployeesJobs().add(mapping);
+                job.getJobEmployees().add(mapping);
+                newMappings.add(mapping);
+            }
+        }
+
+        employeeJobEmployerRepository.saveAll(newMappings);
         employeeRepository.save(employee);
-        employeeJobEmployerRepository.saveAll(updatedMappings);
+
+        return new EEMGenericResponseDTO(
+                employee.getEmployeeId(),
+                "Employee reconciliation successful"
+        );
     }
 
     private Set<EmployeeJobEmployer> getEmployeeJobEmployers(EmployeeDTO dto, Employee employee) {

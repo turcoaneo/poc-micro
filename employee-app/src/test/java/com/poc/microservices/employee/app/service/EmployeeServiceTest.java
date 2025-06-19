@@ -1,6 +1,7 @@
 package com.poc.microservices.employee.app.service;
 
 import com.poc.microservices.employee.app.model.Employee;
+import com.poc.microservices.employee.app.model.EmployeeJobEmployer;
 import com.poc.microservices.employee.app.model.Employer;
 import com.poc.microservices.employee.app.model.Job;
 import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
@@ -25,7 +26,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -55,6 +58,56 @@ class EmployeeServiceTest {
         Assertions.assertNotNull(employeeMapper);
         Assertions.assertNotNull(jobRepository);
         Assertions.assertNotNull(employerRepository);
+    }
+
+    @Test
+    void testReconcileEmployee_patchesExistingEmployerAndJobs() {
+        // Given
+        Long employeeId = 10L;
+        Long localEmployerId = 1L;
+        String oldEmployerName = "Old Name";
+        String newEmployerName = "Employer 1";
+
+        Long jobId1 = 101L;
+        Long jobId2 = 102L;
+        String oldTitle = "Outdated Title";
+        String newTitle1 = "Job 1";
+        String newTitle2 = "Job 2";
+
+        Employer existingEmployer = new Employer(localEmployerId, 99999L, oldEmployerName, new HashSet<>());
+        Job existingJob1 = new Job(jobId1, 11111L, oldTitle, new HashSet<>());
+        Job existingJob2 = new Job(jobId2, 22222L, oldTitle, new HashSet<>());
+
+        Employee employee = new Employee();
+        employee.setEmployeeId(employeeId);
+        employee.setName("Test Employee");
+        employee.setJobEmployers(new HashSet<>(Set.of(
+                new EmployeeJobEmployer(null, employee, existingJob1, existingEmployer),
+                new EmployeeJobEmployer(null, employee, existingJob2, existingEmployer)
+        )));
+
+        GrpcEmployerJobDto dto = new GrpcEmployerJobDto();
+        dto.setEmployeeId(employeeId);
+        dto.setEmployerId(localEmployerId);
+        dto.setEmployerName(newEmployerName);
+        dto.setJobIdToTitle(Map.of(
+                jobId1, newTitle1,
+                jobId2, newTitle2
+        ));
+
+        Mockito.when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+        Mockito.when(employeeRepository.save(employee)).thenReturn(employee);
+
+        // When
+        employeeService.reconcileEmployee(dto);
+
+        // Then
+        Assertions.assertEquals(newEmployerName, existingEmployer.getName());
+        Assertions.assertEquals(newTitle1, existingJob1.getTitle());
+        Assertions.assertEquals(newTitle2, existingJob2.getTitle());
+
+        Mockito.verify(employeeRepository).save(employee);
+        Mockito.verify(employeeJobEmployerRepository).saveAll(Mockito.any());
     }
 
     @Test
@@ -91,7 +144,7 @@ class EmployeeServiceTest {
             Mockito.when(jobRepository.save(Mockito.argThat(j -> j != null && jobId == j.getJobId()))).thenReturn(savedJob);
         }
 
-        employeeService.updateEmployee(dto);
+        employeeService.reconcileEmployee(dto);
 
         Mockito.verify(employeeRepository).save(employee);
         Mockito.verify(employeeJobEmployerRepository).saveAll(Mockito.any());
