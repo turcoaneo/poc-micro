@@ -56,16 +56,7 @@ public class EmployeeService {
         Set<EmployeeJobEmployer> existingMappings = employee.getJobEmployers();
 
         // Fetch or create Employer
-        Employer employer = existingMappings.stream()
-                .map(EmployeeJobEmployer::getEmployer)
-                .filter(e -> e.getLocalEmployerId().equals(dto.getEmployerId()))
-                .findFirst()
-                .orElseGet(() -> {
-                    Employer newEmp = new Employer(null, dto.getEmployerId(), dto.getEmployerName(), new HashSet<>());
-                    employerRepository.save(newEmp);
-                    return newEmp;
-                });
-
+        Employer employer = getOrSaveEmployer(dto, existingMappings);
         employer.setName(dto.getEmployerName());
 
         Set<EmployeeJobEmployer> newMappings = new HashSet<>();
@@ -74,41 +65,58 @@ public class EmployeeService {
             String title = entry.getValue();
 
             // Fetch or create Job
-            Job job = existingMappings.stream()
-                    .map(EmployeeJobEmployer::getJob)
-                    .filter(j -> j.getLocalJobId() != null && j.getLocalJobId().equals(jobId))
-                    .findFirst()
-                    .orElseGet(() -> {
-                        Job newJob = new Job(null, jobId, title, new HashSet<>());
-                        jobRepository.save(newJob);
-                        return newJob;
-                    });
-
+            Job job = getOrSaveJob(existingMappings, jobId, title);
             job.setTitle(title);
 
             // Check if mapping already exists
-            boolean mappingExists = existingMappings.stream()
-                    .anyMatch(m -> m.getJob().getLocalJobId() != null && m.getJob().getLocalJobId().equals(jobId)
-                            && m.getEmployer().getLocalEmployerId().equals(dto.getEmployerId()));
-
-            if (!mappingExists) {
-                EmployeeJobEmployer mapping = new EmployeeJobEmployer(null, employee, job, employer);
-
-                // Bidirectional links (needed only on first patch / new mapping)
-                employee.getJobEmployers().add(mapping);
-                employer.getEmployeesJobs().add(mapping);
-                job.getJobEmployees().add(mapping);
-                newMappings.add(mapping);
-            }
+            populateNewMappings(dto, existingMappings, jobId, employee, job, employer, newMappings);
         }
 
         employeeJobEmployerRepository.saveAll(newMappings);
         employeeRepository.save(employee);
 
-        return new EEMGenericResponseDTO(
-                employee.getEmployeeId(),
-                "Employee reconciliation successful"
+        return new EEMGenericResponseDTO(employee.getEmployeeId(), "Employee reconciliation successful"
         );
+    }
+
+    private static void populateNewMappings(GrpcEmployerJobDto dto, Set<EmployeeJobEmployer> existingMappings, Long jobId, Employee employee, Job job, Employer employer, Set<EmployeeJobEmployer> newMappings) {
+        boolean mappingExists = existingMappings.stream()
+                .anyMatch(m -> m.getJob().getLocalJobId() != null && m.getJob().getLocalJobId().equals(jobId)
+                        && m.getEmployer().getLocalEmployerId().equals(dto.getEmployerId()));
+
+        if (!mappingExists) {
+            EmployeeJobEmployer mapping = new EmployeeJobEmployer(null, employee, job, employer);
+
+            // Bidirectional links (needed only on first patch / new mapping)
+            employee.getJobEmployers().add(mapping);
+            employer.getEmployeesJobs().add(mapping);
+            job.getJobEmployees().add(mapping);
+            newMappings.add(mapping);
+        }
+    }
+
+    private Job getOrSaveJob(Set<EmployeeJobEmployer> existingMappings, Long jobId, String title) {
+        return existingMappings.stream()
+                .map(EmployeeJobEmployer::getJob)
+                .filter(j -> j.getLocalJobId() != null && j.getLocalJobId().equals(jobId))
+                .findFirst()
+                .orElseGet(() -> {
+                    Job newJob = new Job(null, jobId, title, new HashSet<>());
+                    jobRepository.save(newJob);
+                    return newJob;
+                });
+    }
+
+    private Employer getOrSaveEmployer(GrpcEmployerJobDto dto, Set<EmployeeJobEmployer> existingMappings) {
+        return existingMappings.stream()
+                .map(EmployeeJobEmployer::getEmployer)
+                .filter(e -> e.getLocalEmployerId().equals(dto.getEmployerId()))
+                .findFirst()
+                .orElseGet(() -> {
+                    Employer newEmp = new Employer(null, dto.getEmployerId(), dto.getEmployerName(), new HashSet<>());
+                    employerRepository.save(newEmp);
+                    return newEmp;
+                });
     }
 
     private Set<EmployeeJobEmployer> getEmployeeJobEmployers(EmployeeDTO dto, Employee employee) {
