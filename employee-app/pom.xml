@@ -15,6 +15,9 @@
     <description>employee-app</description>
     <properties>
         <java.version>21</java.version>
+        <tomcat.version>10.1.42</tomcat.version>
+        <io.grpc.version>1.73.0</io.grpc.version>
+        <protobuf.version>4.31.1</protobuf.version>
     </properties>
 
     <dependencies>
@@ -70,23 +73,23 @@
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
-            <version>1.73.0</version>
+            <version>${io.grpc.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-protobuf</artifactId>
-            <version>1.73.0</version>
+            <version>${io.grpc.version}</version>
         </dependency>
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-stub</artifactId>
-            <version>1.73.0</version>
+            <version>${io.grpc.version}</version>
         </dependency>
         <!-- Protobuf Java Format -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>4.31.1</version>
+            <version>${protobuf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tomcat</groupId>
@@ -108,6 +111,13 @@
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- Config server -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+            <version>4.3.0</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -118,6 +128,16 @@
                 <version>2025.0.0</version> <!-- Use latest stable version -->
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>6.2.8</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -136,10 +156,10 @@
                 <version>0.6.1</version>
                 <configuration>
                     <!--suppress MavenModelInspection -->
-                    <protocArtifact>com.google.protobuf:protoc:4.31.1:exe:${os.detected.classifier}</protocArtifact>
+                    <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
                     <!--suppress MavenModelInspection -->
-                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.73.0:exe:${os.detected.classifier}</pluginArtifact>
+                    <pluginArtifact>io.grpc:protoc-gen-grpc-java:${io.grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
                 </configuration>
                 <executions>
                     <execution>

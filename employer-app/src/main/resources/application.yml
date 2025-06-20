@@ -4,6 +4,8 @@ grpc:
 server:
   port: 8093
 spring:
+  config:
+    import: optional:configserver:http://localhost:8888
   application:
     name: em-service
   mvc:
@@ -11,8 +13,6 @@ spring:
       path: /em  # This sets the global prefix for all controllers
     pathmatch:
       matching-strategy: ant_path_matcher  # Ensures correct path mapping
-  config:
-    import: optional:configserver:http://localhost:8888
 #  datasource:
 #    url: jdbc:mysql://localhost:3307/employer_db
 #    username: root

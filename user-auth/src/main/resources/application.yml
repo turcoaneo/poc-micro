@@ -1,6 +1,8 @@
 server:
   port: 8092
 spring:
+  config:
+    import: optional:configserver:http://localhost:8888
   application:
     name: uam-service
   mvc:

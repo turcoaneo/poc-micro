@@ -4,6 +4,8 @@ grpc:
 server:
   port: 8094
 spring:
+  config:
+    import: optional:configserver:http://localhost:8888
   application:
     name: eem-service
   mvc:
@@ -40,4 +42,4 @@ spring:
 
 eem:
   scheduler:
-    cron: "0 */20 * * * *"
+    cron: "0 */5 * * * *"

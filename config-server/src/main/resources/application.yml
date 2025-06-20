@@ -6,7 +6,7 @@ spring:
       server:
         git:
           uri: https://github.com/turcoaneo/poc-server-config
-          default-label: config-server
+          default-label: main
   application:
     name: config-server
 
