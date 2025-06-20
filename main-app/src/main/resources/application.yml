@@ -1,6 +1,8 @@
 server:
   port: 8091
 spring:
+  config:
+    import: optional:configserver:http://localhost:8888
   cloud:
     openfeign:
       okhttp:
