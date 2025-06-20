@@ -15,7 +15,7 @@ class GrpcSslContextHelperTest {
 
     @Test
     void testCreateSslContext() throws Exception {
-        System.setProperty("JKS_KEY", "changeit");
+        System.setProperty("JKS_KEY", "test_pwd");
         SslContext sslContext = GrpcSslContextHelper.createSslContext();
         Assertions.assertNotNull(sslContext, "SSL Context should be created successfully.");
         Assertions.assertFalse(sslContext.cipherSuites().isEmpty());
