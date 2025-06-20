@@ -12,7 +12,7 @@ import java.security.KeyStore;
 public class GrpcSslContextHelper {
     private static final String jksKeyName = "JKS_KEY";
     private final static String DEFAULT_PASSWORD = System.getenv(jksKeyName) != null ? System.getenv(jksKeyName) :
-            System.getProperty(jksKeyName, "changeit"); // todo remove hard-code pass; create new JKS stuff for test
+            System.getProperty(jksKeyName, "test_pwd"); // default for test contexts
 
     private static final String defaultFolder = "eem-client/";
     private final static String keyStoreFile = defaultFolder + "client.jks";
