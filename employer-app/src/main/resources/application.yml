@@ -13,9 +13,9 @@ spring:
       path: /em  # This sets the global prefix for all controllers
     pathmatch:
       matching-strategy: ant_path_matcher  # Ensures correct path mapping
-#  datasource:
-#    url: jdbc:mysql://localhost:3307/employer_db
-#    username: root
+  datasource:
+    url: jdbc:mysql://localhost:3307/employer_db
+    username: root
 #    password: Sky_Dev#*75
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #  jpa:
