@@ -3,6 +3,11 @@ grpc:
     port: 9094
 server:
   port: 8094
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, info, monitor
 spring:
   config:
     import: optional:configserver:http://localhost:8888
@@ -16,6 +21,14 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3307/employee_db
     username: root
+  cloud:
+    config:
+      discovery:
+        service-id: config-server
+        enabled: true
+      name: eem-service
+      profile: dev
+#      uri: http://localhost:8888
 #    password: Sky_Dev#*75
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #  jpa:
@@ -42,4 +55,9 @@ spring:
 
 eem:
   scheduler:
-    cron: "0 */5 * * * *"
+    cron: "0 */1 * * * *"
+#    enabled: false
+
+logging:
+  level:
+    org.springframework.cloud.context.scope.refresh: DEBUG

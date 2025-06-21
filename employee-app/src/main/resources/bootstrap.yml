@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: eem-service
+  cloud:
+    config:
+      uri: http://localhost:8888
+      name: eem-service
+      profile: dev
+      discovery:
+        enabled: true
+        service-id: config-server
+  # noinspection SpringBootApplicationYaml
+  cloud.bootstrap.enabled: true

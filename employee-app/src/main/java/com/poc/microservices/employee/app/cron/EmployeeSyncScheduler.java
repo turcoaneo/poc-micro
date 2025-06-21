@@ -3,7 +3,6 @@ package com.poc.microservices.employee.app.cron;
 import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDtoList;
 import com.poc.microservices.employee.app.proto.GrpcEmployeeClientService;
 import com.poc.microservices.employee.app.service.EmployeeService;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +14,30 @@ import java.util.List;
 
 @Component
 @NoArgsConstructor
-@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class EmployeeSyncScheduler {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeSyncScheduler.class);
 
+    private SchedulerProperties schedulerProperties;
     private GrpcEmployeeClientService grpcService;
     private EmployeeService employeeService;
 
+    @Autowired
+    public EmployeeSyncScheduler(SchedulerProperties schedulerProperties, GrpcEmployeeClientService grpcService,
+                                 EmployeeService employeeService) {
+        this.schedulerProperties = schedulerProperties;
+        this.grpcService = grpcService;
+        this.employeeService = employeeService;
+    }
+
+
     @Scheduled(cron = "${eem.scheduler.cron}")
     public void runEmployeeReconciliation() {
+        logger.info("SchedulerProperties instance: {}", System.identityHashCode(schedulerProperties));
+        if (!schedulerProperties.isEnabled()) {
+            logger.info("Scheduler is disabled. Skipping reconciliation.");
+            return;
+        }
+
         logger.info("Reconciliation triggered by schedule");
 
         // Inject via config or env for now

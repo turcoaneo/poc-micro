@@ -12,6 +12,7 @@ spring:
 eem:
   scheduler:
     cron: "*/1 * * * * *"
+    enabled: true
 
 grpc:
   server:
