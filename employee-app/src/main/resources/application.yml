@@ -10,7 +10,8 @@ management:
         include: refresh, health, info, monitor
 spring:
   config:
-    import: optional:configserver:http://localhost:8888
+#    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:config-server
   application:
     name: eem-service
   mvc:
