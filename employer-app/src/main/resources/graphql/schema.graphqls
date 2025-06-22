@@ -1,0 +1,23 @@
+scalar Long
+
+type Query {
+  employers: [Employer]
+  employer(id: Long!): Employer
+}
+
+type Employer {
+  employerId: Long!
+  name: String
+  jobs: [Job]
+}
+
+type Job {
+  jobId: Long!
+  title: String
+  employees: [Employee]
+}
+
+type Employee {
+  employeeId: Long!
+  name: String
+}
