@@ -1,4 +1,8 @@
 spring:
+  config:
+    import: optional:configserver:http://localhost:8888
+#    activate:
+#      on-profile: test
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -8,6 +12,3 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
-  config:
-    activate:
-      on-profile: test

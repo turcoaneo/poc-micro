@@ -38,6 +38,9 @@ class EmployeeSyncSchedulerTest {
     @MockitoBean
     private GrpcEmployeeClientService grpcService;
 
+    @MockitoBean
+    private SchedulerProperties schedulerProperties;
+
     @SuppressWarnings("unused")
     @MockitoSpyBean
     private EmployeeSyncScheduler scheduler;
@@ -47,6 +50,8 @@ class EmployeeSyncSchedulerTest {
         ReflectionTestUtils.setField(employeeService, "employeeRepository", employeeRepository);
         ReflectionTestUtils.setField(scheduler, "employeeService", employeeService);
         ReflectionTestUtils.setField(scheduler, "grpcService", grpcService);
+        ReflectionTestUtils.setField(scheduler, "schedulerProperties", schedulerProperties);
+        ReflectionTestUtils.setField(schedulerProperties, "enabled", true);
     }
 
 

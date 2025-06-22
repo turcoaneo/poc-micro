@@ -7,10 +7,12 @@ import com.poc.microservices.employee.app.service.EmployeeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -24,12 +26,15 @@ class EmployeeSyncSchedulerMockTest {
     private GrpcEmployeeClientService grpcService;
     @MockitoBean
     private EmployeeService employeeService;
+    @Spy
+    private SchedulerProperties schedulerProperties;
 
     @Autowired
     private EmployeeSyncScheduler scheduler;
 
     @Test
     void testEmployeeIsReconciled() {
+        ReflectionTestUtils.setField(schedulerProperties, "enabled", true);
         GrpcEmployerJobDto dto = new GrpcEmployerJobDto(1L, "Employee X", 100L, "Test Employer", Map.of(1L, "Dev"));
         GrpcEmployerJobDtoList dtoList = new GrpcEmployerJobDtoList(List.of(dto));
 

@@ -1,6 +1,8 @@
 server:
   port: 8091
 spring:
+  config:
+    import: optional:configserver:http://localhost:8888
   cloud:
     openfeign:
       okhttp:
@@ -13,24 +15,24 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher  # Ensures correct path mapping
 
-#jwt:
-  #  secretKey: ENV var SECRET_KEY
-
-logging:
-  level:
-    root: INFO
-    com.poc.microservices: DEBUG
-    org.springframework.web: WARN
-
 security:
   excludedEndpoints: "/mas/mas-users/login,/mas/mas-users/register"
 
-eureka:
-  client:
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    preferIpAddress: true
-    leaseRenewalIntervalInSeconds: 30  # Ensures regular heartbeat updates
-    leaseExpirationDurationInSeconds: 90  # Prevents premature instance removal
+#jwt:
+  #  secretKey: ENV var SECRET_KEY
+
+#logging:
+#  level:
+#    root: INFO
+#    com.poc.microservices: DEBUG
+#    org.springframework.web: WARN
+#
+#eureka:
+#  client:
+#    fetchRegistry: true
+#    serviceUrl:
+#      defaultZone: http://localhost:8761/eureka/
+#  instance:
+#    preferIpAddress: true
+#    leaseRenewalIntervalInSeconds: 30  # Ensures regular heartbeat updates
+#    leaseExpirationDurationInSeconds: 90  # Prevents premature instance removal

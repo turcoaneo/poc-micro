@@ -1,0 +1,7 @@
+# this file is needed for refresh scope
+spring:
+  cloud:
+    config:
+      name: eem-service
+  # noinspection SpringBootApplicationYaml
+  cloud.bootstrap.enabled: true
