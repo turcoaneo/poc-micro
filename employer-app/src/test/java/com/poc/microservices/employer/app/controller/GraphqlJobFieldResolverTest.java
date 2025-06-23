@@ -1,8 +1,6 @@
-package com.poc.microservices.employer.app;
+package com.poc.microservices.employer.app.controller;
 
 import com.poc.microservices.employer.app.config.GraphQLScalarConfig;
-import com.poc.microservices.employer.app.controller.GraphqlEmployerQueryResolver;
-import com.poc.microservices.employer.app.controller.GraphqlJobFieldResolver;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployeeRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployerRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLJobRecord;
