@@ -13,7 +13,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class EmployerQueryResolver {
+public class GraphqlEmployerQueryResolver {
 
     private final EmployerRepository employerRepository;
     private final GraphQLEmployerMapper employerMapper;

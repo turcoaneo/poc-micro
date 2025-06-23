@@ -17,9 +17,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-@GraphQlTest(EmployerQueryResolver.class)
+@GraphQlTest(GraphqlEmployerQueryResolver.class)
 @Import(GraphQLScalarConfig.class)
-class EmployerQueryResolverTest {
+class GraphqlEmployerQueryResolverTest {
 
     @Autowired
     private GraphQlTester graphQlTester;

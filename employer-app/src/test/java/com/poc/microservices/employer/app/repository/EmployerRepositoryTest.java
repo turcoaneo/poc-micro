@@ -57,6 +57,9 @@ class EmployerRepositoryTest {
         Assertions.assertEquals("TechCorp",
                 result.getFirst().getJobs().stream().findFirst().get().getEmployer().getName());
         Assertions.assertEquals(2, result.getFirst().getJobs().size());
+
+        List<Employee> byJobsJobId = employeeRepository.findByJobsJobId(job1.getJobId());
+        Assertions.assertEquals(1, byJobsJobId.size());
     }
 
 

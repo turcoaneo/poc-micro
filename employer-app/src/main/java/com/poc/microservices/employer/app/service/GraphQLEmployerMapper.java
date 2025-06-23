@@ -6,9 +6,11 @@ import com.poc.microservices.employer.app.graphql.GraphQLJobRecord;
 import com.poc.microservices.employer.app.model.Employee;
 import com.poc.microservices.employer.app.model.Employer;
 import com.poc.microservices.employer.app.model.Job;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@NoArgsConstructor
 public class GraphQLEmployerMapper {
 
     public GraphQLEmployerRecord toGraphQLRecord(Employer employer) {

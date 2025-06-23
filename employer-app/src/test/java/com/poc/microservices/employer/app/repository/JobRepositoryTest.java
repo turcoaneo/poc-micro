@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,6 +48,9 @@ class JobRepositoryTest {
         Optional<Job> retrievedJob = jobRepository.findById(jobId);
         Assertions.assertTrue(retrievedJob.isPresent());
         Assertions.assertEquals("job 2", retrievedJob.get().getTitle());
+
+        List<Job> byEmployerEmployerId = jobRepository.findByEmployerEmployerId(retrievedJob.get().getEmployer().getEmployerId());
+        Assertions.assertEquals(2, byEmployerEmployerId.size());
     }
 
     @Test
