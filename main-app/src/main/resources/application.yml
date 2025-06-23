@@ -18,6 +18,10 @@ spring:
 security:
   excludedEndpoints: "/mas/mas-users/login,/mas/mas-users/register"
 
+em:
+  graphql:
+    url: http://localhost:8093/em/graphql
+
 #jwt:
   #  secretKey: ENV var SECRET_KEY
 

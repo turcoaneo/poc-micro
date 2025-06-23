@@ -1,0 +1,14 @@
+query GetEmployer($id: Long!) {
+    employer(id: $id) {
+        employerId
+        name
+        jobs {
+            jobId
+            title
+            employees {
+                employeeId
+                name
+            }
+        }
+    }
+}
