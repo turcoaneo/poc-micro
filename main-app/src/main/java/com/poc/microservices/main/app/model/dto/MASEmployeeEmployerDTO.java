@@ -11,9 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-public class MASEmployeeDTO {
-    private Long id = null;
-    private String name;
-    private Set<MASEmployeeEmployerDTO> employerDTOS;
-    private Boolean active;
+public class MASEmployeeEmployerDTO {
+    private Long employerId;
+    private Set<MASEmployeeJobDTO> jobDTOS;
 }

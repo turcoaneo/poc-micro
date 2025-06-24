@@ -5,15 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class MASEmployeeDTO {
-    private Long id = null;
+public class MASPatchEmployeeDTO {
+    private Long id;
     private String name;
-    private Set<MASEmployeeEmployerDTO> employerDTOS;
     private Boolean active;
 }

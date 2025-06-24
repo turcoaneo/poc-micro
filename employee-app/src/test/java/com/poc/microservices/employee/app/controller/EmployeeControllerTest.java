@@ -41,9 +41,11 @@ class EmployeeControllerTest {
 
     @Test
     void testCreateEmployee() throws Exception {
-        EmployeeDTO dto = new EmployeeDTO(null, "Alice", 40, List.of(
-                new EmployerDTO(1L, "TechCorp", List.of(new JobDTO(101L, "Developer"), new JobDTO(102L, "Architect"))),
-                new EmployerDTO(2L, "DataLabs", List.of(new JobDTO(201L, "Analyst"), new JobDTO(202L, "ML Engineer")))
+        EmployeeDTO dto = new EmployeeDTO(null, "Alice", List.of(
+                new EmployerDTO(1L, "TechCorp", List.of(new JobDTO(101L, "Developer", 40), new JobDTO(102L,
+                        "Architect", 40))),
+                new EmployerDTO(2L, "DataLabs", List.of(new JobDTO(201L, "Analyst", 40), new JobDTO(202L, "ML " +
+                        "Engineer", 40)))
         ));
 
         Mockito.when(employeeService.createEmployee(Mockito.any(EmployeeDTO.class))).thenReturn(0L);
@@ -58,20 +60,19 @@ class EmployeeControllerTest {
 
     @Test
     void testGetEmployeeById() throws Exception {
-        EmployeeDTO dto = new EmployeeDTO(null, "Alice", 40, List.of());
+        EmployeeDTO dto = new EmployeeDTO(null, "Alice", List.of());
 
         Mockito.when(employeeService.getEmployeeById(1L)).thenReturn(Optional.of(dto));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/employees/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Alice"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.workingHours").value(40));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value("Alice"));
     }
 
     @Test
     void testGetEmployeesByName() throws Exception {
-        List<EmployeeDTO> employees = List.of(new EmployeeDTO(null, "Alice", 40, List.of()),
-                new EmployeeDTO(null, "Alice", 35, List.of()));
+        List<EmployeeDTO> employees = List.of(new EmployeeDTO(null, "Alice", List.of()),
+                new EmployeeDTO(null, "Alice", List.of()));
 
         Mockito.when(employeeService.getEmployeesByName("Alice")).thenReturn(employees);
 
@@ -85,8 +86,8 @@ class EmployeeControllerTest {
     @Test
     void testGetEmployeesByJobId() throws Exception {
         List<EmployeeDTO> employees = List.of(
-                new EmployeeDTO(null, "Alice", 40, List.of()),
-                new EmployeeDTO(null, "Bob", 35, List.of())
+                new EmployeeDTO(null, "Alice", List.of()),
+                new EmployeeDTO(null, "Bob", List.of())
         );
 
         Mockito.when(employeeService.getEmployeesByJobId(101L)).thenReturn(employees);
@@ -100,7 +101,7 @@ class EmployeeControllerTest {
 
     @Test
     void testGetEmployeesByEmployerId() throws Exception {
-        List<EmployeeDTO> employees = List.of(new EmployeeDTO(null, "Charlie", 42, List.of())
+        List<EmployeeDTO> employees = List.of(new EmployeeDTO(null, "Charlie", List.of())
         );
 
         Mockito.when(employeeService.getEmployeesByEmployerId(1L)).thenReturn(employees);

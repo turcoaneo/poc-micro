@@ -54,7 +54,8 @@ class EmployeeServiceTest {
     private EmployeeService employeeService;
 
     @BeforeEach
-    void setUp() {}
+    void setUp() {
+    }
 
     @Test
     void testReconcileEmployee_patchesExistingEmployerAndJobs() {
@@ -78,8 +79,8 @@ class EmployeeServiceTest {
         employee.setEmployeeId(employeeId);
         employee.setName("Test Employee");
         employee.setJobEmployers(new HashSet<>(Set.of(
-                new EmployeeJobEmployer(null, employee, existingJob1, existingEmployer),
-                new EmployeeJobEmployer(null, employee, existingJob2, existingEmployer)
+                new EmployeeJobEmployer(null, employee, existingJob1, existingEmployer, 0),
+                new EmployeeJobEmployer(null, employee, existingJob2, existingEmployer, 0)
         )));
 
         GrpcEmployerJobDto dto = new GrpcEmployerJobDto();
@@ -149,14 +150,16 @@ class EmployeeServiceTest {
 
     @Test
     void testCreateEmployeeWithEmployersAndJobs() {
-        EmployeeDTO dto = new EmployeeDTO(null, "Alice", 40, List.of(
-                new EmployerDTO(1L, "TechCorp", List.of(new JobDTO(101L, "Developer"), new JobDTO(102L, "Architect"))),
-                new EmployerDTO(2L, "DataLabs", List.of(new JobDTO(201L, "Analyst"), new JobDTO(202L, "ML Engineer")))
+        EmployeeDTO dto = new EmployeeDTO(null, "Alice", List.of(
+                new EmployerDTO(1L, "TechCorp", List.of(new JobDTO(101L, "Developer", 0),
+                        new JobDTO(102L, "Architect", 0))),
+                new EmployerDTO(2L, "DataLabs", List.of(new JobDTO(201L, "Analyst", 0),
+                        new JobDTO(202L, "ML Engineer", 0)))
         ));
 
         Employee mappedEntity = employeeMapper.toEntity(dto);
 
-        Employee entity = new Employee(0L, "Alice", 40, mappedEntity.getJobEmployers());
+        Employee entity = new Employee(0L, "Alice", mappedEntity.getJobEmployers());
 
         Mockito.when(employeeRepository.save(Mockito.any(Employee.class))).thenReturn(entity);
 
@@ -167,8 +170,8 @@ class EmployeeServiceTest {
 
     @Test
     void testGetEmployeesByJobId() {
-        List<Employee> employees = List.of(new Employee(null, "Alice", 40, new HashSet<>()),
-                new Employee(null, "Bob", 35, new HashSet<>()));
+        List<Employee> employees = List.of(new Employee(null, "Alice", new HashSet<>()),
+                new Employee(null, "Bob", new HashSet<>()));
 
         Mockito.when(employeeJobEmployerRepository.findEmployeesByJobId(101L)).thenReturn(employees);
 
@@ -181,7 +184,7 @@ class EmployeeServiceTest {
 
     @Test
     void testGetEmployeesByEmployerId() {
-        List<Employee> employees = List.of(new Employee(null, "Charlie", 42, new HashSet<>()));
+        List<Employee> employees = List.of(new Employee(null, "Charlie", new HashSet<>()));
 
         Mockito.when(employeeJobEmployerRepository.findEmployeesByEmployerId(1L)).thenReturn(employees);
 

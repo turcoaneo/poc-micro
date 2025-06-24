@@ -28,8 +28,6 @@ public class Employee {
 
     private String name;
 
-    private Integer workingHours;
-
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private Set<EmployeeJobEmployer> jobEmployers = new HashSet<>(); // New mapping
 }

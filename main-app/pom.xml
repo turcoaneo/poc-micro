@@ -170,6 +170,8 @@
                 <version>5.10.0</version>
                 <executions>
                     <execution>
+                        <id>generate-graphql-code</id>
+                        <phase>generate-sources</phase> <!-- makes sure it runs early -->
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -177,7 +179,7 @@
                 </executions>
                 <configuration>
                     <graphqlSchemaPaths>
-                        <param>src/main/resources/graphql/schema.graphqls</param>
+                        <param>${basedir}/src/main/resources/graphql/schema.graphqls</param>
                     </graphqlSchemaPaths>
                     <outputDir>${project.build.directory}/generated-sources/graphql</outputDir>
                     <packageName>com.poc.microservice.main.app.generated.graphql</packageName>

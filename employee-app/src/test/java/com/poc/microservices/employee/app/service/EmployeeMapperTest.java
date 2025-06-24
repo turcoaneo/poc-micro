@@ -26,21 +26,22 @@ class EmployeeMapperTest {
 
     @Test
     void testToEntity() {
-        EmployeeDTO dto = new EmployeeDTO(null, "Alice", 40, List.of(
-                new EmployerDTO(1L, "TechCorp", List.of(new JobDTO(101L, "Developer"), new JobDTO(102L, "Architect"))),
-                new EmployerDTO(2L, "DataLabs", List.of(new JobDTO(201L, "Analyst"), new JobDTO(202L, "ML Engineer")))
+        EmployeeDTO dto = new EmployeeDTO(null, "Alice", List.of(
+                new EmployerDTO(1L, "TechCorp", List.of(new JobDTO(101L, "Developer", 40),
+                        new JobDTO(102L, "Architect", 40))),
+                new EmployerDTO(2L, "DataLabs", List.of(new JobDTO(201L, "Analyst", 40),
+                        new JobDTO(202L, "ML Engineer", 40)))
         ));
 
         Employee entity = employeeMapper.toEntity(dto);
 
         Assertions.assertEquals("Alice", entity.getName());
-        Assertions.assertEquals(40, entity.getWorkingHours());
         Assertions.assertEquals(4, entity.getJobEmployers().size()); // Each job-employer pair should be mapped separately
     }
 
     @Test
     void testToDTO() {
-        Employee employee = new Employee(null, "Alice", 40, new HashSet<>());
+        Employee employee = new Employee(null, "Alice", new HashSet<>());
 
         Set<EmployeeJobEmployer> jobEmployers = getEmployeeJobEmployers(employee);
 
@@ -49,7 +50,6 @@ class EmployeeMapperTest {
         EmployeeDTO dto = employeeMapper.toDTO(employee);
 
         Assertions.assertEquals("Alice", dto.getName());
-        Assertions.assertEquals(40, dto.getWorkingHours());
         Assertions.assertEquals(2, dto.getEmployers().size()); // Should have two employers
         Assertions.assertEquals(2, dto.getEmployers().getFirst().getJobs().size()); // Should have two jobs at first
         // employer
@@ -65,10 +65,10 @@ class EmployeeMapperTest {
         Job mlEngineerJob = new Job(202L, 202L, "ML Engineer", new HashSet<>());
 
         return Set.of(
-                new EmployeeJobEmployer(null, employee, devJob, employer1),
-                new EmployeeJobEmployer(null, employee, archJob, employer1),
-                new EmployeeJobEmployer(null, employee, analystJob, employer2),
-                new EmployeeJobEmployer(null, employee, mlEngineerJob, employer2)
+                new EmployeeJobEmployer(null, employee, devJob, employer1, 0),
+                new EmployeeJobEmployer(null, employee, archJob, employer1, 20),
+                new EmployeeJobEmployer(null, employee, analystJob, employer2, 0),
+                new EmployeeJobEmployer(null, employee, mlEngineerJob, employer2, 30)
         );
     }
 }
