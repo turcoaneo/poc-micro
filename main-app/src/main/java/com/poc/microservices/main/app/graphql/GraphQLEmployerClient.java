@@ -20,8 +20,8 @@ public class GraphQLEmployerClient {
         this.graphQLEmployerGateway = graphQLEmployerGateway;
     }
 
-    public Employer fetchEmployerById(Long id) {
-        EmployerQueryRequest request = EmployerQueryRequest.builder().setId(id).build();
+    public Employer fetchEmployerById(Long id, Long employeeId) {
+        EmployerQueryRequest request = EmployerQueryRequest.builder().setId(id).setEmployeeId(employeeId).build();
 
         EmployerResponseProjection projection = new EmployerResponseProjection()
                 .employerId()
@@ -34,6 +34,7 @@ public class GraphQLEmployerClient {
                                         new EmployeeResponseProjection()
                                                 .employeeId()
                                                 .name()
+                                                .hours()
                                 )
                 );
 

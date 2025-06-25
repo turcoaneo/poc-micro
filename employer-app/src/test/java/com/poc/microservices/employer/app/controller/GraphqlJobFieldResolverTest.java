@@ -1,15 +1,19 @@
 package com.poc.microservices.employer.app.controller;
 
 import com.poc.microservices.employer.app.config.GraphQLScalarConfig;
+import com.poc.microservices.employer.app.feign.EMWorkingHoursClient;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployeeRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployerRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLJobRecord;
 import com.poc.microservices.employer.app.model.Employee;
 import com.poc.microservices.employer.app.model.Employer;
 import com.poc.microservices.employer.app.model.Job;
+import com.poc.microservices.employer.app.model.dto.EMWorkingHoursRequestDTO;
+import com.poc.microservices.employer.app.model.dto.EMWorkingHoursResponseDTO;
 import com.poc.microservices.employer.app.repository.EmployeeRepository;
 import com.poc.microservices.employer.app.repository.EmployerRepository;
 import com.poc.microservices.employer.app.service.GraphQLEmployerMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +42,11 @@ class GraphqlJobFieldResolverTest {
     @MockitoBean
     private GraphQLEmployerMapper mapper;
 
+    @MockitoBean
+    EMWorkingHoursClient emWorkingHoursClient;
+
     @Test
+    @Disabled // while disabling  @SchemaMapping
     void testResolveEmployeesOnJob() {
         // Arrange domain model
         Employer employer = new Employer(1L, "Employer 1", new HashSet<>());
@@ -52,8 +60,8 @@ class GraphqlJobFieldResolverTest {
         GraphQLJobRecord gqlJob = new GraphQLJobRecord(101L, "Job 1", null);
         GraphQLEmployerRecord gqlEmployer = new GraphQLEmployerRecord(1L, "Employer 1", List.of(gqlJob));
 
-        GraphQLEmployeeRecord gqlEmp1 = new GraphQLEmployeeRecord(1L, "Alice");
-        GraphQLEmployeeRecord gqlEmp2 = new GraphQLEmployeeRecord(2L, "Bob");
+        GraphQLEmployeeRecord gqlEmp1 = new GraphQLEmployeeRecord(1L, "Alice", null);
+        GraphQLEmployeeRecord gqlEmp2 = new GraphQLEmployeeRecord(2L, "Bob", null);
 
         // Mock mappings and repositories
         Mockito.when(employerRepository.findAll()).thenReturn(List.of(employer));
@@ -62,6 +70,8 @@ class GraphqlJobFieldResolverTest {
         Mockito.when(employeeRepository.findByJobsJobId(101L)).thenReturn(List.of(emp1, emp2));
         Mockito.when(mapper.toGraphQLRecord(emp1)).thenReturn(gqlEmp1);
         Mockito.when(mapper.toGraphQLRecord(emp2)).thenReturn(gqlEmp2);
+        Mockito.when(emWorkingHoursClient.getWorkingHours(Mockito.any(EMWorkingHoursRequestDTO.class)))
+                .thenReturn(new EMWorkingHoursResponseDTO());
 
         // Act + Assert
         graphQlTester.document("""

@@ -40,7 +40,7 @@ class GraphQLEmployerClientTest {
                 .thenReturn(mockResponse);
 
         // when
-        Employer actual = graphQLEmployerClient.fetchEmployerById(42L);
+        Employer actual = graphQLEmployerClient.fetchEmployerById(42L, 1L);
 
         // then
         Assertions.assertNotNull(actual);
@@ -53,7 +53,7 @@ class GraphQLEmployerClientTest {
         Mockito.when(gateway.execute(Mockito.any(GraphQLRequest.class))).thenReturn(null);
 
         // when
-        Employer actual = graphQLEmployerClient.fetchEmployerById(42L);
+        Employer actual = graphQLEmployerClient.fetchEmployerById(42L, 1L);
 
         // then
         Assertions.assertNull(actual);

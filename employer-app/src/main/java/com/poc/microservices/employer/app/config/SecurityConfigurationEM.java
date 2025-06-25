@@ -28,6 +28,7 @@ public class SecurityConfigurationEM {
                         .requestMatchers("/em-users/login", "/em-users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/employers/**").permitAll()
                         .requestMatchers("/graphql", "/em/graphql", "/graphiql/**").permitAll()
+                        .requestMatchers("/working-hours").permitAll()
                         .anyRequest().authenticated()
                 );
 

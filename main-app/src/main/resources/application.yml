@@ -16,7 +16,7 @@ spring:
       matching-strategy: ant_path_matcher  # Ensures correct path mapping
 
 security:
-  excludedEndpoints: "/mas/mas-users/login,/mas/mas-users/register"
+  excludedEndpoints: "/mas/mas-users/login,/mas/mas-users/register,/graphql/employers"
 
 em:
   graphql:

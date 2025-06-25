@@ -48,7 +48,7 @@ spring:
 
 eem:
   scheduler:
-    cron: "0 */1 * * * *"
+    cron: "0 */20 * * * *"
 #    enabled: false
 
 logging:

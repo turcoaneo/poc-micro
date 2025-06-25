@@ -49,6 +49,7 @@ public class GraphQLMASMapper {
         GraphQLMASEmployeeDTO dto = new GraphQLMASEmployeeDTO();
         dto.setEmployeeId(employee.getEmployeeId());
         dto.setName(employee.getName());
+        dto.setHours(employee.getHours());
         return dto;
     }
 }

@@ -18,7 +18,7 @@ public class GraphQLMASService {
     }
 
     public GraphQLMASEmployerDTO getEmployerById(Long id) {
-        Employer employer = gqlClient.fetchEmployerById(id);
+        Employer employer = gqlClient.fetchEmployerById(id, 1L);
         return mapper.toDto(employer);
     }
 }
