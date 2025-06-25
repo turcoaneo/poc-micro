@@ -6,7 +6,9 @@ import com.poc.microservices.employee.app.model.Employer;
 import com.poc.microservices.employee.app.model.Job;
 import com.poc.microservices.employee.app.model.dto.EEMGenericResponseDTO;
 import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
+import com.poc.microservices.employee.app.model.dto.EmployeePatchDTO;
 import com.poc.microservices.employee.app.model.dto.EmployerDTO;
+import com.poc.microservices.employee.app.model.dto.EmployerEmployeeAssignmentPatchDTO;
 import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDto;
 import com.poc.microservices.employee.app.repository.EmployeeJobEmployerRepository;
 import com.poc.microservices.employee.app.repository.EmployeeRepository;
@@ -36,9 +38,41 @@ public class EmployeeService {
     private final EmployerRepository employerRepository;
     private final EmployeeJobEmployerRepository employeeJobEmployerRepository;
 
+    public void patchEmployeeAssignment(EmployerEmployeeAssignmentPatchDTO dto) {
+        Long employerId = dto.getEmployerId();
+        EmployeePatchDTO empPatch = dto.getEmployee();
+        Map<Long, Integer> jobMap = dto.getJobIdWorkingHoursMap();
+
+        // Load employee
+        Employee employee = employeeRepository.findById(empPatch.getId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        // Patch name and active
+        if (empPatch.getName() != null) employee.setName(empPatch.getName());
+
+        // Update working hours
+        Set<EmployeeJobEmployer> assignments = employee.getJobEmployers().stream()
+                .filter(eje -> eje.getEmployer().getEmployerId().equals(employerId))
+                .collect(Collectors.toSet());
+
+        if (jobMap == null || jobMap.isEmpty()) {
+            // Patch all jobs for that employer
+            assignments.forEach(eje -> eje.setWorkingHours(eje.getWorkingHours() != null ? eje.getWorkingHours() : 0));
+        } else {
+            // Patch specific jobs
+            assignments.forEach(eje -> {
+                if (jobMap.containsKey(eje.getJob().getJobId())) {
+                    eje.setWorkingHours(jobMap.get(eje.getJob().getJobId()));
+                }
+            });
+        }
+
+        employeeRepository.save(employee); // cascade will save EJE too
+    }
+
     public Long createEmployee(EmployeeDTO dto) {
         Employee employee = employeeMapper.toEntity(dto);
-        Set<EmployeeJobEmployer> jobEmployers = getEmployeeJobEmployers(dto, employee);
+        Set<EmployeeJobEmployer> jobEmployers = setEmployeeJobEmployers(dto, employee);
         employee.setJobEmployers(new HashSet<>());
         Employee saved = employeeRepository.save(employee);
         Long employeeId = saved.getEmployeeId();
@@ -122,7 +156,7 @@ public class EmployeeService {
                         && m.getEmployer().getLocalEmployerId().equals(dto.getEmployerId()));
 
         if (!mappingExists) {
-            EmployeeJobEmployer mapping = new EmployeeJobEmployer(null, employee, job, employer);
+            EmployeeJobEmployer mapping = new EmployeeJobEmployer(null, employee, job, employer, 0);
 
             // Bidirectional links (needed only on first patch / new mapping)
             employee.getJobEmployers().add(mapping);
@@ -156,7 +190,7 @@ public class EmployeeService {
                 });
     }
 
-    private Set<EmployeeJobEmployer> getEmployeeJobEmployers(EmployeeDTO dto, Employee employee) {
+    private Set<EmployeeJobEmployer> setEmployeeJobEmployers(EmployeeDTO dto, Employee employee) {
         List<EmployerDTO> employers = dto.getEmployers();
         if (CollectionUtils.isEmpty(employers)) return new HashSet<>();
         Set<EmployeeJobEmployer> jobEmployers = new HashSet<>();
@@ -166,7 +200,7 @@ public class EmployeeService {
             employerDTO.getJobs().forEach(jobDTO -> {
                 Job job = jobRepository.save(new Job(null, jobDTO.getId(), jobDTO.getTitle(), new HashSet<>()));
                 jobRepository.save(job);
-                EmployeeJobEmployer jobEmployer = new EmployeeJobEmployer(null, employee, job, employer);
+                EmployeeJobEmployer jobEmployer = new EmployeeJobEmployer(null, employee, job, employer ,0);
                 jobEmployers.add(jobEmployer);
             });
         });

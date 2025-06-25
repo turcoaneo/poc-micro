@@ -14,6 +14,5 @@ import java.util.List;
 public class EmployeeDTO {
     private Long id = null;
     private String name;
-    private Integer workingHours;
     private List<EmployerDTO> employers;
 }

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -12,6 +14,6 @@ import lombok.Setter;
 public class MASEmployeeDTO {
     private Long id = null;
     private String name;
-    private Integer workingHours;
+    private Set<MASEmployeeEmployerDTO> employerDTOS;
     private Boolean active;
 }

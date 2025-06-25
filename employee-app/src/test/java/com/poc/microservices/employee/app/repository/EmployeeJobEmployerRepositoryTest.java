@@ -47,8 +47,8 @@ class EmployeeJobEmployerRepositoryTest {
         Job job2 = new Job(null, 102L, "Initial Job 2", new HashSet<>());
         jobRepository.saveAll(Arrays.asList(job1, job2));
 
-        EmployeeJobEmployer eje1 = new EmployeeJobEmployer(null, employee, job1, employer);
-        EmployeeJobEmployer eje2 = new EmployeeJobEmployer(null, employee, job2, employer);
+        EmployeeJobEmployer eje1 = new EmployeeJobEmployer(null, employee, job1, employer, 0);
+        EmployeeJobEmployer eje2 = new EmployeeJobEmployer(null, employee, job2, employer, 0);
         employee.getJobEmployers().addAll(List.of(eje1, eje2));
         employer.getEmployeesJobs().addAll(List.of(eje1, eje2));
         job1.getJobEmployees().add(eje1);
@@ -88,22 +88,21 @@ class EmployeeJobEmployerRepositoryTest {
     }
 
 
-
     @Test
     void testFindEmployeesByJobAndEmployer() {
         Employer employer1 = employerRepository.save(new Employer(null, 1L, "TechCorp", new HashSet<>()));
-        Employer employer2 = employerRepository.save(new Employer(null, 2L,"DataLabs", new HashSet<>()));
+        Employer employer2 = employerRepository.save(new Employer(null, 2L, "DataLabs", new HashSet<>()));
 
-        Job devJob = jobRepository.save(new Job(null, 11L,"Developer", new HashSet<>()));
-        Job dataJob = jobRepository.save(new Job(null, 12L,"Data Scientist", new HashSet<>()));
+        Job devJob = jobRepository.save(new Job(null, 11L, "Developer", new HashSet<>()));
+        Job dataJob = jobRepository.save(new Job(null, 12L, "Data Scientist", new HashSet<>()));
 
-        Employee alice = employeeRepository.save(new Employee(null, "Alice", 40, new HashSet<>()));
-        Employee bob = employeeRepository.save(new Employee(null, "Bob", 35, new HashSet<>()));
+        Employee alice = employeeRepository.save(new Employee(null, "Alice", new HashSet<>()));
+        Employee bob = employeeRepository.save(new Employee(null, "Bob", new HashSet<>()));
 
         employeeJobEmployerRepository.saveAll(List.of(
-                new EmployeeJobEmployer(null, alice, devJob, employer1),
-                new EmployeeJobEmployer(null, bob, devJob, employer1),
-                new EmployeeJobEmployer(null, bob, dataJob, employer2) // Bob works at DataLabs too
+                new EmployeeJobEmployer(null, alice, devJob, employer1, 0),
+                new EmployeeJobEmployer(null, bob, devJob, employer1, 0),
+                new EmployeeJobEmployer(null, bob, dataJob, employer2, 0) // Bob works at DataLabs too
         ));
 
         List<Employee> employeesAtTechCorpDev = employeeJobEmployerRepository.findEmployeesByJobAndEmployer(devJob.getJobId(), employer1.getEmployerId());
@@ -121,17 +120,17 @@ class EmployeeJobEmployerRepositoryTest {
 
     @Test
     void testFindJobsByEmployee() {
-        Employer employer1 = employerRepository.save(new Employer(null, 1L,"TechCorp", new HashSet<>()));
-        Employer employer2 = employerRepository.save(new Employer(null, 2L,"DataLabs", new HashSet<>()));
+        Employer employer1 = employerRepository.save(new Employer(null, 1L, "TechCorp", new HashSet<>()));
+        Employer employer2 = employerRepository.save(new Employer(null, 2L, "DataLabs", new HashSet<>()));
 
-        Job devJob = jobRepository.save(new Job(null, 11L,"Developer", new HashSet<>()));
-        Job dataJob = jobRepository.save(new Job(null, 12L,"Data Scientist", new HashSet<>()));
+        Job devJob = jobRepository.save(new Job(null, 11L, "Developer", new HashSet<>()));
+        Job dataJob = jobRepository.save(new Job(null, 12L, "Data Scientist", new HashSet<>()));
 
-        Employee bob = employeeRepository.save(new Employee(null, "Bob", 35, new HashSet<>()));
+        Employee bob = employeeRepository.save(new Employee(null, "Bob", new HashSet<>()));
 
         employeeJobEmployerRepository.saveAll(List.of(
-                new EmployeeJobEmployer(null, bob, devJob, employer1),
-                new EmployeeJobEmployer(null, bob, dataJob, employer2) // Bob works at DataLabs too
+                new EmployeeJobEmployer(null, bob, devJob, employer1, 0),
+                new EmployeeJobEmployer(null, bob, dataJob, employer2, 0) // Bob works at DataLabs too
         ));
 
         List<Job> bobJobs = employeeJobEmployerRepository.findJobsByEmployeeId(bob.getEmployeeId());

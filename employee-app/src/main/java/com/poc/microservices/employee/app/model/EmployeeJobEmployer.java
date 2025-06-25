@@ -35,4 +35,6 @@ public class EmployeeJobEmployer {
     @ManyToOne
     @JoinColumn(name = "employer_id", nullable = false)
     private Employer employer;
+
+    private Integer workingHours;
 }

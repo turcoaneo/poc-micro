@@ -12,4 +12,5 @@ import lombok.Setter;
 public class JobDTO {
     private Long id;
     private String title;
+    private Integer workingHours;
 }

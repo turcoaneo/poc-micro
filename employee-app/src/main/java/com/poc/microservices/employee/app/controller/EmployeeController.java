@@ -4,6 +4,7 @@ import com.poc.microservices.employee.app.aop.EmployeeAuthorize;
 import com.poc.microservices.employee.app.model.EEMUserRole;
 import com.poc.microservices.employee.app.model.dto.EEMGenericResponseDTO;
 import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
+import com.poc.microservices.employee.app.model.dto.EmployerEmployeeAssignmentPatchDTO;
 import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDto;
 import com.poc.microservices.employee.app.service.EmployeeService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -31,12 +32,20 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
+    @PatchMapping
+    public ResponseEntity<EEMGenericResponseDTO> patchEmployerEmployeeAssignment(@RequestBody EmployerEmployeeAssignmentPatchDTO dto) {
+        employeeService.patchEmployeeAssignment(dto);
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(new EEMGenericResponseDTO(dto.getEmployee().getId(), "Employee successfully patched"));
+    }
+
     @DeleteMapping("/{employeeId}")
     @EmployeeAuthorize({EEMUserRole.ADMIN})
     @SecurityRequirement(name = "BearerAuth")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable Long employeeId) {
+    public ResponseEntity<EEMGenericResponseDTO> deleteEmployee(@PathVariable Long employeeId) {
         employeeService.deleteEmployee(employeeId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED)
+                .body(new EEMGenericResponseDTO(employeeId, "Employee successfully deleted"));
     }
 
     @PostMapping

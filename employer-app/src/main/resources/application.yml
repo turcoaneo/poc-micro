@@ -4,6 +4,10 @@ grpc:
 server:
   port: 8093
 spring:
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql
   config:
     import: optional:configserver:http://localhost:8888
   application:

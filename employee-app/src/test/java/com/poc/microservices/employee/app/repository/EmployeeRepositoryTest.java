@@ -85,11 +85,11 @@ class EmployeeRepositoryTest {
         Job devJob = jobRepository.save(new Job(null, 11L,"Developer", new HashSet<>()));
         Job dataJob = jobRepository.save(new Job(null, 12L,"Data Scientist", new HashSet<>()));
 
-        Employee alice = employeeRepository.save(new Employee(null, "Alice", 40, new HashSet<>()));
+        Employee alice = employeeRepository.save(new Employee(null, "Alice", new HashSet<>()));
 
         employeeJobEmployerRepository.saveAll(List.of(
-                new EmployeeJobEmployer(null, alice, devJob, employer1),
-                new EmployeeJobEmployer(null, alice, dataJob, employer2)
+                new EmployeeJobEmployer(null, alice, devJob, employer1, 0),
+                new EmployeeJobEmployer(null, alice, dataJob, employer2, 0)
         ));
         return new Entities(employer1, employer2, devJob, dataJob, alice);
     }

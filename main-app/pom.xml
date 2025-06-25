@@ -91,6 +91,27 @@
             <artifactId>spring-cloud-starter-config</artifactId>
             <version>4.3.0</version>
         </dependency>
+
+        <!-- GraphQL -->
+        <dependency>
+            <groupId>io.github.kobylynskyi</groupId>
+            <artifactId>graphql-java-codegen</artifactId>
+            <version>5.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.graphql.dgs</groupId>
+            <artifactId>graphql-dgs-client</artifactId>
+            <version>10.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webflux</artifactId>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -140,6 +161,32 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <!-- GraphQL -->
+            <plugin>
+                <groupId>io.github.kobylynskyi</groupId>
+                <artifactId>graphql-codegen-maven-plugin</artifactId>
+                <version>5.10.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-graphql-code</id>
+                        <phase>generate-sources</phase> <!-- makes sure it runs early -->
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <graphqlSchemaPaths>
+                        <param>${basedir}/src/main/resources/graphql/schema.graphqls</param>
+                    </graphqlSchemaPaths>
+                    <outputDir>${project.build.directory}/generated-sources/graphql</outputDir>
+                    <packageName>com.poc.microservice.main.app.generated.graphql</packageName>
+                    <generateClient>true</generateClient>
+                    <customTypesMapping>
+                        <Long>java.lang.Long</Long>
+                    </customTypesMapping>
                 </configuration>
             </plugin>
         </plugins>

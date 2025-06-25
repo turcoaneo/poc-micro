@@ -7,6 +7,7 @@ import com.poc.microservices.main.app.model.dto.MASEmployerDTO;
 import com.poc.microservices.main.app.model.dto.MASEmployerEmployeeAssignmentPatchDTO;
 import com.poc.microservices.main.app.model.dto.MASGenericResponseDTO;
 import com.poc.microservices.main.app.model.dto.MASJobDTO;
+import com.poc.microservices.main.app.model.dto.MASPatchEmployeeDTO;
 import com.poc.microservices.main.app.model.dto.UserDTO;
 import com.poc.microservices.main.app.util.TestMASHelper;
 import feign.FeignException;
@@ -29,6 +30,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 @WebMvcTest(MASGatewayController.class)
@@ -122,7 +124,7 @@ public class MASGatewayControllerTest {
 
     @Test
     void testCreateEmployee_Unauthorized() throws Exception {
-        MASEmployeeDTO dto = new MASEmployeeDTO(null, "John", 20, false);
+        MASEmployeeDTO dto = new MASEmployeeDTO(null, "John", new HashSet<>(), false);
         MASGenericResponseDTO response = new MASGenericResponseDTO(null, "Employee not created");
 
         Mockito.when(masGatewayClient.createEmployee(Mockito.any(MASEmployeeDTO.class)))
@@ -142,7 +144,7 @@ public class MASGatewayControllerTest {
         MASEmployerEmployeeAssignmentPatchDTO patchDTO = new MASEmployerEmployeeAssignmentPatchDTO();
         patchDTO.setEmployerId(1L);
 
-        MASEmployeeDTO employeeDTO = new MASEmployeeDTO();
+        MASPatchEmployeeDTO employeeDTO = new MASPatchEmployeeDTO();
         employeeDTO.setId(100L);
         employeeDTO.setName("Alice");
         employeeDTO.setActive(true);

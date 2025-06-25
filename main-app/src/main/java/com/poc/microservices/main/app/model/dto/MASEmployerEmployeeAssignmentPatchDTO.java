@@ -13,6 +13,6 @@ import java.util.List;
 @Setter
 public class MASEmployerEmployeeAssignmentPatchDTO {
     private Long employerId;
-    private MASEmployeeDTO employee;
+    private MASPatchEmployeeDTO employee;
     private List<Long> jobIds;
 }

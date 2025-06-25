@@ -21,7 +21,6 @@ public class EmployeeMapper {
     public Employee toEntity(EmployeeDTO dto) {
         Employee employee = new Employee();
         employee.setName(dto.getName());
-        employee.setWorkingHours(dto.getWorkingHours());
 
         Set<EmployeeJobEmployer> jobEmployers = new HashSet<>();
 
@@ -31,7 +30,7 @@ public class EmployeeMapper {
 
                 for (JobDTO jobDTO : employerDTO.getJobs()) {
                     Job job = new Job(null, jobDTO.getId(), jobDTO.getTitle(), new HashSet<>());
-                    jobEmployers.add(new EmployeeJobEmployer(null, employee, job, employer));
+                    jobEmployers.add(new EmployeeJobEmployer(null, employee, job, employer, jobDTO.getWorkingHours()));
                 }
             }
         }
@@ -44,7 +43,6 @@ public class EmployeeMapper {
         EmployeeDTO dto = new EmployeeDTO();
         dto.setName(employee.getName());
         dto.setId(employee.getEmployeeId());
-        dto.setWorkingHours(employee.getWorkingHours());
 
         Map<Long, EmployerDTO> employerMap = new HashMap<>();
 
@@ -54,7 +52,7 @@ public class EmployeeMapper {
 
             employerMap.computeIfAbsent(employer.getEmployerId(), id ->
                     new EmployerDTO(id, employer.getName(),
-                            new ArrayList<>())).getJobs().add(new JobDTO(job.getJobId(), job.getTitle()));
+                            new ArrayList<>())).getJobs().add(new JobDTO(job.getJobId(), job.getTitle(), jobEmployer.getWorkingHours()));
         }
 
         dto.setEmployers(new ArrayList<>(employerMap.values()));
