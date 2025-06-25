@@ -27,8 +27,7 @@ public class SecurityConfigurationEM {
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers("/em-users/login", "/em-users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/employers/**").permitAll()
-                        .requestMatchers("/graphql", "/em/graphql", "/graphiql/**").permitAll()
-                        .requestMatchers("/working-hours").permitAll()
+                        .requestMatchers("/graphql", "/em/graphql", "/graphiql/**").permitAll()// graphi browser test
                         .anyRequest().authenticated()
                 );
 

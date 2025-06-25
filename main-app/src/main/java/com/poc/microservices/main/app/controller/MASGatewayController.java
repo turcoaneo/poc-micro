@@ -13,6 +13,7 @@ import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+@Tag(name = "MAS API Gateway Management", description = "Using API Gateway")
 @RestController
 @RequestMapping("/mas-gateway")
 public class MASGatewayController {
@@ -38,7 +41,7 @@ public class MASGatewayController {
         this.masGatewayClient = MASGatewayClient;
     }
 
-    @Operation(summary = "Fetch employer data from UAM")
+    @Operation(summary = "Fetch test employer role data from UAM")
     @ApiResponse(responseCode = "200", description = "Employer data retrieved successfully")
     @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/test-employer-role")
@@ -55,7 +58,7 @@ public class MASGatewayController {
         }
     }
 
-    @Operation(summary = "Fetch user from UAM")
+    @Operation(summary = "Fetch user role from UAM")
     @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/fetch-user-role/{username}")
     public ResponseEntity<MASResponse<UserDTO>> fetchUser(@PathVariable String username) {
@@ -72,6 +75,7 @@ public class MASGatewayController {
     }
 
     @PostMapping("/create-employer")
+    @Operation(summary = "Create employer in EM")
     @MainAppAuthorize({MASUserRole.ADMIN})
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<MASGenericResponseDTO> createEmployer(@RequestBody MASEmployerDTO employerDTO) {
@@ -80,6 +84,7 @@ public class MASGatewayController {
     }
 
     @PostMapping("/create-employee")
+    @Operation(summary = "Create employee in EEM")
     @MainAppAuthorize({MASUserRole.ADMIN, MASUserRole.EMPLOYER})
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<MASGenericResponseDTO> createEmployee(@RequestBody MASEmployeeDTO employeeDTO) {
@@ -89,6 +94,7 @@ public class MASGatewayController {
 
     @PatchMapping("/assign-employee")
     @MainAppAuthorize({MASUserRole.ADMIN, MASUserRole.EMPLOYER})
+    @Operation(summary = "Assign Employee to Jobs in EM")
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<MASGenericResponseDTO> assignEmployeeToJobs(
             @RequestBody MASEmployerEmployeeAssignmentPatchDTO patchDTO) {

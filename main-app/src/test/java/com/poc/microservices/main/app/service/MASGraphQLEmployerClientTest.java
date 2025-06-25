@@ -3,8 +3,8 @@ package com.poc.microservices.main.app.service;
 import com.kobylynskyi.graphql.codegen.model.graphql.GraphQLRequest;
 import com.netflix.graphql.dgs.client.GraphQLResponse;
 import com.poc.microservice.main.app.generated.graphql.Employer;
-import com.poc.microservices.main.app.graphql.GraphQLEmployerClient;
-import com.poc.microservices.main.app.graphql.GraphQLEmployerGateway;
+import com.poc.microservices.main.app.graphql.MASGraphQLEmployerClient;
+import com.poc.microservices.main.app.graphql.MASGraphQLEmployerGateway;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,13 +16,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 @ExtendWith(MockitoExtension.class)
-class GraphQLEmployerClientTest {
+class MASGraphQLEmployerClientTest {
 
     @Mock
-    private GraphQLEmployerGateway gateway;
+    private MASGraphQLEmployerGateway gateway;
 
     @InjectMocks
-    private GraphQLEmployerClient graphQLEmployerClient;
+    private MASGraphQLEmployerClient MASGraphQLEmployerClient;
 
     @Test
     void shouldReturnEmployerWhenResponseIsValid() {
@@ -40,7 +40,7 @@ class GraphQLEmployerClientTest {
                 .thenReturn(mockResponse);
 
         // when
-        Employer actual = graphQLEmployerClient.fetchEmployerById(42L);
+        Employer actual = MASGraphQLEmployerClient.fetchEmployerById(42L);
 
         // then
         Assertions.assertNotNull(actual);
@@ -53,7 +53,7 @@ class GraphQLEmployerClientTest {
         Mockito.when(gateway.execute(Mockito.any(GraphQLRequest.class))).thenReturn(null);
 
         // when
-        Employer actual = graphQLEmployerClient.fetchEmployerById(42L);
+        Employer actual = MASGraphQLEmployerClient.fetchEmployerById(42L);
 
         // then
         Assertions.assertNull(actual);

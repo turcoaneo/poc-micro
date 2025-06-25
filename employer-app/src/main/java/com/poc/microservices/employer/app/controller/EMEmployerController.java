@@ -28,11 +28,11 @@ import java.util.Set;
 @Tag(name = "Employer Management", description = "Employer API")
 @RestController
 @RequestMapping("/api/employers")
-public class EmployerController {
+public class EMEmployerController {
 
     private final EmployerService employerService;
 
-    public EmployerController(EmployerService employerService) {
+    public EMEmployerController(EmployerService employerService) {
         this.employerService = employerService;
     }
 

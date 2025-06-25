@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class GraphQLEmployerClient {
+public class MASGraphQLEmployerClient {
 
-    private final GraphQLEmployerGateway graphQLEmployerGateway;
+    private final MASGraphQLEmployerGateway MASGraphQLEmployerGateway;
 
     @Autowired
-    public GraphQLEmployerClient(GraphQLEmployerGateway graphQLEmployerGateway) {
-        this.graphQLEmployerGateway = graphQLEmployerGateway;
+    public MASGraphQLEmployerClient(MASGraphQLEmployerGateway MASGraphQLEmployerGateway) {
+        this.MASGraphQLEmployerGateway = MASGraphQLEmployerGateway;
     }
 
     public Employer fetchEmployerById(Long id) {
@@ -44,7 +44,7 @@ public class GraphQLEmployerClient {
                 );
 
         GraphQLRequest gqlRequest = new GraphQLRequest(request, projection);
-        GraphQLResponse response = graphQLEmployerGateway.execute(gqlRequest);
+        GraphQLResponse response = MASGraphQLEmployerGateway.execute(gqlRequest);
 
         if (response != null) {
             return response.extractValueAsObject("employer", Employer.class);
@@ -71,7 +71,7 @@ public class GraphQLEmployerClient {
                 );
 
         GraphQLRequest gqlRequest = new GraphQLRequest(request, projection);
-        GraphQLResponse response = graphQLEmployerGateway.execute(gqlRequest);
+        GraphQLResponse response = MASGraphQLEmployerGateway.execute(gqlRequest);
 
         if (response != null) {
             Object raw = response.getData().get("employers");

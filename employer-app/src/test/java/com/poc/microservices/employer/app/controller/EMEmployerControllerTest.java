@@ -29,12 +29,12 @@ import java.nio.file.Path;
 import java.util.Set;
 
 
-@WebMvcTest(controllers = EmployerController.class)
-class EmployerControllerTest {
+@WebMvcTest(controllers = EMEmployerController.class)
+class EMEmployerControllerTest {
 
     private MockMvc mockMvc;
     @Autowired
-    private EmployerController employerController;
+    private EMEmployerController EMEmployerController;
 
     @MockitoBean
     private EmployerService employerService;
@@ -54,7 +54,7 @@ class EmployerControllerTest {
         employer.setEmployerId(1L);
         employer.setName("TestCorp");
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(employerController)
+                .standaloneSetup(EMEmployerController)
                 .build();
         System.setProperty("SECRET_KEY", "someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits");
     }
