@@ -62,7 +62,6 @@ class GraphqlEmployerFieldResolverTest {
         Mockito.when(mapper.toGraphQLRecord(job1)).thenReturn(gqlJob1);
         Mockito.when(mapper.toGraphQLRecord(job2)).thenReturn(gqlJob2);
 
-        Mockito.when(mockContext.getEmployeeId()).thenReturn(null);
         Mockito.when(mockContext.getEmployerId()).thenReturn(null);
 
         // Query execution

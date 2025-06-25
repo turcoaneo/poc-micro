@@ -10,6 +10,5 @@ import org.springframework.web.context.annotation.RequestScope;
 @Component
 @RequestScope
 public class GraphQLWorkingHoursContext {
-    private Long employeeId;
     private Long employerId;
 }

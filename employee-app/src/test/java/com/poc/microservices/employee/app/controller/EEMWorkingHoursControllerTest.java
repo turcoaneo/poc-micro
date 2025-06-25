@@ -40,7 +40,6 @@ class EEMWorkingHoursControllerTest {
     @Test
     void shouldReturnWorkingHoursResponseDTO() throws Exception {
         WorkingHoursRequestDTO requestDTO = new WorkingHoursRequestDTO();
-        requestDTO.setEmployeeId(1L);
         requestDTO.setEmployerId(2L);
         requestDTO.setJobIds(Set.of(101L, 102L));
 
@@ -53,7 +52,7 @@ class EEMWorkingHoursControllerTest {
         responseDTO.setEmployerId(2L);
         responseDTO.setJobWorkingHoursDTOS(new HashSet<>(jobHours));
 
-        Mockito.when(service.getWorkingHours(1L, 2L, List.of(101L, 102L))).thenReturn(responseDTO);
+        Mockito.when(service.getWorkingHours( 2L, List.of(101L, 102L))).thenReturn(responseDTO);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/working-hours")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -63,6 +62,6 @@ class EEMWorkingHoursControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.employerId").value(2L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.jobWorkingHoursDTOS[?(@.jobId == 101)].workingHours").value(30));
 
-        Mockito.verify(service).getWorkingHours(1L, 2L, List.of(101L, 102L));
+        Mockito.verify(service).getWorkingHours(2L, List.of(101L, 102L));
     }
 }

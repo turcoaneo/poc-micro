@@ -17,10 +17,9 @@ public interface EmployeeJobEmployerRepository extends JpaRepository<EmployeeJob
     @Query("SELECT new com.poc.microservices.employee.app.model.dto.JobWorkingHoursDTO(" +
             "eje.job.jobId, eje.employee.employeeId, eje.workingHours) " +
             "FROM EmployeeJobEmployer eje " +
-            "WHERE eje.employee.employeeId = :employeeId " +
-            "AND eje.employer.employerId = :employerId " +
+            "WHERE eje.employer.employerId = :employerId " +
             "AND (:jobIds IS NULL OR eje.job.jobId IN :jobIds)")
-    List<JobWorkingHoursDTO> findWorkingHoursByEmployeeEmployerAndJobs(@Param("employeeId") Long employeeId,
+    List<JobWorkingHoursDTO> findWorkingHoursByEmployeeEmployerAndJobs(
                                                                        @Param("employerId") Long employerId,
                                                                        @Param("jobIds") List<Long> jobIds);
 

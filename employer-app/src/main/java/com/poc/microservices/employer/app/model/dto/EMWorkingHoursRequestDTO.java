@@ -12,7 +12,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class EMWorkingHoursRequestDTO {
-    private Long employeeId;
     private Long employerId;
     private Set<Long> jobIds;
 }

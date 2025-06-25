@@ -32,11 +32,10 @@ public class GraphqlJobFieldResolver {
     @SchemaMapping(typeName = "Job", field = "employees")
     public List<GraphQLEmployeeRecord> resolveEmployees(GraphQLJobRecord job) {
         List<Employee> emEmployees = employeeRepository.findByJobsJobId(job.jobId());
-        Long employeeId = workingHoursContext.getEmployeeId();
-        if (employeeId != null) {
+        Long employerId = workingHoursContext.getEmployerId();
+        if (employerId != null) {
             EMWorkingHoursRequestDTO requestDTO = new EMWorkingHoursRequestDTO();
-            requestDTO.setEmployeeId(employeeId);
-            requestDTO.setEmployerId(workingHoursContext.getEmployerId());
+            requestDTO.setEmployerId(employerId);
             EMWorkingHoursResponseDTO hoursDTO = emWorkingHoursClient.getWorkingHours(requestDTO);
             Set<EMJobWorkingHoursDTO> hours = hoursDTO != null
                     ? hoursDTO.getJobWorkingHoursDTOS()

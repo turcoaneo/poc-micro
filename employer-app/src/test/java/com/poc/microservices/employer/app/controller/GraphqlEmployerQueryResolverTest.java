@@ -37,7 +37,6 @@ class GraphqlEmployerQueryResolverTest {
 
     @BeforeEach
     public void setUp() {
-        Mockito.when(mockContext.getEmployeeId()).thenReturn(null);
         Mockito.when(mockContext.getEmployerId()).thenReturn(null);
     }
 

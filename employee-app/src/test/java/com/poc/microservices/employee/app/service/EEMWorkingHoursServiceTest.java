@@ -33,10 +33,10 @@ class EEMWorkingHoursServiceTest {
                 new JobWorkingHoursDTO(102L, 2L, 20)
         );
 
-        Mockito.when(ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employeeId, employerId, jobIds))
+        Mockito.when(ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employerId, jobIds))
                 .thenReturn(mockResult);
 
-        WorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(employeeId, employerId, jobIds);
+        WorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(employerId, jobIds);
 
         Assertions.assertEquals(employeeId, response.getEmployeeId());
         Assertions.assertEquals(employerId, response.getEmployerId());
@@ -46,17 +46,16 @@ class EEMWorkingHoursServiceTest {
 
     @Test
     void shouldReturnWorkingHoursWhenJobIdsNull() {
-        Long employeeId = 1L;
         Long employerId = 2L;
 
         List<JobWorkingHoursDTO> mockResult = List.of(
                 new JobWorkingHoursDTO(101L, 1L, 40)
         );
 
-        Mockito.when(ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employeeId, employerId, null))
+        Mockito.when(ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employerId, null))
                 .thenReturn(mockResult);
 
-        WorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(employeeId, employerId, null);
+        WorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(employerId, null);
 
         Assertions.assertEquals(1, response.getJobWorkingHoursDTOS().size());
         Assertions.assertEquals(101L, response.getJobWorkingHoursDTOS().iterator().next().getJobId());

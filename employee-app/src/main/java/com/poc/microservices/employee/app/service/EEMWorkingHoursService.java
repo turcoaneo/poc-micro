@@ -16,17 +16,16 @@ public class EEMWorkingHoursService {
 
     private final EmployeeJobEmployerRepository ejeRepository;
 
-    public WorkingHoursResponseDTO getWorkingHours(Long employeeId, Long employerId, List<Long> jobIds) {
+    public WorkingHoursResponseDTO getWorkingHours(Long employerId, List<Long> jobIds) {
         List<JobWorkingHoursDTO> workingHours;
 
         if (jobIds == null || jobIds.isEmpty()) {
-            workingHours = ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employeeId, employerId, null);
+            workingHours = ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employerId, null);
         } else {
-            workingHours = ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employeeId, employerId, jobIds);
+            workingHours = ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employerId, jobIds);
         }
 
         WorkingHoursResponseDTO response = new WorkingHoursResponseDTO();
-        response.setEmployeeId(employeeId);
         response.setEmployerId(employerId);
         response.setJobWorkingHoursDTOS(new HashSet<>(workingHours));
 

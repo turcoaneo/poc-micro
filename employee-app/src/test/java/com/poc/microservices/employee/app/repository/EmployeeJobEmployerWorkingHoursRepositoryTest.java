@@ -40,15 +40,18 @@ class EmployeeJobEmployerWorkingHoursRepositoryTest {
         em.persist(dev);
 
         EmployeeJobEmployer eje = new EmployeeJobEmployer();
-        eje.setEmployee(emp); emp.getJobEmployers().add(eje);
-        eje.setEmployer(org); org.getEmployeesJobs().add(eje);
-        eje.setJob(dev); dev.getJobEmployees().add(eje);
+        eje.setEmployee(emp);
+        emp.getJobEmployers().add(eje);
+        eje.setEmployer(org);
+        org.getEmployeesJobs().add(eje);
+        eje.setJob(dev);
+        dev.getJobEmployees().add(eje);
         eje.setWorkingHours(36);
         em.persist(eje);
         em.flush();
 
-        List<JobWorkingHoursDTO> result = repository.findWorkingHoursByEmployeeEmployerAndJobs(
-                emp.getEmployeeId(), org.getEmployerId(), List.of(100L));
+        List<JobWorkingHoursDTO> result = repository.findWorkingHoursByEmployeeEmployerAndJobs(org.getEmployerId(),
+                List.of(100L));
 
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(dev.getJobId(), result.getFirst().getJobId());
@@ -56,15 +59,13 @@ class EmployeeJobEmployerWorkingHoursRepositoryTest {
         Assertions.assertEquals(emp.getEmployeeId(), result.getFirst().getEmployeeId());
         Assertions.assertEquals(36, result.getFirst().getWorkingHours());
 
-        result = repository.findWorkingHoursByEmployeeEmployerAndJobs(
-                emp.getEmployeeId(), org.getEmployerId(), List.of(100L));
+        result = repository.findWorkingHoursByEmployeeEmployerAndJobs(org.getEmployerId(), List.of(100L));
 
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(dev.getJobId(), result.getFirst().getJobId());
         Assertions.assertEquals(36, result.getFirst().getWorkingHours());
 
-        result = repository.findWorkingHoursByEmployeeEmployerAndJobs(
-                emp.getEmployeeId(), org.getLocalEmployerId(), List.of(100L));
+        result = repository.findWorkingHoursByEmployeeEmployerAndJobs(org.getLocalEmployerId(), List.of(100L));
         Assertions.assertEquals(0, result.size());
     }
 }

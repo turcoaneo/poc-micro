@@ -22,14 +22,11 @@ public class GraphqlEmployerQueryResolver {
     private final GraphQLWorkingHoursContext workingHoursContext;
 
     @QueryMapping
-    public GraphQLEmployerRecord employer(@Argument Long id, @Argument Long employeeId) {
+    public GraphQLEmployerRecord employer(@Argument Long id) {
         Employer employer = employerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employer not found"));
 
-        if (employeeId != null) {
-            workingHoursContext.setEmployeeId(employeeId);
-            workingHoursContext.setEmployerId(id);
-        }
+        workingHoursContext.setEmployerId(id);
 
         return employerMapper.toGraphQLRecord(employer);
     }

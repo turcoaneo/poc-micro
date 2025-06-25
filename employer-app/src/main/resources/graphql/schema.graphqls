@@ -3,7 +3,7 @@ scalar Long
 
 type Query {
   employers: [Employer]
-  employer(id: Long!, employeeId: Long): Employer
+  employer(id: Long!): Employer
 }
 
 type Employer {

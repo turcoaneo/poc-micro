@@ -26,7 +26,6 @@ public class EEMWorkingHoursController {
     public ResponseEntity<WorkingHoursResponseDTO> getWorkingHours(@RequestBody WorkingHoursRequestDTO dto) {
         Set<Long> jobIds = dto.getJobIds() == null ? new HashSet<>() : dto.getJobIds();
         WorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(
-            dto.getEmployeeId(),
             dto.getEmployerId(),
             new ArrayList<>(jobIds)
         );
