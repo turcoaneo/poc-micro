@@ -24,7 +24,6 @@ class EEMWorkingHoursServiceTest {
 
     @Test
     void shouldReturnWorkingHoursWhenJobsProvided() {
-        Long employeeId = 1L;
         Long employerId = 2L;
         List<Long> jobIds = List.of(101L, 102L);
 
@@ -38,7 +37,7 @@ class EEMWorkingHoursServiceTest {
 
         WorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(employerId, jobIds);
 
-        Assertions.assertEquals(employeeId, response.getEmployeeId());
+        Assertions.assertNull(response.getEmployeeId());
         Assertions.assertEquals(employerId, response.getEmployerId());
         Assertions.assertEquals(2, response.getJobWorkingHoursDTOS().size());
         Assertions.assertTrue(response.getJobWorkingHoursDTOS().containsAll(mockResult));

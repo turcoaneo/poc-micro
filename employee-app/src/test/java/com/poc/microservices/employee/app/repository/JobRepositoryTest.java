@@ -4,6 +4,7 @@ import com.poc.microservices.employee.app.model.Job;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.Set;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JobRepositoryTest {
 
     @Autowired
@@ -29,9 +31,9 @@ class JobRepositoryTest {
 
     @Test
     void testDeleteByIds() {
-        Job job1 = jobRepository.save(new Job(null, 11L,"Developer", new HashSet<>()));
-        Job job2 = jobRepository.save(new Job(null, 12L,"Data Scientist", new HashSet<>()));
-        Job job3 = jobRepository.save(new Job(null, 13L,"Architect", new HashSet<>()));
+        Job job1 = jobRepository.save(new Job(null, 21L,"Developer", new HashSet<>()));
+        Job job2 = jobRepository.save(new Job(null, 22L,"Data Scientist", new HashSet<>()));
+        Job job3 = jobRepository.save(new Job(null, 23L,"Architect", new HashSet<>()));
 
         Set<Long> jobIdsToDelete = Set.of(job1.getJobId(), job2.getLocalJobId());
 
