@@ -29,8 +29,8 @@ class EEMWorkingHoursServiceTest {
         List<Long> jobIds = List.of(101L, 102L);
 
         List<JobWorkingHoursDTO> mockResult = List.of(
-                new JobWorkingHoursDTO(101L, 40),
-                new JobWorkingHoursDTO(102L, 20)
+                new JobWorkingHoursDTO(101L, 1L, 40),
+                new JobWorkingHoursDTO(102L, 2L, 20)
         );
 
         Mockito.when(ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employeeId, employerId, jobIds))
@@ -50,7 +50,7 @@ class EEMWorkingHoursServiceTest {
         Long employerId = 2L;
 
         List<JobWorkingHoursDTO> mockResult = List.of(
-                new JobWorkingHoursDTO(101L, 40)
+                new JobWorkingHoursDTO(101L, 1L, 40)
         );
 
         Mockito.when(ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employeeId, employerId, null))

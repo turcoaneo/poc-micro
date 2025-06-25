@@ -33,7 +33,9 @@ public class GraphQLEmployerMapper {
     }
 
     public GraphQLEmployeeRecord toGraphQLRecord(Employee employee, Long jobId, Set<EMJobWorkingHoursDTO> hours) {
-        Integer workingHours = hours.stream().filter(emJobWorkingHoursDTO -> emJobWorkingHoursDTO.getJobId().equals(jobId))
+        Integer workingHours = hours.stream()
+                .filter(emJobWorkingHoursDTO -> emJobWorkingHoursDTO.getJobId().equals(jobId) &&
+                        emJobWorkingHoursDTO.getEmployeeId().equals(employee.getEmployeeId()))
                 .map(EMJobWorkingHoursDTO::getWorkingHours).findAny().orElse(null);
         return new GraphQLEmployeeRecord(employee.getEmployeeId(), employee.getName(), workingHours);
     }

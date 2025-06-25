@@ -1,10 +1,10 @@
 package com.poc.microservices.employer.app.controller;
 
 import com.poc.microservices.employer.app.config.GraphQLScalarConfig;
-import com.poc.microservices.employer.app.feign.EMWorkingHoursClient;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployerRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLJobRecord;
 import com.poc.microservices.employer.app.model.Employer;
+import com.poc.microservices.employer.app.model.GraphQLWorkingHoursContext;
 import com.poc.microservices.employer.app.model.Job;
 import com.poc.microservices.employer.app.repository.EmployerRepository;
 import com.poc.microservices.employer.app.repository.JobRepository;
@@ -37,7 +37,7 @@ class GraphqlEmployerFieldResolverTest {
     private GraphQLEmployerMapper mapper;
 
     @MockitoBean
-    EMWorkingHoursClient emWorkingHoursClient;
+    private GraphQLWorkingHoursContext mockContext;
 
     @Test
     void testEmployerJobsField() {
@@ -61,6 +61,9 @@ class GraphqlEmployerFieldResolverTest {
         Mockito.when(mapper.toGraphQLRecord(employer)).thenReturn(gqlEmployer);
         Mockito.when(mapper.toGraphQLRecord(job1)).thenReturn(gqlJob1);
         Mockito.when(mapper.toGraphQLRecord(job2)).thenReturn(gqlJob2);
+
+        Mockito.when(mockContext.getEmployeeId()).thenReturn(null);
+        Mockito.when(mockContext.getEmployerId()).thenReturn(null);
 
         // Query execution
         graphQlTester.document("""

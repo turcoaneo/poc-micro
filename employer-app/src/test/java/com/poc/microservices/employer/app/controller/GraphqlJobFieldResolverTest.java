@@ -7,12 +7,14 @@ import com.poc.microservices.employer.app.graphql.GraphQLEmployerRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLJobRecord;
 import com.poc.microservices.employer.app.model.Employee;
 import com.poc.microservices.employer.app.model.Employer;
+import com.poc.microservices.employer.app.model.GraphQLWorkingHoursContext;
 import com.poc.microservices.employer.app.model.Job;
 import com.poc.microservices.employer.app.model.dto.EMWorkingHoursRequestDTO;
 import com.poc.microservices.employer.app.model.dto.EMWorkingHoursResponseDTO;
 import com.poc.microservices.employer.app.repository.EmployeeRepository;
 import com.poc.microservices.employer.app.repository.EmployerRepository;
 import com.poc.microservices.employer.app.service.util.GraphQLEmployerMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +46,17 @@ class GraphqlJobFieldResolverTest {
     @MockitoBean
     EMWorkingHoursClient emWorkingHoursClient;
 
+    @MockitoBean
+    private GraphQLWorkingHoursContext mockContext;
+
+    @BeforeEach
+    public void setUp() {
+        Mockito.when(mockContext.getEmployeeId()).thenReturn(null);
+        Mockito.when(mockContext.getEmployerId()).thenReturn(null);
+    }
+
     @Test
-//    @Disabled // while disabling  @SchemaMapping
+    //@Disabled // while disabling  @SchemaMapping
     void testResolveEmployeesOnJob() {
         // Arrange domain model
         Employer employer = new Employer(1L, "Employer 1", new HashSet<>());

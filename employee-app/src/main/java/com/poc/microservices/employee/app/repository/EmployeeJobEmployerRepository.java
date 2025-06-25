@@ -14,7 +14,8 @@ import java.util.List;
 @Repository
 public interface EmployeeJobEmployerRepository extends JpaRepository<EmployeeJobEmployer, Long> {
 
-    @Query("SELECT new com.poc.microservices.employee.app.model.dto.JobWorkingHoursDTO(eje.job.jobId, eje.workingHours) " +
+    @Query("SELECT new com.poc.microservices.employee.app.model.dto.JobWorkingHoursDTO(" +
+            "eje.job.jobId, eje.employee.employeeId, eje.workingHours) " +
             "FROM EmployeeJobEmployer eje " +
             "WHERE eje.employee.employeeId = :employeeId " +
             "AND eje.employer.employerId = :employerId " +

@@ -45,8 +45,8 @@ class EEMWorkingHoursControllerTest {
         requestDTO.setJobIds(Set.of(101L, 102L));
 
         List<JobWorkingHoursDTO> jobHours = List.of(
-                new JobWorkingHoursDTO(101L, 30),
-                new JobWorkingHoursDTO(102L, 20)
+                new JobWorkingHoursDTO(101L, 1L, 30),
+                new JobWorkingHoursDTO(102L, 2L, 20)
         );
         WorkingHoursResponseDTO responseDTO = new WorkingHoursResponseDTO();
         responseDTO.setEmployeeId(1L);

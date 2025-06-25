@@ -3,8 +3,10 @@ package com.poc.microservices.employer.app.controller;
 import com.poc.microservices.employer.app.config.GraphQLScalarConfig;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployerRecord;
 import com.poc.microservices.employer.app.model.Employer;
+import com.poc.microservices.employer.app.model.GraphQLWorkingHoursContext;
 import com.poc.microservices.employer.app.repository.EmployerRepository;
 import com.poc.microservices.employer.app.service.util.GraphQLEmployerMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,15 @@ class GraphqlEmployerQueryResolverTest {
 
     @MockitoBean
     private GraphQLEmployerMapper employerMapper;
+
+    @MockitoBean
+    private GraphQLWorkingHoursContext mockContext;
+
+    @BeforeEach
+    public void setUp() {
+        Mockito.when(mockContext.getEmployeeId()).thenReturn(null);
+        Mockito.when(mockContext.getEmployerId()).thenReturn(null);
+    }
 
     @Test
     void testEmployersQuery() {

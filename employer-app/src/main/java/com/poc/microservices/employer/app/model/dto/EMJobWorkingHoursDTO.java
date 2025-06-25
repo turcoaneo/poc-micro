@@ -13,5 +13,6 @@ import lombok.Setter;
 @EqualsAndHashCode
 public class EMJobWorkingHoursDTO {
     private Long jobId;
+    private Long employeeId;
     private Integer workingHours;
 }

@@ -52,6 +52,8 @@ class EmployeeJobEmployerWorkingHoursRepositoryTest {
 
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(dev.getJobId(), result.getFirst().getJobId());
+        Assertions.assertEquals(dev.getJobId(), result.getFirst().getJobId());
+        Assertions.assertEquals(emp.getEmployeeId(), result.getFirst().getEmployeeId());
         Assertions.assertEquals(36, result.getFirst().getWorkingHours());
 
         result = repository.findWorkingHoursByEmployeeEmployerAndJobs(
