@@ -6,6 +6,7 @@ import com.poc.microservices.employer.app.graphql.GraphQLJobRecord;
 import com.poc.microservices.employer.app.model.Employee;
 import com.poc.microservices.employer.app.model.Employer;
 import com.poc.microservices.employer.app.model.Job;
+import com.poc.microservices.employer.app.service.util.GraphQLEmployerMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -4,7 +4,7 @@ import com.poc.microservices.employer.app.config.GraphQLScalarConfig;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployerRecord;
 import com.poc.microservices.employer.app.model.Employer;
 import com.poc.microservices.employer.app.repository.EmployerRepository;
-import com.poc.microservices.employer.app.service.GraphQLEmployerMapper;
+import com.poc.microservices.employer.app.service.util.GraphQLEmployerMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

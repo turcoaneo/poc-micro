@@ -12,8 +12,7 @@ import com.poc.microservices.employer.app.model.dto.EMWorkingHoursRequestDTO;
 import com.poc.microservices.employer.app.model.dto.EMWorkingHoursResponseDTO;
 import com.poc.microservices.employer.app.repository.EmployeeRepository;
 import com.poc.microservices.employer.app.repository.EmployerRepository;
-import com.poc.microservices.employer.app.service.GraphQLEmployerMapper;
-import org.junit.jupiter.api.Disabled;
+import com.poc.microservices.employer.app.service.util.GraphQLEmployerMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ class GraphqlJobFieldResolverTest {
     EMWorkingHoursClient emWorkingHoursClient;
 
     @Test
-    @Disabled // while disabling  @SchemaMapping
+//    @Disabled // while disabling  @SchemaMapping
     void testResolveEmployeesOnJob() {
         // Arrange domain model
         Employer employer = new Employer(1L, "Employer 1", new HashSet<>());

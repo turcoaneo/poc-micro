@@ -1,14 +1,23 @@
 package com.poc.microservices.employer.app.controller;
 
+import com.poc.microservices.employer.app.feign.EMWorkingHoursClient;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployeeRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLJobRecord;
+import com.poc.microservices.employer.app.model.Employee;
+import com.poc.microservices.employer.app.model.GraphQLWorkingHoursContext;
+import com.poc.microservices.employer.app.model.dto.EMJobWorkingHoursDTO;
+import com.poc.microservices.employer.app.model.dto.EMWorkingHoursRequestDTO;
+import com.poc.microservices.employer.app.model.dto.EMWorkingHoursResponseDTO;
 import com.poc.microservices.employer.app.repository.EmployeeRepository;
-import com.poc.microservices.employer.app.service.GraphQLEmployerMapper;
+import com.poc.microservices.employer.app.service.util.GraphQLEmployerMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -16,11 +25,29 @@ public class GraphqlJobFieldResolver {
 
     private final EmployeeRepository employeeRepository;
     private final GraphQLEmployerMapper mapper;
+    private final EMWorkingHoursClient emWorkingHoursClient;
+    private final GraphQLWorkingHoursContext workingHoursContext;
 
-//    @SchemaMapping(typeName = "Job", field = "employees")
+
+    @SchemaMapping(typeName = "Job", field = "employees")
     public List<GraphQLEmployeeRecord> resolveEmployees(GraphQLJobRecord job) {
-        return employeeRepository.findByJobsJobId(job.jobId()).stream()
-            .map(mapper::toGraphQLRecord)
-            .toList();
+        List<Employee> emEmployees = employeeRepository.findByJobsJobId(job.jobId());
+        Long employeeId = workingHoursContext.getEmployeeId();
+        if (employeeId != null) {
+            EMWorkingHoursRequestDTO requestDTO = new EMWorkingHoursRequestDTO();
+            requestDTO.setEmployeeId(employeeId);
+            requestDTO.setEmployerId(workingHoursContext.getEmployerId());
+            EMWorkingHoursResponseDTO hoursDTO = emWorkingHoursClient.getWorkingHours(requestDTO);
+            Set<EMJobWorkingHoursDTO> hours = hoursDTO != null
+                    ? hoursDTO.getJobWorkingHoursDTOS()
+                    : Collections.emptySet();
+            return emEmployees.stream()
+                    .map(employee -> mapper.toGraphQLRecord(employee, job.jobId(), hours))
+                    .toList();
+        } else {
+            return emEmployees.stream()
+                    .map(mapper::toGraphQLRecord)
+                    .toList();
+        }
     }
 }
