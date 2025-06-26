@@ -43,3 +43,15 @@ spring:
 #    preferIpAddress: true
 #    leaseRenewalIntervalInSeconds: 30  # Ensures regular heartbeat updates
 #    leaseExpirationDurationInSeconds: 90  # Prevents premature instance removal
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      eemCircuitBreaker:
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 30s
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 5
+        minimum-number-of-calls: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        permitted-number-of-calls-in-half-open-state: 5
