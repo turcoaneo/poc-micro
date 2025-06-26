@@ -28,7 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/employees")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class EmployeeController {
+public class EEMEmployeeController {
 
     private final EmployeeService employeeService;
 

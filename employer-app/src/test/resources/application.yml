@@ -8,3 +8,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop  # fresh schema every run
+
+eem:
+  fallback:
+    cache-enabled: true
+    cache-path: "target/test-working-hours.csv"

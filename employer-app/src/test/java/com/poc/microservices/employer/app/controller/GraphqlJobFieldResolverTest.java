@@ -1,7 +1,6 @@
 package com.poc.microservices.employer.app.controller;
 
 import com.poc.microservices.employer.app.config.GraphQLScalarConfig;
-import com.poc.microservices.employer.app.feign.EMWorkingHoursClient;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployeeRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployerRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLJobRecord;
@@ -13,6 +12,7 @@ import com.poc.microservices.employer.app.model.dto.EMWorkingHoursRequestDTO;
 import com.poc.microservices.employer.app.model.dto.EMWorkingHoursResponseDTO;
 import com.poc.microservices.employer.app.repository.EmployeeRepository;
 import com.poc.microservices.employer.app.repository.EmployerRepository;
+import com.poc.microservices.employer.app.service.EMWorkingHoursService;
 import com.poc.microservices.employer.app.service.util.GraphQLEmployerMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class GraphqlJobFieldResolverTest {
     private GraphQLEmployerMapper mapper;
 
     @MockitoBean
-    EMWorkingHoursClient emWorkingHoursClient;
+    EMWorkingHoursService emWorkingHoursService;
 
     @MockitoBean
     private GraphQLWorkingHoursContext mockContext;
@@ -55,7 +55,7 @@ class GraphqlJobFieldResolverTest {
     }
 
     @Test
-    //@Disabled // while disabling  @SchemaMapping
+        //@Disabled // while disabling  @SchemaMapping
     void testResolveEmployeesOnJob() {
         // Arrange domain model
         Employer employer = new Employer(1L, "Employer 1", new HashSet<>());
@@ -79,24 +79,24 @@ class GraphqlJobFieldResolverTest {
         Mockito.when(employeeRepository.findByJobsJobId(101L)).thenReturn(List.of(emp1, emp2));
         Mockito.when(mapper.toGraphQLRecord(emp1)).thenReturn(gqlEmp1);
         Mockito.when(mapper.toGraphQLRecord(emp2)).thenReturn(gqlEmp2);
-        Mockito.when(emWorkingHoursClient.getWorkingHours(Mockito.any(EMWorkingHoursRequestDTO.class)))
+        Mockito.when(emWorkingHoursService.getWorkingHours(Mockito.any(EMWorkingHoursRequestDTO.class)))
                 .thenReturn(new EMWorkingHoursResponseDTO());
 
         // Act + Assert
         graphQlTester.document("""
-            {
-              employers {
-                name
-                jobs {
-                  title
-                  employees {
-                    employeeId
-                    name
-                  }
-                }
-              }
-            }
-            """)
+                        {
+                          employers {
+                            name
+                            jobs {
+                              title
+                              employees {
+                                employeeId
+                                name
+                              }
+                            }
+                          }
+                        }
+                        """)
                 .execute()
                 .path("employers[0].jobs[0].employees")
                 .entityList(GraphQLEmployeeRecord.class)

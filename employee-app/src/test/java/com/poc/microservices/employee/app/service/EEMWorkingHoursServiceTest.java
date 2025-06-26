@@ -1,7 +1,7 @@
 package com.poc.microservices.employee.app.service;
 
 import com.poc.microservices.employee.app.model.dto.JobWorkingHoursDTO;
-import com.poc.microservices.employee.app.model.dto.WorkingHoursResponseDTO;
+import com.poc.microservices.employee.app.model.dto.EEMWorkingHoursResponseDTO;
 import com.poc.microservices.employee.app.repository.EmployeeJobEmployerRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -35,9 +35,8 @@ class EEMWorkingHoursServiceTest {
         Mockito.when(ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employerId, jobIds))
                 .thenReturn(mockResult);
 
-        WorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(employerId, jobIds);
+        EEMWorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(employerId, jobIds);
 
-        Assertions.assertNull(response.getEmployeeId());
         Assertions.assertEquals(employerId, response.getEmployerId());
         Assertions.assertEquals(2, response.getJobWorkingHoursDTOS().size());
         Assertions.assertTrue(response.getJobWorkingHoursDTOS().containsAll(mockResult));
@@ -54,7 +53,7 @@ class EEMWorkingHoursServiceTest {
         Mockito.when(ejeRepository.findWorkingHoursByEmployeeEmployerAndJobs(employerId, null))
                 .thenReturn(mockResult);
 
-        WorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(employerId, null);
+        EEMWorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(employerId, null);
 
         Assertions.assertEquals(1, response.getJobWorkingHoursDTOS().size());
         Assertions.assertEquals(101L, response.getJobWorkingHoursDTOS().iterator().next().getJobId());

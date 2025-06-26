@@ -55,3 +55,8 @@ resilience4j:
         minimum-number-of-calls: 3
         automatic-transition-from-open-to-half-open-enabled: true
         permitted-number-of-calls-in-half-open-state: 5
+
+eem:
+  fallback:
+    cache-enabled: true
+    cache-path: ${java.io.tmpdir}/eem/working-hours.csv

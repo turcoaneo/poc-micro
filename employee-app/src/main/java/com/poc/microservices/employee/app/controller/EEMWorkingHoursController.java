@@ -2,8 +2,8 @@ package com.poc.microservices.employee.app.controller;
 
 import com.poc.microservices.employee.app.aop.EmployeeAuthorize;
 import com.poc.microservices.employee.app.model.EEMUserRole;
-import com.poc.microservices.employee.app.model.dto.WorkingHoursRequestDTO;
-import com.poc.microservices.employee.app.model.dto.WorkingHoursResponseDTO;
+import com.poc.microservices.employee.app.model.dto.EEMWorkingHoursRequestDTO;
+import com.poc.microservices.employee.app.model.dto.EEMWorkingHoursResponseDTO;
 import com.poc.microservices.employee.app.service.EEMWorkingHoursService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,9 +34,9 @@ public class EEMWorkingHoursController {
     @ApiResponse(responseCode = "200", description = "Employee working hours retrieved successfully")
     @SecurityRequirement(name = "BearerAuth")
     @EmployeeAuthorize({EEMUserRole.ADMIN})
-    public ResponseEntity<WorkingHoursResponseDTO> getWorkingHours(@RequestBody WorkingHoursRequestDTO dto) {
+    public ResponseEntity<EEMWorkingHoursResponseDTO> getWorkingHours(@RequestBody EEMWorkingHoursRequestDTO dto) {
         Set<Long> jobIds = dto.getJobIds() == null ? new HashSet<>() : dto.getJobIds();
-        WorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(
+        EEMWorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(
             dto.getEmployerId(),
             new ArrayList<>(jobIds)
         );

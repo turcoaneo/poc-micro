@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(EmployeeController.class)
+@WebMvcTest(EEMEmployeeController.class)
 class EmployeePatchControllerTest {
 
     private MockMvc mockMvc;
@@ -30,11 +30,11 @@ class EmployeePatchControllerTest {
     private EmployeeService employeeService;
 
     @Autowired
-    EmployeeController employeeController;
+    EEMEmployeeController EEMEmployeeController;
 
     @BeforeEach
     public void setUp() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(employeeController).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(EEMEmployeeController).build();
     }
 
     @Test
