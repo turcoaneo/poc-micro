@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(EmployeeController.class)
-class EmployeeControllerTest {
+@WebMvcTest(EEMEmployeeController.class)
+class EEMEmployeeControllerTest {
 
     private MockMvc mockMvc;
 
@@ -32,11 +32,11 @@ class EmployeeControllerTest {
     private EmployeeService employeeService;
 
     @Autowired
-    EmployeeController employeeController;
+    EEMEmployeeController EEMEmployeeController;
 
     @BeforeEach
     void setUp() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(employeeController).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(EEMEmployeeController).build();
     }
 
     @Test

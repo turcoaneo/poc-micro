@@ -26,7 +26,7 @@ import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(GrpcEmployeeController.class)
-class GrpcEmployeeControllerTest {
+class GrpcEEMEmployeeControllerTest {
 
     @MockitoBean
     private GrpcClientGreeterService greeterClient;

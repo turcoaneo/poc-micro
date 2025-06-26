@@ -2,8 +2,8 @@ package com.poc.microservices.employee.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.poc.microservices.employee.app.model.dto.JobWorkingHoursDTO;
-import com.poc.microservices.employee.app.model.dto.WorkingHoursRequestDTO;
-import com.poc.microservices.employee.app.model.dto.WorkingHoursResponseDTO;
+import com.poc.microservices.employee.app.model.dto.EEMWorkingHoursRequestDTO;
+import com.poc.microservices.employee.app.model.dto.EEMWorkingHoursResponseDTO;
 import com.poc.microservices.employee.app.service.EEMWorkingHoursService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ class EEMWorkingHoursControllerTest {
 
     @Test
     void shouldReturnWorkingHoursResponseDTO() throws Exception {
-        WorkingHoursRequestDTO requestDTO = new WorkingHoursRequestDTO();
+        EEMWorkingHoursRequestDTO requestDTO = new EEMWorkingHoursRequestDTO();
         requestDTO.setEmployerId(2L);
         requestDTO.setJobIds(Set.of(101L, 102L));
 
@@ -47,8 +47,7 @@ class EEMWorkingHoursControllerTest {
                 new JobWorkingHoursDTO(101L, 1L, 30),
                 new JobWorkingHoursDTO(102L, 2L, 20)
         );
-        WorkingHoursResponseDTO responseDTO = new WorkingHoursResponseDTO();
-        responseDTO.setEmployeeId(1L);
+        EEMWorkingHoursResponseDTO responseDTO = new EEMWorkingHoursResponseDTO();
         responseDTO.setEmployerId(2L);
         responseDTO.setJobWorkingHoursDTOS(new HashSet<>(jobHours));
 
@@ -58,7 +57,6 @@ class EEMWorkingHoursControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(requestDTO)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.employeeId").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.employerId").value(2L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.jobWorkingHoursDTOS[?(@.jobId == 101)].workingHours").value(30));
 

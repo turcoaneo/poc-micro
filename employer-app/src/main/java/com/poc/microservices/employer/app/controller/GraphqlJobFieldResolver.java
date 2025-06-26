@@ -1,6 +1,5 @@
 package com.poc.microservices.employer.app.controller;
 
-import com.poc.microservices.employer.app.feign.EMWorkingHoursClient;
 import com.poc.microservices.employer.app.graphql.GraphQLEmployeeRecord;
 import com.poc.microservices.employer.app.graphql.GraphQLJobRecord;
 import com.poc.microservices.employer.app.model.Employee;
@@ -9,6 +8,7 @@ import com.poc.microservices.employer.app.model.dto.EMJobWorkingHoursDTO;
 import com.poc.microservices.employer.app.model.dto.EMWorkingHoursRequestDTO;
 import com.poc.microservices.employer.app.model.dto.EMWorkingHoursResponseDTO;
 import com.poc.microservices.employer.app.repository.EmployeeRepository;
+import com.poc.microservices.employer.app.service.EMWorkingHoursService;
 import com.poc.microservices.employer.app.service.util.GraphQLEmployerMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class GraphqlJobFieldResolver {
 
     private final EmployeeRepository employeeRepository;
     private final GraphQLEmployerMapper mapper;
-    private final EMWorkingHoursClient emWorkingHoursClient;
+    private final EMWorkingHoursService emWorkingHoursService;
     private final GraphQLWorkingHoursContext workingHoursContext;
 
 
@@ -36,7 +36,7 @@ public class GraphqlJobFieldResolver {
         if (employerId != null) {
             EMWorkingHoursRequestDTO requestDTO = new EMWorkingHoursRequestDTO();
             requestDTO.setEmployerId(employerId);
-            EMWorkingHoursResponseDTO hoursDTO = emWorkingHoursClient.getWorkingHours(requestDTO);
+            EMWorkingHoursResponseDTO hoursDTO = emWorkingHoursService.getWorkingHours(requestDTO);
             Set<EMJobWorkingHoursDTO> hours = hoursDTO != null
                     ? hoursDTO.getJobWorkingHoursDTOS()
                     : Collections.emptySet();

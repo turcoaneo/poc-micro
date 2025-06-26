@@ -11,8 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-public class WorkingHoursResponseDTO {
-    private Long employeeId;
+public class EEMWorkingHoursRequestDTO {
     private Long employerId;
-    private Set<JobWorkingHoursDTO> jobWorkingHoursDTOS;
+    private Set<Long> jobIds;
 }
