@@ -58,7 +58,7 @@ public class EMWorkingHoursCsvCache {
                 }
 
                 Long employeeId = Long.parseLong(nextLine[2]);
-                int hours = Integer.parseInt(nextLine[3]);
+                int hours = -1 * Integer.parseInt(nextLine[3]);//negative cached value to differentiate from real one
 
                 result.add(new EMJobWorkingHoursDTO(jobId, employeeId, hours));
             }
