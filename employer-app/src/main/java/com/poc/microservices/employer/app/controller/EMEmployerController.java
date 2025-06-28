@@ -10,6 +10,8 @@ import com.poc.microservices.employer.app.model.dto.JobDTO;
 import com.poc.microservices.employer.app.service.EmployerService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,6 +31,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/employers")
 public class EMEmployerController {
+    private static final Logger logger = LoggerFactory.getLogger(EMEmployerController.class);
 
     private final EmployerService employerService;
 
@@ -49,6 +52,7 @@ public class EMEmployerController {
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<EMGenericResponseDTO> createEmployer(@RequestBody EmployerDTO employerDTO) {
         Long employerId = employerService.createEmployer(employerDTO);
+        logger.info("EM Create employer {}", employerDTO.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new EMGenericResponseDTO(employerId, "Employer successfully created"));
     }

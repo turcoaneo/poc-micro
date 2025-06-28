@@ -14,6 +14,7 @@ import org.springframework.security.web.server.context.ServerSecurityContextRepo
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+
 @Configuration
 @EnableWebFluxSecurity
 public class GatewayConfig {
@@ -37,6 +38,7 @@ public class GatewayConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(auth -> auth
+                        .pathMatchers("/actuator/**").permitAll()
                         .anyExchange().authenticated() // Debugging step—allow all traffic for testing
                 )
                 .addFilterAt(new JwtAuthFilterWebflux(), SecurityWebFiltersOrder.AUTHORIZATION) // Apply JWT before authorization

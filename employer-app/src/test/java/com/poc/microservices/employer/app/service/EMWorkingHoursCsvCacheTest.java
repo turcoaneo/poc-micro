@@ -38,7 +38,7 @@ class EMWorkingHoursCsvCacheTest {
         Set<EMJobWorkingHoursDTO> read = emWorkingHoursCsvCache.readFromCsv(TEST_FILE, request);
 
         Assertions.assertEquals(2, read.size());
-        Assertions.assertTrue(read.contains(new EMJobWorkingHoursDTO(11L, 1L, 11)));
-        Assertions.assertTrue(read.contains(new EMJobWorkingHoursDTO(22L, 2L, 22)));
+        Assertions.assertTrue(read.contains(new EMJobWorkingHoursDTO(11L, 1L, -11)));
+        Assertions.assertTrue(read.contains(new EMJobWorkingHoursDTO(22L, 2L, -22)));
     }
 }
