@@ -1,25 +1,28 @@
 package com.poc.microservices.main.app.service;
 
 import com.kobylynskyi.graphql.codegen.model.graphql.GraphQLRequest;
-import com.netflix.graphql.dgs.client.GraphQLResponse;
 import com.poc.microservice.main.app.generated.graphql.Employer;
 import com.poc.microservices.main.app.graphql.MASGraphQLEmployerClient;
-import com.poc.microservices.main.app.graphql.MASGraphQLEmployerGateway;
+import com.poc.microservices.main.app.graphql.MASHttpGraphQLEmployerGateway;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.graphql.client.ClientGraphQlResponse;
+import org.springframework.graphql.client.ClientResponseField;
+import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 
 @ExtendWith(MockitoExtension.class)
 class MASGraphQLEmployerClientTest {
 
     @Mock
-    private MASGraphQLEmployerGateway gateway;
+    private MASHttpGraphQLEmployerGateway gateway;
 
     @InjectMocks
     private MASGraphQLEmployerClient MASGraphQLEmployerClient;
@@ -31,13 +34,14 @@ class MASGraphQLEmployerClientTest {
         expected.setEmployerId(42L);
         expected.setName("Acme Corp");
 
-        GraphQLResponse mockResponse = Mockito.mock(GraphQLResponse.class);
-        Mockito.when(mockResponse.extractValueAsObject(ArgumentMatchers.eq("employer"),
-                        ArgumentMatchers.eq(Employer.class)))
-                .thenReturn(expected);
+        ClientGraphQlResponse mockResponse = Mockito.mock(ClientGraphQlResponse.class);
+        ClientResponseField mockField = Mockito.mock(ClientResponseField.class);
 
+        Mockito.when(mockField.toEntity(Employer.class)).thenReturn(expected);
+        Mockito.when(mockResponse.isValid()).thenReturn(true);
+        Mockito.when(mockResponse.field("employer")).thenReturn(mockField);
         Mockito.when(gateway.execute(Mockito.any(GraphQLRequest.class)))
-                .thenReturn(mockResponse);
+                .thenReturn(Mono.just(mockResponse));
 
         // when
         Employer actual = MASGraphQLEmployerClient.fetchEmployerById(42L);
@@ -50,7 +54,8 @@ class MASGraphQLEmployerClientTest {
     @Test
     void shouldReturnNullWhenResponseIsNull() {
         // given
-        Mockito.when(gateway.execute(Mockito.any(GraphQLRequest.class))).thenReturn(null);
+        Mockito.when(gateway.execute(Mockito.any(GraphQLRequest.class)))
+                .thenReturn(Mono.justOrEmpty(Optional.empty())); // Mimics gateway returning no response
 
         // when
         Employer actual = MASGraphQLEmployerClient.fetchEmployerById(42L);

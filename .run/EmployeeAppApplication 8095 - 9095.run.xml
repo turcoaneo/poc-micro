@@ -6,7 +6,7 @@
     </envs>
     <module name="employee-app" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.poc.microservices.employee.app.EmployeeAppApplication" />
-    <option name="VM_PARAMETERS" value="-Dserver.port=8095 -Dgrpc.server.port=9095 -Deem.scheduler.cron=&quot;0 */1 * * * *&quot;" />
+    <option name="VM_PARAMETERS" value="-Dserver.port=8095 -Dgrpc.server.port=9095 -Deem.scheduler.cron=&quot;0 */13 * * * *&quot;" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.poc.microservices.employee.app.*" />

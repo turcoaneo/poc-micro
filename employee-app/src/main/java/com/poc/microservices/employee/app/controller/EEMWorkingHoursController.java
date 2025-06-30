@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +28,7 @@ import java.util.Set;
 @RequestMapping("/working-hours")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EEMWorkingHoursController {
+    private static final Logger logger = LoggerFactory.getLogger(EEMWorkingHoursController.class);
 
     private final EEMWorkingHoursService EEMWorkingHoursService;
 
@@ -35,6 +38,7 @@ public class EEMWorkingHoursController {
     @SecurityRequirement(name = "BearerAuth")
     @EmployeeAuthorize({EEMUserRole.ADMIN})
     public ResponseEntity<EEMWorkingHoursResponseDTO> getWorkingHours(@RequestBody EEMWorkingHoursRequestDTO dto) {
+        logger.info("EEM fetching employees working hours for employer {}", dto.getEmployerId());
         Set<Long> jobIds = dto.getJobIds() == null ? new HashSet<>() : dto.getJobIds();
         EEMWorkingHoursResponseDTO response = EEMWorkingHoursService.getWorkingHours(
             dto.getEmployerId(),

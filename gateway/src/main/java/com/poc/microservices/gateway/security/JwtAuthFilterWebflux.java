@@ -3,6 +3,7 @@ package com.poc.microservices.gateway.security;
 import com.poc.microservices.gateway.security.helper.JwtLocalHelperGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +17,7 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -27,6 +29,19 @@ public class JwtAuthFilterWebflux implements WebFilter {
     @SuppressWarnings("NullableProblems")
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        logger.info("Trace ID: {}", MDC.get("traceId"));
+        String requestUri = exchange.getRequest().getURI().toString();
+
+        List<String> excludedEndpoints = Arrays.asList("/api-gateway", "favicon");
+
+        // Skip JWT validation for excluded endpoints
+        if (excludedEndpoints.stream().anyMatch(requestUri::contains)) {
+            logger.debug("Skipping JWT authentication for endpoint: {}", requestUri);
+            String admin = "ADMIN";
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(admin, null,
+                    List.of(new SimpleGrantedAuthority("ROLE_" + admin)));
+            return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
+        }
         String token = extractToken(exchange);
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         logger.debug("Gateway received Authorization Header: {}", authHeader); // Log header before processing

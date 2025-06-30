@@ -3,9 +3,9 @@ package com.poc.microservices.main.app.controller;
 import com.poc.microservices.main.app.aop.MainAppAuthorize;
 import com.poc.microservices.main.app.feign.MASGatewayClient;
 import com.poc.microservices.main.app.model.MASUserRole;
-import com.poc.microservices.main.app.model.dto.MASEmployerEmployeeAssignmentPatchDTO;
 import com.poc.microservices.main.app.model.dto.MASEmployeeDTO;
 import com.poc.microservices.main.app.model.dto.MASEmployerDTO;
+import com.poc.microservices.main.app.model.dto.MASEmployerEmployeeAssignmentPatchDTO;
 import com.poc.microservices.main.app.model.dto.MASGenericResponseDTO;
 import com.poc.microservices.main.app.model.dto.MASResponse;
 import com.poc.microservices.main.app.model.dto.UserDTO;
@@ -24,8 +24,11 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 
 @Tag(name = "MAS API Gateway Management", description = "Using API Gateway")
@@ -58,7 +61,7 @@ public class MASGatewayController {
         }
     }
 
-    @Operation(summary = "Fetch user role from UAM")
+    @Operation(summary = "Fetch generic user role from UAM")
     @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/fetch-user-role/{username}")
     public ResponseEntity<MASResponse<UserDTO>> fetchUser(@PathVariable String username) {
@@ -75,10 +78,11 @@ public class MASGatewayController {
     }
 
     @PostMapping("/create-employer")
-    @Operation(summary = "Create employer in EM")
+    @Operation(summary = "Create employer in EM, no employees, possible with jobs")
     @MainAppAuthorize({MASUserRole.ADMIN})
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<MASGenericResponseDTO> createEmployer(@RequestBody MASEmployerDTO employerDTO) {
+        logger.info("MAS Create employer {} with jobs {}, no employees", employerDTO.getName(), employerDTO.getJobs());
         ResponseEntity<MASGenericResponseDTO> employerResponse = masGatewayClient.createEmployer(employerDTO);
         return ResponseEntity.status(employerResponse.getStatusCode()).body(employerResponse.getBody());
     }
@@ -102,4 +106,15 @@ public class MASGatewayController {
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 
+    @GetMapping("/trace-test")
+    @Operation(summary = "Test x-b3")
+    public ResponseEntity<String> traceHeaders(@RequestHeader Map<String, String> headers) {
+        logger.info("Trace header test");
+        headers.forEach((k, v) -> {
+            if (k.toLowerCase().startsWith("x-b3")) {
+                logger.info(">> {}: {}", k, v);
+            }
+        });
+        return ResponseEntity.ok("trace headers logged");
+    }
 }
