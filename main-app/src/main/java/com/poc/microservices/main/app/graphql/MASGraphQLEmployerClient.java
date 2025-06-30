@@ -16,88 +16,85 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 @Service
 public class MASGraphQLEmployerClient {
 
-    private final MASHttpGraphQLEmployerGateway masHttpGraphQLEmployerGateway;
+    private final MASHttpGraphQLEmployerGateway gateway;
 
     @Autowired
-    public MASGraphQLEmployerClient(MASHttpGraphQLEmployerGateway masHttpGraphQLEmployerGateway) {
-        this.masHttpGraphQLEmployerGateway = masHttpGraphQLEmployerGateway;
+    public MASGraphQLEmployerClient(MASHttpGraphQLEmployerGateway gateway) {
+        this.gateway = gateway;
     }
 
     public Employer fetchEmployerById(Long id) {
-        EmployerQueryRequest request = EmployerQueryRequest.builder().setId(id).build();
+        GraphQLRequest gqlRequest = new GraphQLRequest(
+                EmployerQueryRequest.builder().setId(id).build(),
+                buildEmployerWithHoursProjection()
+        );
 
-        EmployerResponseProjection projection = new EmployerResponseProjection()
-                .employerId()
-                .name()
-                .jobs(
-                        new JobResponseProjection()
-                                .jobId()
-                                .title()
-                                .employees(
-                                        new EmployeeResponseProjection()
-                                                .employeeId()
-                                                .name()
-                                                .hours()
-                                )
-                );
-        GraphQLRequest gqlRequest = new GraphQLRequest(request, projection);
-        // Capture the current context
-        ContextSnapshot snapshot = ContextSnapshotFactory.builder()
-                .contextRegistry(ContextRegistry.getInstance())
-                .build()
-                .captureAll();
-
-        try {
-            return snapshot
-                    .wrap(() -> {
-                        ClientGraphQlResponse response = masHttpGraphQLEmployerGateway.execute(gqlRequest).block();
-                        if (response != null && response.isValid()) {
-                            return response.field("employer").toEntity(Employer.class);
-                        }
-                        return null;
-                    })
-                    .call();
-        } catch (Exception e) {
-            throw new RuntimeException("GraphQL execution failed", e);
-        }
-
+        return executeWithTrace(() -> {
+            ClientGraphQlResponse response = gateway.execute(gqlRequest).block();
+            if (response != null && response.isValid()) {
+                return response.field("employer").toEntity(Employer.class);
+            }
+            return null;
+        });
     }
 
     public List<Employer> fetchEmployers() {
-        EmployersQueryRequest request = EmployersQueryRequest.builder().build();
+        GraphQLRequest gqlRequest = new GraphQLRequest(
+                EmployersQueryRequest.builder().build(),
+                buildBaseEmployerProjection()
+        );
 
-        EmployerResponseProjection projection = new EmployerResponseProjection()
+        return executeWithTrace(() -> {
+            ClientGraphQlResponse response = gateway.execute(gqlRequest).block();
+            if (response != null && response.isValid()) {
+                return response.field("employers").toEntityList(Employer.class);
+            }
+            return Collections.emptyList();
+        });
+    }
+
+    private EmployerResponseProjection buildEmployerWithHoursProjection() {
+        EmployeeResponseProjection employeeProjection = getEmployeeResponseProjection();
+        employeeProjection.hours();
+        return getEmployerResponseProjection(employeeProjection);
+    }
+
+    private EmployerResponseProjection buildBaseEmployerProjection() {
+        EmployeeResponseProjection employeeProjection = getEmployeeResponseProjection();
+        return getEmployerResponseProjection(employeeProjection);
+    }
+
+    private static EmployeeResponseProjection getEmployeeResponseProjection() {
+        return new EmployeeResponseProjection()
+                .employeeId()
+                .name();
+    }
+
+    private static EmployerResponseProjection getEmployerResponseProjection(EmployeeResponseProjection employeeProjection) {
+        return new EmployerResponseProjection()
                 .employerId()
                 .name()
                 .jobs(
                         new JobResponseProjection()
                                 .jobId()
                                 .title()
-                                .employees(
-                                        new EmployeeResponseProjection()
-                                                .employeeId()
-                                                .name()
-                                )
+                                .employees(employeeProjection)
                 );
+    }
 
-        GraphQLRequest gqlRequest = new GraphQLRequest(request, projection);
+    private <T> T executeWithTrace(Callable<T> callable) {
         ContextSnapshot snapshot = ContextSnapshotFactory.builder()
                 .contextRegistry(ContextRegistry.getInstance())
                 .build()
                 .captureAll();
+
         try {
-            //noinspection unchecked
-            return (List<Employer>)snapshot.wrap(() -> {
-                ClientGraphQlResponse response = masHttpGraphQLEmployerGateway.execute(gqlRequest).block();
-                if (response != null && response.isValid()) {
-                    return response.field("employers").toEntityList(Employer.class);
-                }
-                return Collections.emptyList();
-            }).call();
+            return snapshot.wrap(callable).call();
         } catch (Exception e) {
             throw new RuntimeException("GraphQL execution failed", e);
         }
