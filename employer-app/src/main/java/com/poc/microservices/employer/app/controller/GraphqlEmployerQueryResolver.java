@@ -37,6 +37,7 @@ public class GraphqlEmployerQueryResolver {
 
     @QueryMapping
     public List<GraphQLEmployerRecord> employers() {
+        logger.info("EM resolving employers without working hours for employees from EEM");
         return employerRepository.findAll().stream()
                 .map(employerMapper::toGraphQLRecord)
                 .toList();

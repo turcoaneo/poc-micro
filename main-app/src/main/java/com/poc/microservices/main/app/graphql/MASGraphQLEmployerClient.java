@@ -1,28 +1,30 @@
 package com.poc.microservices.main.app.graphql;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kobylynskyi.graphql.codegen.model.graphql.GraphQLRequest;
-import com.netflix.graphql.dgs.client.GraphQLResponse;
 import com.poc.microservice.main.app.generated.graphql.EmployeeResponseProjection;
 import com.poc.microservice.main.app.generated.graphql.Employer;
 import com.poc.microservice.main.app.generated.graphql.EmployerQueryRequest;
 import com.poc.microservice.main.app.generated.graphql.EmployerResponseProjection;
 import com.poc.microservice.main.app.generated.graphql.EmployersQueryRequest;
 import com.poc.microservice.main.app.generated.graphql.JobResponseProjection;
+import io.micrometer.context.ContextRegistry;
+import io.micrometer.context.ContextSnapshot;
+import io.micrometer.context.ContextSnapshotFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.client.ClientGraphQlResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class MASGraphQLEmployerClient {
 
-    private final MASGraphQLEmployerGateway MASGraphQLEmployerGateway;
+    private final MASHttpGraphQLEmployerGateway masHttpGraphQLEmployerGateway;
 
     @Autowired
-    public MASGraphQLEmployerClient(MASGraphQLEmployerGateway MASGraphQLEmployerGateway) {
-        this.MASGraphQLEmployerGateway = MASGraphQLEmployerGateway;
+    public MASGraphQLEmployerClient(MASHttpGraphQLEmployerGateway masHttpGraphQLEmployerGateway) {
+        this.masHttpGraphQLEmployerGateway = masHttpGraphQLEmployerGateway;
     }
 
     public Employer fetchEmployerById(Long id) {
@@ -42,15 +44,27 @@ public class MASGraphQLEmployerClient {
                                                 .hours()
                                 )
                 );
-
         GraphQLRequest gqlRequest = new GraphQLRequest(request, projection);
-        GraphQLResponse response = MASGraphQLEmployerGateway.execute(gqlRequest);
+        // Capture the current context
+        ContextSnapshot snapshot = ContextSnapshotFactory.builder()
+                .contextRegistry(ContextRegistry.getInstance())
+                .build()
+                .captureAll();
 
-        if (response != null) {
-            return response.extractValueAsObject("employer", Employer.class);
-        } else {
-            return null;
+        try {
+            return snapshot
+                    .wrap(() -> {
+                        ClientGraphQlResponse response = masHttpGraphQLEmployerGateway.execute(gqlRequest).block();
+                        if (response != null && response.isValid()) {
+                            return response.field("employer").toEntity(Employer.class);
+                        }
+                        return null;
+                    })
+                    .call();
+        } catch (Exception e) {
+            throw new RuntimeException("GraphQL execution failed", e);
         }
+
     }
 
     public List<Employer> fetchEmployers() {
@@ -71,13 +85,21 @@ public class MASGraphQLEmployerClient {
                 );
 
         GraphQLRequest gqlRequest = new GraphQLRequest(request, projection);
-        GraphQLResponse response = MASGraphQLEmployerGateway.execute(gqlRequest);
-
-        if (response != null) {
-            Object raw = response.getData().get("employers");
-            return new ObjectMapper().convertValue(raw, new TypeReference<>() {});
-        } else {
-            return null;
+        ContextSnapshot snapshot = ContextSnapshotFactory.builder()
+                .contextRegistry(ContextRegistry.getInstance())
+                .build()
+                .captureAll();
+        try {
+            //noinspection unchecked
+            return (List<Employer>)snapshot.wrap(() -> {
+                ClientGraphQlResponse response = masHttpGraphQLEmployerGateway.execute(gqlRequest).block();
+                if (response != null && response.isValid()) {
+                    return response.field("employers").toEntityList(Employer.class);
+                }
+                return Collections.emptyList();
+            }).call();
+        } catch (Exception e) {
+            throw new RuntimeException("GraphQL execution failed", e);
         }
     }
 }

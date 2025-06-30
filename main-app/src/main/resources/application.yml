@@ -21,12 +21,14 @@ security:
 em:
   graphql:
     url: http://localhost:8093/em/graphql
+    service: http://api-gateway/em-service/em/graphql
 
 management:
   tracing:
     propagation:
       consume: [ b3, w3c ]
       produce: [ b3 ]
+      type: b3
     sampling:
       probability: 1.0
   zipkin:

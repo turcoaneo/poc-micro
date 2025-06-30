@@ -4,6 +4,7 @@ import com.poc.microservices.main.app.aop.MainAppAuthorize;
 import com.poc.microservices.main.app.model.MASUserRole;
 import com.poc.microservices.main.app.model.dto.graphql.GraphQLMASEmployerDTO;
 import com.poc.microservices.main.app.service.MASGraphQLService;
+import io.micrometer.observation.annotation.Observed;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -35,6 +36,7 @@ public class MASGraphQLController {
     @ApiResponse(responseCode = "200", description = "Employer EM & EEM data retrieved successfully")
     @MainAppAuthorize({MASUserRole.ADMIN})
     @SecurityRequirement(name = "BearerAuth")
+    @Observed(name = "mas.getEmployer")
     public ResponseEntity<GraphQLMASEmployerDTO> getEmployer(@PathVariable Long id) {
         logger.info("Controller fetching employees working hours for employer {}", id);
         GraphQLMASEmployerDTO dto = service.getEmployerById(id);
@@ -46,7 +48,7 @@ public class MASGraphQLController {
     @ApiResponse(responseCode = "200", description = "Employer EM data retrieved successfully")
     @SecurityRequirement(name = "BearerAuth")
     @MainAppAuthorize({MASUserRole.ADMIN})
-    public ResponseEntity<List<GraphQLMASEmployerDTO>> getEmployer() {
+    public ResponseEntity<List<GraphQLMASEmployerDTO>> getEmployers() {
         List<GraphQLMASEmployerDTO> dto = service.getEmployers();
         return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
     }
