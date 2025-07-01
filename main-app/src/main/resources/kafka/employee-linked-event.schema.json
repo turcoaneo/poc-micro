@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EmployeeLinkedEvent",
+  "type": "object",
+  "required": ["messageId", "employeeId", "jobId", "employerId"],
+  "properties": {
+    "messageId": { "type": "string" },
+    "employeeId": { "type": "string" },
+    "jobId": { "type": "string" },
+    "employerId": { "type": "string" },
+    "workingHours": { "type": "number" }
+  }
+}
