@@ -1,11 +1,13 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="UserAuthenticationApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <option name="ACTIVE_PROFILES" value="local" />
     <envs>
       <env name="SECRET_KEY" value="someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits" />
     </envs>
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="user-auth" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.poc.microservices.user.authentication.UserAuthenticationApplication" />
+    <option name="VM_PARAMETERS" value="-Dspring.datasource.password=Sky_Dev#*75" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="com.poc.microservices.user.authentication.*" />
