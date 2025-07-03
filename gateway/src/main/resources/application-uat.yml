@@ -1,0 +1,6 @@
+management:
+  endpoints:
+    web:
+      base-path: /api-gateway
+      exposure:
+        include: refresh, info
