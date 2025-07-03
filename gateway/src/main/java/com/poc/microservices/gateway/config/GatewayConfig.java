@@ -30,6 +30,8 @@ public class GatewayConfig {
                         .uri("http://localhost:8090/test_service"))
                 .route("em-service", r -> r.path("/em/**")
                         .uri("lb://em-service"))
+                .route("eem-service", r -> r.path("/eem/**")
+                        .uri("lb://eem-service"))
                 .build();
     }
 

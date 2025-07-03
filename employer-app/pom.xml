@@ -18,6 +18,7 @@
         <tomcat.version>10.1.42</tomcat.version>
         <io.grpc.version>1.73.0</io.grpc.version>
         <protobuf.version>4.31.1</protobuf.version>
+        <spring.config.server>4.3.0</spring.config.server>
     </properties>
 
     <dependencies>
@@ -137,8 +138,17 @@
         <!-- Config server -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-            <version>4.3.0</version>
+            <artifactId>spring-cloud-config-client</artifactId>
+            <version>${spring.config.server}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+            <version>${spring.config.server}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
         </dependency>
 
         <!-- GraphQL -->

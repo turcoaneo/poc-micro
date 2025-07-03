@@ -1,0 +1,5 @@
+em:
+  graphql:
+    url: http://localhost:8093/em/graphql
+    service: http://api-gateway/em-service/em/graphql
+

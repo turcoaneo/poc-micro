@@ -19,6 +19,7 @@
         <io.grpc.version>1.73.0</io.grpc.version>
         <protobuf.version>4.31.1</protobuf.version>
         <spring.version>3.5.0</spring.version>
+        <spring.config.server>4.3.0</spring.config.server>
     </properties>
 
     <dependencies>
@@ -122,12 +123,12 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-config-client</artifactId>
-            <version>4.3.0</version>
+            <version>${spring.config.server}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
-            <version>4.3.0</version>
+            <version>${spring.config.server}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
