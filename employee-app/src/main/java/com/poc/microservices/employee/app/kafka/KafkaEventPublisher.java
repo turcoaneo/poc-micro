@@ -5,6 +5,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Properties;
@@ -16,13 +17,15 @@ public class KafkaEventPublisher {
     private final KafkaProducer<String, String> producer;
     private static final String TOPIC = "eem.employees.linked";
 
-    public KafkaEventPublisher() {
-        Properties props = new Properties();
-        props.put("bootstrap.servers", "127.0.0.1:9092"); // Kafka broker
-        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+    public KafkaEventPublisher(@Value("${kafka.hostname}") String hostname, @Value("${kafka.enabled}") String enabled) {
+        if (Boolean.parseBoolean(enabled)) {
+            Properties props = new Properties();
+            props.put("bootstrap.servers", hostname + ":9092"); // Kafka broker
+            props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+            props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        producer = new KafkaProducer<>(props);
+            producer = new KafkaProducer<>(props);
+        } else producer = null;
     }
 
     public void publishEvent(String key, String event) {

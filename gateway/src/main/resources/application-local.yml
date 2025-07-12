@@ -12,6 +12,9 @@ management:
       base-path: /api-gateway
       exposure:
         include: "*"
-  zipkin:
-    tracing:
-      endpoint: http://localhost:9411/api/v2/spans
+#  zipkin:
+#    tracing:
+#      endpoint: http://localhost:9411/api/v2/spans
+
+app:
+  hostname: localhost

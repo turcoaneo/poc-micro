@@ -86,4 +86,9 @@ public class EMEmployerController {
     public ResponseEntity<Set<EmployeeDTO>> getEmployeesByEmployerId(@PathVariable Long id) {
         return ResponseEntity.ok(employerService.getEmployeesByEmployerId(id));
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test EM");
+    }
 }

@@ -4,3 +4,4 @@ management:
       base-path: /api-gateway
       exposure:
         include: refresh, info
+

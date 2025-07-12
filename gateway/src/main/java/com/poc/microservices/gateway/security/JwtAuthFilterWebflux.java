@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,18 +33,25 @@ public class JwtAuthFilterWebflux implements WebFilter {
         logger.info("Trace ID: {}", MDC.get("traceId"));
         String requestUri = exchange.getRequest().getURI().toString();
 
-        List<String> excludedEndpoints = Arrays.asList("/api-gateway", "favicon");
+        HttpMethod httpMethod = exchange.getRequest().getMethod();
+        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+
+        // Bypass auth for GET /, especially for container
+        //noinspection ConstantValue
+        if (HttpMethod.GET.equals(httpMethod) && "/".equals(requestUri) &&
+                (authHeader == null || authHeader.isEmpty())) {
+            logger.debug("Skipping JWT auth for GET / and empty authentication header");
+            return getDummyAdminAuth(exchange, chain);
+        }
+
+        List<String> excludedEndpoints = Arrays.asList("/gateway/test", "/api-gateway", "favicon");
 
         // Skip JWT validation for excluded endpoints
         if (excludedEndpoints.stream().anyMatch(requestUri::contains)) {
             logger.debug("Skipping JWT authentication for endpoint: {}", requestUri);
-            String admin = "ADMIN";
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(admin, null,
-                    List.of(new SimpleGrantedAuthority("ROLE_" + admin)));
-            return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
+            return getDummyAdminAuth(exchange, chain);
         }
         String token = extractToken(exchange);
-        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         logger.debug("Gateway received Authorization Header: {}", authHeader); // Log header before processing
 
 
@@ -52,20 +60,33 @@ public class JwtAuthFilterWebflux implements WebFilter {
             return exchange.getResponse().setComplete();
         }
 
+        return storeAuthContext(exchange, chain, token);
+    }
+
+    private Mono<Void> storeAuthContext(ServerWebExchange exchange, WebFilterChain chain, String token) {
         //  Store authentication context
         String role = new JwtLocalHelperGateway().getRoleFromToken(token, secretKey);
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(role, null, List.of(new SimpleGrantedAuthority("ROLE_" + role)));
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(role, null,
+                List.of(new SimpleGrantedAuthority("ROLE_" + role)));
 
         Mono<SecurityContext> securityContext = Mono.just(new SecurityContextImpl(auth));
         exchange.getAttributes().put(SecurityContext.class.getName(), securityContext);
 
-        return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth)); // Ensures WebFlux security recognizes the user
+        return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
+    }
+
+    private static Mono<Void> getDummyAdminAuth(ServerWebExchange exchange, WebFilterChain chain) {
+        String admin = "ADMIN";
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(admin, null,
+                List.of(new SimpleGrantedAuthority("ROLE_" + admin)));
+        return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
     }
 
     private String extractToken(ServerWebExchange exchange) {
         String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        if (!authHeader.startsWith("Bearer ")) {
+        //noinspection ConstantValue
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             logger.warn("No valid Authorization header found!");
             return null;
         }

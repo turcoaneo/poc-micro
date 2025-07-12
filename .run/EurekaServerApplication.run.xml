@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="EurekaServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <option name="ACTIVE_PROFILES" value="local" />
     <module name="eureka" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.poc.microservices.eureka.EurekaServerApplication" />
     <method v="2">

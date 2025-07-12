@@ -28,6 +28,7 @@ public class SecurityConfigurationEM {
                         .requestMatchers("/em-users/login", "/em-users/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/employers/**").permitAll()
                         .requestMatchers("/graphql", "/em/graphql", "/graphiql/**").permitAll()// graphi browser test
+                        .requestMatchers("/api/employers/test").permitAll()// Docker test
                         .anyRequest().authenticated()
                 );
 

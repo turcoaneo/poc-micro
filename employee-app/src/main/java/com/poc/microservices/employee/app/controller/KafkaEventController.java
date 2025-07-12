@@ -38,6 +38,9 @@ public class KafkaEventController {
         try {
             String key = payload.getOrDefault("messageId", UUID.randomUUID().toString()).toString();
             String event = new ObjectMapper().writeValueAsString(payload);
+            if (kafkaPublisher == null) {
+                return ResponseEntity.ok("Event publishing is stopped");
+            }
             kafkaPublisher.publishEvent(key, event);
             return ResponseEntity.ok("Event published successfully");
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package com.poc.microservices.gateway.config;
 
 import com.poc.microservices.gateway.security.JwtAuthFilterWebflux;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,8 @@ import reactor.core.publisher.Mono;
 @Configuration
 @EnableWebFluxSecurity
 public class GatewayConfig {
+    @Value("${app.hostname}")
+    private String hostname;
 
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
@@ -27,7 +30,7 @@ public class GatewayConfig {
                 .route("uam-service", r -> r.path("/uam/**")
                         .uri("lb://uam-service"))
                 .route("my_route", r -> r.path("/gateway/test/**")
-                        .uri("http://localhost:8090/test_service"))
+                        .uri("http://" + hostname + ":8090/test_service"))
                 .route("em-service", r -> r.path("/em/**")
                         .uri("lb://em-service"))
                 .route("eem-service", r -> r.path("/eem/**")
@@ -41,6 +44,7 @@ public class GatewayConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(auth -> auth
                         .pathMatchers("/actuator/**").permitAll()
+                        .pathMatchers("/gateway/test").permitAll()
                         .anyExchange().authenticated() // Debugging step—allow all traffic for testing
                 )
                 .addFilterAt(new JwtAuthFilterWebflux(), SecurityWebFiltersOrder.AUTHORIZATION) // Apply JWT before authorization

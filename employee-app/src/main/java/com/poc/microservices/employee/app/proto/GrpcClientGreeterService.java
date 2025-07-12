@@ -7,6 +7,7 @@ import com.poc.microservices.proto.HelloResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,10 +15,10 @@ public class GrpcClientGreeterService {
 
     private final GreeterGrpc.GreeterBlockingStub greeterStub;
 
-    public GrpcClientGreeterService() throws Exception {
+    public GrpcClientGreeterService(@Value("${em.grpc.hostname}") String hostname) throws Exception {
         SslContext sslContext = GrpcSslContextHelper.createSslContext();
 
-        ManagedChannel channel = NettyChannelBuilder.forAddress("localhost", 9093)
+        ManagedChannel channel = NettyChannelBuilder.forAddress(hostname, 9093)
                 .sslContext(sslContext)
                 .build();
 

@@ -88,4 +88,9 @@ public class EEMEmployeeController {
         return ResponseEntity.ok(employeeService.getEmployeesByEmployerId(employerId));
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test EEM");
+    }
+
 }

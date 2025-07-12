@@ -117,4 +117,9 @@ public class MASGatewayController {
         });
         return ResponseEntity.ok("trace headers logged");
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test MAS");
+    }
 }

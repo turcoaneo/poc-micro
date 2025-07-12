@@ -24,7 +24,7 @@ public class SecurityConfigurationUAM {
                 .addFilterBefore(new JwtAuthFilterUAM(), UsernamePasswordAuthenticationFilter.class) // Add JWT filter
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
-                        .requestMatchers("/users/login", "/users/register").permitAll()
+                        .requestMatchers("/users/login", "/users/register", "/users/test").permitAll()
                         .anyRequest().authenticated()
                 );
 

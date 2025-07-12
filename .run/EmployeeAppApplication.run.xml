@@ -4,6 +4,7 @@
     <envs>
       <env name="SECRET_KEY" value="someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits" />
       <env name="JKS_KEY" value="changeit" />
+      <env name="HOST" value="localhost" />
     </envs>
     <module name="employee-app" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="com.poc.microservices.employee.app.EmployeeAppApplication" />
