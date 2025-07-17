@@ -13,5 +13,6 @@ import java.util.Set;
 @Setter
 public class MASEmployeeEmployerDTO {
     private Long employerId;
+    private String name;
     private Set<MASEmployeeJobDTO> jobDTOS;
 }

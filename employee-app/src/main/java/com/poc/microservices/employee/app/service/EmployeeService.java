@@ -191,16 +191,17 @@ public class EmployeeService {
     }
 
     private Set<EmployeeJobEmployer> setEmployeeJobEmployers(EmployeeDTO dto, Employee employee) {
-        List<EmployerDTO> employers = dto.getEmployers();
+        List<EmployerDTO> employers = dto.getEmployerDTOS();
         if (CollectionUtils.isEmpty(employers)) return new HashSet<>();
         Set<EmployeeJobEmployer> jobEmployers = new HashSet<>();
         employers.forEach(employerDTO -> {
-            Employer employer = new Employer(null, dto.getId(), employerDTO.getName(), new HashSet<>());
+            Employer employer = new Employer(null, employerDTO.getEmployerId(), employerDTO.getName(), new HashSet<>());
             employerRepository.saveAndFlush(employer);
-            employerDTO.getJobs().forEach(jobDTO -> {
-                Job job = jobRepository.saveAndFlush(new Job(null, jobDTO.getId(), jobDTO.getTitle(), new HashSet<>()));
+            employerDTO.getJobDTOS().forEach(jobDTO -> {
+                Job job = jobRepository.saveAndFlush(new Job(null, jobDTO.getJobId(), jobDTO.getTitle(), new HashSet<>()));
                 jobRepository.saveAndFlush(job);
-                EmployeeJobEmployer jobEmployer = new EmployeeJobEmployer(null, employee, job, employer ,0);
+                EmployeeJobEmployer jobEmployer = new EmployeeJobEmployer(null, employee, job, employer,
+                        jobDTO.getWorkingHours());
                 jobEmployers.add(jobEmployer);
             });
         });

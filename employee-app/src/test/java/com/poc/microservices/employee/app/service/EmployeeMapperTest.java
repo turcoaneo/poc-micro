@@ -50,8 +50,8 @@ class EmployeeMapperTest {
         EmployeeDTO dto = employeeMapper.toDTO(employee);
 
         Assertions.assertEquals("Alice", dto.getName());
-        Assertions.assertEquals(2, dto.getEmployers().size()); // Should have two employers
-        Assertions.assertEquals(2, dto.getEmployers().getFirst().getJobs().size()); // Should have two jobs at first
+        Assertions.assertEquals(2, dto.getEmployerDTOS().size()); // Should have two employers
+        Assertions.assertEquals(2, dto.getEmployerDTOS().getFirst().getJobDTOS().size()); // Should have two jobs at first
         // employer
     }
 
