@@ -5,6 +5,7 @@ import com.poc.microservices.user.authentication.model.entity.User;
 import com.poc.microservices.user.authentication.model.entity.UserRole;
 import com.poc.microservices.user.authentication.repository.UserRepository;
 import com.poc.microservices.user.authentication.service.helper.JwtLocalHelperUAM;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +25,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    @Transactional
     public UserDTO saveUser(UserDTO userDTO) {
         try {
             String password = passwordEncoder.encode(userDTO.getPassword());
             User user = new User(null, userDTO.getUsername(), password, UserRole.valueOf(userDTO.getRole()));
-            User savedUser = userRepository.save(user);
+            User savedUser = userRepository.saveAndFlush(user);
             return new UserDTO(savedUser);
         } catch (RuntimeException runtimeException) {
             logger.error("Could not save ", runtimeException);

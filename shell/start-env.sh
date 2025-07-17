@@ -63,11 +63,12 @@ launch_app "EEM" "-Xms512m -Xmx1024m" "eem.jar" 8094 "--grpc.server.port=9094" "
   -Dkafka.hostname=host.docker.internal \
   -Dmanagement.tracing.enabled=false
 
-launch_app "EEM2" "-Xms512m -Xmx1024m" "eem2.jar" 8095 "--grpc.server.port=9095" "/eem/api/employees/test" \
+launch_app "EEM2" "-Xms512m -Xmx1024m" "eem2.jar" 8095 "--grpc.server.port=9095" "/eem-2/api/employees/test" \
   -Dspring.datasource.password="$DATASOURCE_PASSWORD" \
   -Dspring.datasource.url="$SPRING_DATASOURCE_URL_EEM" \
   -Dkafka.hostname=host.docker.internal \
-  -Dmanagement.tracing.enabled=false
+  -Dmanagement.tracing.enabled=false \
+  -Dspring.mvc.servlet.path=/eem-2
 
 wait
 

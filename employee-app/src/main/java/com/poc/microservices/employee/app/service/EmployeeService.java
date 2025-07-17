@@ -67,17 +67,17 @@ public class EmployeeService {
             });
         }
 
-        employeeRepository.save(employee); // cascade will save EJE too
+        employeeRepository.saveAndFlush(employee); // cascade will save EJE too
     }
 
     public Long createEmployee(EmployeeDTO dto) {
         Employee employee = employeeMapper.toEntity(dto);
         Set<EmployeeJobEmployer> jobEmployers = setEmployeeJobEmployers(dto, employee);
         employee.setJobEmployers(new HashSet<>());
-        Employee saved = employeeRepository.save(employee);
+        Employee saved = employeeRepository.saveAndFlush(employee);
         Long employeeId = saved.getEmployeeId();
 
-        employeeJobEmployerRepository.saveAll(jobEmployers);
+        employeeJobEmployerRepository.saveAllAndFlush(jobEmployers);
         employeeJobEmployerRepository.flush();
         return employeeId;
     }
@@ -143,8 +143,8 @@ public class EmployeeService {
             populateNewMappings(dto, existingMappings, jobId, employee, job, employer, newMappings);
         }
 
-        employeeJobEmployerRepository.saveAll(newMappings);
-        employeeRepository.save(employee);
+        employeeJobEmployerRepository.saveAllAndFlush(newMappings);
+        employeeRepository.saveAndFlush(employee);
 
         return new EEMGenericResponseDTO(employee.getEmployeeId(), "Employee reconciliation successful"
         );
@@ -173,7 +173,7 @@ public class EmployeeService {
                 .findFirst()
                 .orElseGet(() -> {
                     Job newJob = new Job(null, jobId, title, new HashSet<>());
-                    jobRepository.save(newJob);
+                    jobRepository.saveAndFlush(newJob);
                     return newJob;
                 });
     }
@@ -185,7 +185,7 @@ public class EmployeeService {
                 .findFirst()
                 .orElseGet(() -> {
                     Employer newEmp = new Employer(null, dto.getEmployerId(), dto.getEmployerName(), new HashSet<>());
-                    employerRepository.save(newEmp);
+                    employerRepository.saveAndFlush(newEmp);
                     return newEmp;
                 });
     }
@@ -196,10 +196,10 @@ public class EmployeeService {
         Set<EmployeeJobEmployer> jobEmployers = new HashSet<>();
         employers.forEach(employerDTO -> {
             Employer employer = new Employer(null, dto.getId(), employerDTO.getName(), new HashSet<>());
-            employerRepository.save(employer);
+            employerRepository.saveAndFlush(employer);
             employerDTO.getJobs().forEach(jobDTO -> {
-                Job job = jobRepository.save(new Job(null, jobDTO.getId(), jobDTO.getTitle(), new HashSet<>()));
-                jobRepository.save(job);
+                Job job = jobRepository.saveAndFlush(new Job(null, jobDTO.getId(), jobDTO.getTitle(), new HashSet<>()));
+                jobRepository.saveAndFlush(job);
                 EmployeeJobEmployer jobEmployer = new EmployeeJobEmployer(null, employee, job, employer ,0);
                 jobEmployers.add(jobEmployer);
             });

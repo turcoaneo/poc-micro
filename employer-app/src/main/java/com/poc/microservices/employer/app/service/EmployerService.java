@@ -36,7 +36,7 @@ public class EmployerService {
     private final EmployeeMapper employeeMapper;
 
     public Long createEmployer(EmployerDTO employerDTO) {
-        Employer employer = employerRepository.save(employerMapper.toEntity(employerDTO));
+        Employer employer = employerRepository.saveAndFlush(employerMapper.toEntity(employerDTO));
         return employer.getEmployerId();
     }
 
@@ -44,7 +44,7 @@ public class EmployerService {
         return employerRepository.findById(updatedEmployerDTO.getId())
                 .map(existingEmployer -> {
                     existingEmployer.setName(updatedEmployerDTO.getName());
-                    Employer employer = employerRepository.save(existingEmployer);
+                    Employer employer = employerRepository.saveAndFlush(existingEmployer);
                     return employerMapper.toDTO(employer);
                 })
                 .orElseThrow(() -> new RuntimeException("Employer not found"));
@@ -99,10 +99,10 @@ public class EmployerService {
                 Job job = maybeJob.get();
                 employeeRef = setNewEmployee(patchDTO, job, reusableEmployeeMap);
             }
-            if (employeeRef != null) employeeRepository.save(employeeRef);
+            if (employeeRef != null) employeeRepository.saveAndFlush(employeeRef);
         }
 
-        employerRepository.save(employer);
+        employerRepository.saveAndFlush(employer);
         return new EMGenericResponseDTO(patchDTO.getEmployee().getId(), "Added employee");
     }
 
