@@ -93,7 +93,7 @@ class EmployeeServiceTest {
         ));
 
         Mockito.when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
-        Mockito.when(employeeRepository.save(employee)).thenReturn(employee);
+        Mockito.when(employeeRepository.saveAndFlush(employee)).thenReturn(employee);
 
         // When
         employeeService.reconcileEmployee(dto);
@@ -103,8 +103,8 @@ class EmployeeServiceTest {
         Assertions.assertEquals(newTitle1, existingJob1.getTitle());
         Assertions.assertEquals(newTitle2, existingJob2.getTitle());
 
-        Mockito.verify(employeeRepository).save(employee);
-        Mockito.verify(employeeJobEmployerRepository).saveAll(Mockito.any());
+        Mockito.verify(employeeRepository).saveAndFlush(employee);
+        Mockito.verify(employeeJobEmployerRepository).saveAllAndFlush(Mockito.any());
     }
 
     @Test
@@ -131,20 +131,20 @@ class EmployeeServiceTest {
         Mockito.when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
 
         Employer savedEmployer = new Employer(null, employerId, employerName, new HashSet<>());
-        Mockito.when(employerRepository.save(Mockito.any(Employer.class))).thenReturn(savedEmployer);
+        Mockito.when(employerRepository.saveAndFlush(Mockito.any(Employer.class))).thenReturn(savedEmployer);
 
         for (int i = 0; i < jobIds.size(); i++) {
             long jobId = jobIds.get(i);
             String title = jobTitles.get(i);
 
             Job savedJob = new Job(null, jobId, title, new HashSet<>());
-            Mockito.when(jobRepository.save(Mockito.argThat(j -> j != null && jobId == j.getJobId()))).thenReturn(savedJob);
+            Mockito.when(jobRepository.saveAndFlush(Mockito.argThat(j -> j != null && jobId == j.getJobId()))).thenReturn(savedJob);
         }
 
         employeeService.reconcileEmployee(dto);
 
-        Mockito.verify(employeeRepository).save(employee);
-        Mockito.verify(employeeJobEmployerRepository).saveAll(Mockito.any());
+        Mockito.verify(employeeRepository).saveAndFlush(employee);
+        Mockito.verify(employeeJobEmployerRepository).saveAllAndFlush(Mockito.any());
     }
 
 
@@ -161,7 +161,7 @@ class EmployeeServiceTest {
 
         Employee entity = new Employee(0L, "Alice", mappedEntity.getJobEmployers());
 
-        Mockito.when(employeeRepository.save(Mockito.any(Employee.class))).thenReturn(entity);
+        Mockito.when(employeeRepository.saveAndFlush(Mockito.any(Employee.class))).thenReturn(entity);
 
         Long employeeId = employeeService.createEmployee(dto);
 

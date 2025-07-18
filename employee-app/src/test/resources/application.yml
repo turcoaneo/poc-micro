@@ -17,3 +17,11 @@ eem:
 grpc:
   server:
     port: 0  # Dynamically allocates a free port
+
+em:
+  grpc:
+    hostname: localhost
+
+kafka:
+  enabled: false
+  hostname: localhost

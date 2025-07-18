@@ -21,7 +21,22 @@ Others:
 ### Docker containers
 docker run -p 3307:3306 --name pumi-dev-mysql -e MYSQL_ROOT_PASSWORD=*** -e MYSQL_DATABASE=dev_db -d mysql:8.4.4
 docker run -d -p 9411:9411 openzipkin/zipkin
-#### Run Kafka from docker-compose.yml
+#### Run Kafka from docker-compose.yml or better the script below in Docker terminal
+docker run -d --name kafka \
+-p 9092:9092 \
+-p 29093:29093 \
+-e KAFKA_NODE_ID=1 \
+-e KAFKA_PROCESS_ROLES=broker,controller \
+-e KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:29093 \
+-e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+-e KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER \
+-e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+-e KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:29093 \
+-e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
+-e KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 \
+-e KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 \
+-e KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0 \
+apache/kafka:latest
 
 
 ### create schemas in MySQL (Docker) ENV
@@ -50,7 +65,7 @@ Spring Boot: Run all services
 
 Access Swagger pages: http://localhost:<port>/<service-name>/swagger-ui/index.html
 
-#### Port - service-name map / dict: 8091 -> mas; 8092 -> uam; 8093 -> em; 8094 -> eem; 8095 -> eem
+#### Port - service-name mapping: 8091 -> mas; 8092 -> uam; 8093 -> em; 8094 -> eem; 8095 -> eem
 
 Example:
 http://localhost:8091/mas/swagger-ui/index.html
@@ -63,10 +78,10 @@ http://poc-alb-1312740255.eu-north-1.elb.amazonaws.com/uam/swagger-ui/index.html
 
 ## How to
 
-### Register user type with '/register' (no JWT required), e.g., test - 123
+### Register user type with '/mas-users/register' (no JWT required), e.g., test - 123 - ADMIN
 select * from user_auth_db.user_account;
 
-### Login with '/login' (no JWT required), e.g., test - 123
+### Login with '/mas-users/login' (no JWT required), e.g., test - 123 to get ADMIN rights JWT
 
-### Copy JWT and insert in Swagger right top component - Authorize (60' life duration) - \
+### Copy JWT and insert in Swagger right top component - Authorize (60' life duration or YAML) - \
 ###     use controllers, see each service README

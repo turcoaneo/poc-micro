@@ -90,8 +90,8 @@ class EmployerServiceTest {
         Assertions.assertTrue(job1.getEmployees().stream().anyMatch(e -> e.getEmployeeId().equals(employeeId)));
         Assertions.assertFalse(job2.getEmployees().isEmpty());
 
-        Mockito.verify(employerRepository).save(Mockito.any());
-        Mockito.verify(employeeRepository).save(Mockito.any());
+        Mockito.verify(employerRepository).saveAndFlush(Mockito.any());
+        Mockito.verify(employeeRepository).saveAndFlush(Mockito.any());
     }
 
     @Test
@@ -131,8 +131,8 @@ class EmployerServiceTest {
         Assertions.assertEquals("Updated Alice", patchedEmployee.getName());
 
         // No new employee should have been saved
-        Mockito.verify(employeeRepository, Mockito.never()).save(Mockito.any());
-        Mockito.verify(employerRepository).save(Mockito.any());
+        Mockito.verify(employeeRepository, Mockito.never()).saveAndFlush(Mockito.any());
+        Mockito.verify(employerRepository).saveAndFlush(Mockito.any());
     }
 
     @Test
@@ -183,7 +183,7 @@ class EmployerServiceTest {
 
     @Test
     void testCreateEmployer() {
-        when(employerRepository.save(Mockito.any(Employer.class))).thenReturn(employer);
+        when(employerRepository.saveAndFlush(Mockito.any(Employer.class))).thenReturn(employer);
 
         Long result = employerService.createEmployer(employerMapper.toDTO(employer));
 
@@ -198,7 +198,7 @@ class EmployerServiceTest {
         updated.setName("UpdatedCorp");
 
         when(employerRepository.findById(2L)).thenReturn(Optional.of(employer));
-        when(employerRepository.save(Mockito.any())).thenAnswer(inv -> inv.getArgument(0));
+        when(employerRepository.saveAndFlush(Mockito.any())).thenAnswer(inv -> inv.getArgument(0));
 
         EmployerDTO result = employerService.updateEmployer(employerMapper.toDTO(updated));
 

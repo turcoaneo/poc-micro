@@ -38,6 +38,13 @@ public class EmployeeService {
     private final EmployerRepository employerRepository;
     private final EmployeeJobEmployerRepository employeeJobEmployerRepository;
 
+    public List<Integer> findEmployeeIds() {
+        return employeeRepository.findAllEmployeeIds()
+                .stream()
+                .map(Long::intValue)
+                .collect(Collectors.toList());
+    }
+
     public void patchEmployeeAssignment(EmployerEmployeeAssignmentPatchDTO dto) {
         Long employerId = dto.getEmployerId();
         EmployeePatchDTO empPatch = dto.getEmployee();

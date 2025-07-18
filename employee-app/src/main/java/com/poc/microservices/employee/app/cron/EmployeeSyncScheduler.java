@@ -40,13 +40,11 @@ public class EmployeeSyncScheduler {
 
         logger.info("Reconciliation triggered by schedule");
 
-        // Inject via config or env for now
-        Integer employeeId = 1;
-        List<Integer> ids = List.of(employeeId);
+        List<Integer> ids = employeeService.findEmployeeIds();
         GrpcEmployerJobDtoList dtoList = grpcService.getEmployerJobInfo(ids);
 
         if (dtoList == null) {
-            logger.warn("Reconciliation failed for [employeeId={}]", employeeId);
+            logger.warn("Reconciliation failed for [employeeIds={}]", ids);
             return;
         }
 
