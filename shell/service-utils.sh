@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#source "$SCRIPT_DIR/env-config.sh"
-
 detect_host() {
   SPRING_PROFILE="${SPRING_PROFILE:-uat}"
   if [[ "$SPRING_PROFILE" == "local" ]]; then
@@ -27,17 +25,6 @@ detect_host() {
         if [[ "$SPRING_PROFILE" == "uat" ]]; then
 
           grep -q "169.254.169.253" /etc/resolv.conf || echo "nameserver 169.254.169.253" >> /etc/resolv.conf
-#
-#
-#          echo "[DEBUG] Starting DNS check with getent..."
-#          if getent hosts mysql-community-db.cn48a44e27uj.eu-north-1.rds.amazonaws.com >/dev/null; then
-#            echo "[DB CHECK] DNS resolved (via getent)"
-#          else
-#            echo "[DB CHECK] DNS failed (via getent)"
-#          fi
-#
-#          echo "=== NSSwitch config ==="
-#          cat /etc/nsswitch.conf
 
           HOST=$(cat /tmp/eureka-ip.txt)
           export HOST
@@ -50,44 +37,6 @@ detect_host() {
         fi
 
         log_masked_secrets
-
-#        echo "Getting current user"
-#        mysql -h mysql-community-db.cn48a44e27uj.eu-north-1.rds.amazonaws.com \
-#        -u admin -p"$SPRING_DATASOURCE_PASSWORD" -e "SELECT CURRENT_USER();"
-#
-#        echo "Creating user grant SQL"
-#          SQL=$(cat <<EOF
-#SET ROLE 'rds_superuser_role';
-#CREATE USER IF NOT EXISTS 'admin'@'$HOST' IDENTIFIED WITH mysql_native_password BY '$SPRING_DATASOURCE_PASSWORD';
-#GRANT ALL PRIVILEGES ON user_auth_db.* TO 'admin'@'$HOST';
-#GRANT ALL PRIVILEGES ON employer_db.* TO 'admin'@'$HOST';
-#GRANT ALL PRIVILEGES ON employee_db.* TO 'admin'@'$HOST';
-#FLUSH PRIVILEGES;
-#EOF
-#)
-#            echo "Executing SQL:"
-#            echo "$SQL"
-#
-#            echo "GRANTED ALL PRIVILEGES TO admin@$HOST"
-#
-#            mysql -h mysql-community-db.cn48a44e27uj.eu-north-1.rds.amazonaws.com \
-#            -u admin -p"$SPRING_DATASOURCE_PASSWORD" -e "$SQL"
-#
-#            GRANTS=$(mysql -h mysql-community-db.cn48a44e27uj.eu-north-1.rds.amazonaws.com \
-#              -u admin -p"$SPRING_DATASOURCE_PASSWORD" \
-#              -N -B -e "SHOW GRANTS FOR 'admin'@'$HOST';")
-#
-#            echo "Grants for admin@$HOST:"
-#            echo "$GRANTS"
-
-#          if [[ "$SPRING_PROFILE" == "uat" ]]; then
-#            export_uat_datasource_urls
-#            echo "UAT profile — exported DB URLs:"
-#
-#            echo "EM: $SPRING_DATASOURCE_URL_EM"
-#            echo "EEM: $SPRING_DATASOURCE_URL_EEM"
-#            echo "UAM: $SPRING_DATASOURCE_URL_UAM"
-#        fi
   fi
 }
 
@@ -139,11 +88,16 @@ restart_service() {
   fi
 
   echo "$(date '+%Y-%m-%d %H:%M:%S') - Restarting $service_name..."
+
+  mvc_servlet_path=$(echo "/${path#/}" | cut -d'/' -f1,2)
+  echo "Mvc path is $mvc_servlet_path"
+
   java -Dspring.profiles.active="$profile" \
-       -Dspring.datasource.password="$pass" \
-       -Dspring.datasource.url="$jdbc_url" \
-       -Dmanagement.tracing.enabled=false \
-       -jar "/apps/${jar_name}" --server.port="$port" &
+     -Dspring.datasource.password="$pass" \
+     -Dspring.datasource.url="$jdbc_url" \
+     -Dmanagement.tracing.enabled=false \
+     -Dspring.mvc.servlet.path="$mvc_servlet_path" \
+     -jar "/apps/${jar_name}" --server.port="$port" &
 
   wait_for_service "$port" "$path" "$service_name"
 }

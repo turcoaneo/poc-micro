@@ -25,16 +25,9 @@ export_uat_datasource_urls() {
 export HOST="localhost"
 if [[ "$SPRING_PROFILE" == "uat" ]]; then
   export_uat_datasource_urls
+  export HOST="poc-alb-1312740255.eu-north-1.elb.amazonaws.com"
 else
   export_docker_datasource_urls
-#  sleep 1
-#  HOST=$(hostname -I | awk '{print $1}')
-#  export HOST
-#  if [[ "$SPRING_PROFILE" == "docker" ]]; then
-#  echo "Unix dummy process triggered — resolved HOST to $HOST"
-#    export_docker_datasource_urls
-#    echo "Docker profile — exported DB URLs:"
-#  fi
 fi
 
 
@@ -42,11 +35,6 @@ fi
 echo "EM: $SPRING_DATASOURCE_URL_EM"
 echo "EEM: $SPRING_DATASOURCE_URL_EEM"
 echo "UAM: $SPRING_DATASOURCE_URL_UAM"
-
-# Logging profile + secrets (optional)
-#echo "Using Spring profile: \"$SPRING_PROFILE\""
-#echo "Docker HOST: $HOST"
-#echo "DATASOURCE_PASSWORD: \"$DATASOURCE_PASSWORD\"; SECRET_KEY: \"$SECRET_KEY\"; JKS_KEY: \"$JKS_KEY\""
 
 
 

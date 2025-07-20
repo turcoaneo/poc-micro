@@ -18,13 +18,16 @@ import java.util.function.Consumer;
 
 @Configuration
 public class GrpcConfig {
+    private static final String jksKeyName = "JKS_KEY";
+    private final static String DEFAULT_PASSWORD = System.getenv(jksKeyName) != null ? System.getenv(jksKeyName) :
+            System.getProperty(jksKeyName, "jks_pwd"); // default for test contexts
 
     @Bean
     public GrpcServerConfigurer tlsConfigurer() throws Exception {
         String folder = "em-server/";
         String keystoreFile = folder + "server.jks";
         String truststoreFile = folder + "server-truststore.jks";
-        char[] storePass = "changeit".toCharArray();
+        char[] storePass = DEFAULT_PASSWORD.toCharArray();
 
         // Load server keystore (JKS) containing private key and certificate
         KeyStore keyStore = KeyStore.getInstance("JKS");

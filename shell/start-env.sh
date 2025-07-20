@@ -18,8 +18,17 @@ launch_app() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - Launching $name..."
 
   # shellcheck disable=SC2086
-  java $jvm_flags -Dspring.profiles.active="$SPRING_PROFILE" $extra_flags \
-       -jar "/apps/$jar" --server.port="$port" $grpc_port &
+  if [ "$name" = "EEM2" ]; then
+    java $jvm_flags -Dspring.profiles.active="$SPRING_PROFILE" \
+         -Dspring.mvc.servlet.path=/eem-2 \
+         "-Deem.scheduler.cron=$EEM_SCHEDULER_CRON" \
+         $extra_flags \
+         -jar "/apps/$jar" --server.port="$port" $grpc_port &
+  else
+    java $jvm_flags -Dspring.profiles.active="$SPRING_PROFILE" \
+         $extra_flags \
+         -jar "/apps/$jar" --server.port="$port" $grpc_port &
+  fi
   sleep 10
 
   wait_for_service "$port" "$health_path" "$name"
@@ -63,9 +72,16 @@ launch_app "EEM" "-Xms512m -Xmx1024m" "eem.jar" 8094 "--grpc.server.port=9094" "
   -Dkafka.hostname=host.docker.internal \
   -Dmanagement.tracing.enabled=false
 
+  if [ -z "$EEM_SCHEDULER_CRON" ]; then
+    echo "EEM_SCHEDULER_CRON is not set!"
+  else
+    echo "EEM_SCHEDULER_CRON=$EEM_SCHEDULER_CRON"
+  fi
+
 launch_app "EEM2" "-Xms512m -Xmx1024m" "eem2.jar" 8095 "--grpc.server.port=9095" "/eem-2/api/employees/test" \
   -Dspring.datasource.password="$DATASOURCE_PASSWORD" \
   -Dspring.datasource.url="$SPRING_DATASOURCE_URL_EEM" \
+  -Dspring.jpa.hibernate.ddl-auto=update \
   -Dkafka.hostname=host.docker.internal \
   -Dmanagement.tracing.enabled=false \
   -Dspring.mvc.servlet.path=/eem-2

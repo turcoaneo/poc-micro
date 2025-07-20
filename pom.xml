@@ -12,14 +12,14 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>employer-app</module>
+        <module>employee-app</module>
+        <module>user-auth</module>
         <module>main-app</module>
         <module>jwt-library</module>
         <module>eureka</module>
         <module>gateway</module>
         <module>config-server</module>
-        <module>user-auth</module>
-        <module>employer-app</module>
-        <module>employee-app</module>
     </modules>
 
     <groupId>com.poc.microservices</groupId>
