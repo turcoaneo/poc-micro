@@ -1,3 +1,7 @@
+eureka:
+  client:
+    enabled: false
+
 spring:
   config:
     import: optional:configserver:configserver
@@ -11,7 +15,7 @@ spring:
 
 eem:
   scheduler:
-    cron: "*/1 * * * * *"
+    cron: "0/1 * * * * *"
     enabled: true
 
 grpc:
@@ -21,8 +25,16 @@ grpc:
 
 em:
   grpc:
+    tlsEnabled: true
     hostname: localhost
+    port: 0
 
 kafka:
   enabled: false
   hostname: localhost
+  port: 0
+
+jks:
+  client:
+    filePath: client.jks
+    truststore: client-truststore.jks

@@ -10,6 +10,8 @@ import com.poc.microservices.proto.EmployerServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -18,13 +20,16 @@ import java.util.List;
 @GrpcService
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GrpcEmployerServiceImpl extends EmployerServiceGrpc.EmployerServiceImplBase {
+    private static final Logger logger = LoggerFactory.getLogger(GrpcEmployerServiceImpl.class);
 
     private final EmployeeJobService employeeJobService;
 
     @Override
     public void getEmployerJobInfo(EmployeeListRequest request, StreamObserver<EmployerJobInfoList> responseObserver) {
+        List<Integer> employeeIdsList = request.getEmployeeIdsList();
+        logger.info("GRPC Employer job ifo called: {}", employeeIdsList);
         List<EmployeeJobDto> employeeJobDtos = employeeJobService.getEmployeeJobInfo(
-                request.getEmployeeIdsList().stream().map(Long::valueOf).toList() // Convert List<Integer> to List<Long>
+                employeeIdsList.stream().map(Long::valueOf).toList() // Convert List<Integer> to List<Long>
         );
 
         EmployerJobInfoList response = EmployerJobInfoList.newBuilder()

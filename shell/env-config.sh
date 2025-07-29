@@ -25,7 +25,7 @@ export_uat_datasource_urls() {
 export HOST="localhost"
 if [[ "$SPRING_PROFILE" == "uat" ]]; then
   export_uat_datasource_urls
-  export HOST="poc-alb-1312740255.eu-north-1.elb.amazonaws.com"
+#  export HOST="poc-alb-1312740255.eu-north-1.elb.amazonaws.com"
 else
   export_docker_datasource_urls
 fi

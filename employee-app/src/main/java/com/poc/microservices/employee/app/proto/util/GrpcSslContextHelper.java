@@ -15,10 +15,10 @@ public class GrpcSslContextHelper {
             System.getProperty(jksKeyName, "test_pwd"); // default for test contexts
 
     private static final String defaultFolder = "eem-client/";
-    private final static String keyStoreFile = defaultFolder + "client.jks";
-    private final static String trustStoreFile = defaultFolder + "client-truststore.jks";
 
-    public static SslContext createSslContext() throws Exception {
+    public static SslContext createSslContext(String filePath, String truststore) throws Exception {
+        String keyStoreFile = defaultFolder + filePath;
+        String trustStoreFile = defaultFolder + truststore;
         char[] password = DEFAULT_PASSWORD.toCharArray();
 
         // Load keystore containing private key and certificate

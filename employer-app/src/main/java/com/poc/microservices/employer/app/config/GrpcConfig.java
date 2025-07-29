@@ -6,6 +6,9 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import net.devh.boot.grpc.server.serverfactory.GrpcServerConfigurer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,15 +21,25 @@ import java.util.function.Consumer;
 
 @Configuration
 public class GrpcConfig {
+    private static final Logger logger = LoggerFactory.getLogger(GrpcConfig.class);
     private static final String jksKeyName = "JKS_KEY";
     private final static String DEFAULT_PASSWORD = System.getenv(jksKeyName) != null ? System.getenv(jksKeyName) :
             System.getProperty(jksKeyName, "jks_pwd"); // default for test contexts
 
+    @Value("${jks.server.filePath}")
+    private String filePath;
+
+    @Value("${jks.server.truststore}")
+    private String truststore;
+
+    @Value("${grpc.tlsEnabled}")
+    private boolean isTlsEnabled;
+
     @Bean
     public GrpcServerConfigurer tlsConfigurer() throws Exception {
         String folder = "em-server/";
-        String keystoreFile = folder + "server.jks";
-        String truststoreFile = folder + "server-truststore.jks";
+        String keystoreFile = folder + filePath;
+        String truststoreFile = folder + truststore;
         char[] storePass = DEFAULT_PASSWORD.toCharArray();
 
         // Load server keystore (JKS) containing private key and certificate
@@ -54,7 +67,8 @@ public class GrpcConfig {
         //noinspection NullableProblems
         return new GrpcServerConfigurer() {
             public void configure(ServerBuilder<?> serverBuilder) {
-                if (serverBuilder instanceof NettyServerBuilder) {
+                if (serverBuilder instanceof NettyServerBuilder && isTlsEnabled) {
+                    logger.warn("TLS is not enabled this time");
                     ((NettyServerBuilder) serverBuilder).sslContext(sslContext);
                 }
             }

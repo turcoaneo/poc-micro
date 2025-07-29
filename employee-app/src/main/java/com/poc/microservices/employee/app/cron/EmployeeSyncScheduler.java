@@ -3,23 +3,21 @@ package com.poc.microservices.employee.app.cron;
 import com.poc.microservices.employee.app.model.dto.GrpcEmployerJobDtoList;
 import com.poc.microservices.employee.app.proto.GrpcEmployeeClientService;
 import com.poc.microservices.employee.app.service.EmployeeService;
-import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Component
-@NoArgsConstructor
 public class EmployeeSyncScheduler {
     private static final Logger logger = LoggerFactory.getLogger(EmployeeSyncScheduler.class);
 
-    private SchedulerProperties schedulerProperties;
-    private GrpcEmployeeClientService grpcService;
-    private EmployeeService employeeService;
+    private final SchedulerProperties schedulerProperties;
+    private final GrpcEmployeeClientService grpcService;
+    private final EmployeeService employeeService;
 
     @Autowired
     public EmployeeSyncScheduler(SchedulerProperties schedulerProperties, GrpcEmployeeClientService grpcService,
@@ -29,8 +27,14 @@ public class EmployeeSyncScheduler {
         this.employeeService = employeeService;
     }
 
+    @PostConstruct
+    public void init() {
+        logger.info("EmployeeSyncScheduler initialized");
+        logger.info("SchedulerProperties initialized {}", schedulerProperties.isEnabled());
+    }
 
-    @Scheduled(cron = "${eem.scheduler.cron}")
+
+//    @Scheduled(cron = "0/1 * * * * *") // directly hard-coded
     public void runEmployeeReconciliation() {
         logger.info("SchedulerProperties instance: {}", System.identityHashCode(schedulerProperties));
         if (!schedulerProperties.isEnabled()) {

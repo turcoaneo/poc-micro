@@ -1,18 +1,18 @@
 eureka:
   instance:
-    hostname: ${EIP}
+    hostname: ${HOST}
     preferIpAddress: true
-    ip-address: ${EIP}
+    ip-address: ${HOST}
     nonSecurePort: 8761
     leaseRenewalIntervalInSeconds: 10
     leaseExpirationDurationInSeconds: 30
-    statusPageUrl: http://${EIP}:8761/info
-    healthCheckUrl: http://${EIP}:8761/actuator/health
-    homePageUrl: http://${EIP}:8761/
+    statusPageUrl: http://${HOST}:8761/info
+    healthCheckUrl: http://${HOST}:8761/actuator/health
+    homePageUrl: http://${HOST}:8761/
     metadataMap:
       instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     serviceUrl:
-      defaultZone: http://${EIP}:8761/eureka/
+      defaultZone: http://${HOST}:8761/eureka/
 server:
   address: 0.0.0.0

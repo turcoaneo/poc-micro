@@ -20,15 +20,10 @@ class KafkaEventPublisherTest {
         //noinspection unchecked
         mockedProducer = Mockito.mock(KafkaProducer.class);
 
-        publisher = new KafkaEventPublisher("127.0.0.1", "false") {
+        publisher = new KafkaEventPublisher("127.0.0.1", "90", "false", "false", "plaintext", "test", "test", "test") {
             @Override
             public void publishEvent(String key, String event) {
                 mockedProducer.send(new ProducerRecord<>("eem.employees.linked", key, event));
-            }
-
-            @Override
-            public void close() {
-                mockedProducer.close();
             }
         };
     }

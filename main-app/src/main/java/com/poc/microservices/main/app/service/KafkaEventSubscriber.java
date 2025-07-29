@@ -22,7 +22,7 @@ public class KafkaEventSubscriber {
 
     @KafkaListener(
             id = "eem-listener",
-            topics = "eem.employees.linked",
+            topics = KafkaConsumerConfig.TOPIC,
             groupId = KafkaConsumerConfig.GROUP_NAME,
             autoStartup = "${kafka.enabled}"
     )

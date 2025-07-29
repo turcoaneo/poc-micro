@@ -1,9 +1,9 @@
 #!/bin/bash
 
-detect_host() {
+detect_host_eip() {
   SPRING_PROFILE="${SPRING_PROFILE:-uat}"
   if [[ "$SPRING_PROFILE" == "local" ]]; then
-    export HOST="localhost"
+    export EIP="localEIP"
   else
     echo "Waiting for IP to appear at /tmp/eureka-ip.txt..."
 
@@ -26,11 +26,11 @@ detect_host() {
 
           grep -q "169.254.169.253" /etc/resolv.conf || echo "nameserver 169.254.169.253" >> /etc/resolv.conf
 
-          HOST=$(cat /tmp/eureka-ip.txt)
-          export HOST
-          echo "Discovered $name IP: $HOST"
+          EIP=$(cat /tmp/eureka-ip.txt)
+          export EIP
+          echo "Discovered EIP IP: $EIP"
 
-          grep -q "$HOST" /etc/hosts || echo "$HOST mysql-community-db.cn48a44e27uj.eu-north-1.rds.amazonaws.com" >> /etc/hosts
+          grep -q "$EIP" /etc/hosts || echo "$EIP mysql-community-db.cn48a44e27uj.eu-north-1.rds.amazonaws.com" >> /etc/hosts
 
           echo "=== DNS Resolver Check ==="
           cat /etc/resolv.conf

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,7 @@ public class KafkaEventController {
 
     private final KafkaEventPublisher kafkaPublisher;
 
+    @Autowired
     public KafkaEventController(KafkaEventPublisher kafkaPublisher) {
         this.kafkaPublisher = kafkaPublisher;
     }
@@ -38,7 +40,7 @@ public class KafkaEventController {
         try {
             String key = payload.getOrDefault("messageId", UUID.randomUUID().toString()).toString();
             String event = new ObjectMapper().writeValueAsString(payload);
-            if (kafkaPublisher == null) {
+            if (kafkaPublisher == null || kafkaPublisher.getProducer() == null) {
                 return ResponseEntity.ok("Event publishing is stopped");
             }
             kafkaPublisher.publishEvent(key, event);

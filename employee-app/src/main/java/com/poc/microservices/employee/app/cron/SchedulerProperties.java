@@ -12,4 +12,5 @@ import org.springframework.stereotype.Component;
 @Getter @Setter
 public class SchedulerProperties {
     private boolean enabled;
+    private String cron;
 }
