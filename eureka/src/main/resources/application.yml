@@ -6,6 +6,7 @@ eureka:
     registerWithEureka: false  # No need for Eureka itself to register
     fetchRegistry: false
   instance:
+#    hostname: ${HOST}
     hostname: localhost
     lease-renewal-interval-in-seconds: 30
   server:

@@ -69,4 +69,9 @@ public class UserController {
 
         return ResponseEntity.ok(jwtToken);
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test UAM");
+    }
 }

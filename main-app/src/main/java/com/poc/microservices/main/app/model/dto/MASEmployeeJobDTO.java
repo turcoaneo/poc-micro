@@ -11,5 +11,6 @@ import lombok.Setter;
 @Setter
 public class MASEmployeeJobDTO {
     private Long jobId;
+    private String title;
     private Integer workingHours;
 }

@@ -20,7 +20,12 @@ public class KafkaEventSubscriber {
 
     private final KafkaMessageValidator validator;
 
-    @KafkaListener(topics = "eem.employees.linked", groupId = KafkaConsumerConfig.GROUP_NAME)
+    @KafkaListener(
+            id = "eem-listener",
+            topics = KafkaConsumerConfig.TOPIC,
+            groupId = KafkaConsumerConfig.GROUP_NAME,
+            autoStartup = "${kafka.enabled}"
+    )
     public void listen(String message) {
         if (validator.isValid(message)) {
             logger.info("Valid message received: {}", message);

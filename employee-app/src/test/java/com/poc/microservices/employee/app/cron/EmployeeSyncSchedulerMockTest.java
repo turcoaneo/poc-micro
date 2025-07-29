@@ -39,6 +39,8 @@ class EmployeeSyncSchedulerMockTest {
 
     @Test
     void testEmployeeIsReconciled() {
+        List<Integer> mockLongIds = List.of(1);
+        Mockito.when(employeeService.findEmployeeIds()).thenReturn(mockLongIds);
         GrpcEmployerJobDto dto = new GrpcEmployerJobDto(1L, "Employee X", 100L, "Test Employer", Map.of(1L, "Dev"));
         GrpcEmployerJobDtoList dtoList = new GrpcEmployerJobDtoList(List.of(dto));
 
@@ -46,6 +48,7 @@ class EmployeeSyncSchedulerMockTest {
 
         scheduler.runEmployeeReconciliation();
 
+        Mockito.verify(employeeService).findEmployeeIds();
         Mockito.verify(employeeService).reconcileEmployee(dto);
     }
 }

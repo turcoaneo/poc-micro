@@ -14,5 +14,5 @@ import java.util.List;
 public class EmployeeDTO {
     private Long id = null;
     private String name;
-    private List<EmployerDTO> employers;
+    private List<EmployerDTO> employerDTOS;
 }

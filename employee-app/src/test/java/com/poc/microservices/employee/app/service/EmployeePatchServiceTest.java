@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -54,6 +55,21 @@ class EmployeePatchServiceTest {
     }
 
     @Test
+    void shouldReturnAllEmployeeIdsAsIntegers() {
+        // Given
+        List<Long> mockLongIds = List.of(101L, 102L);
+        Mockito.when(employeeRepository.findAllEmployeeIds()).thenReturn(mockLongIds);
+
+        // When
+        List<Integer> result = employeeService.findEmployeeIds();
+
+        // Then
+        List<Integer> expected = List.of(101, 102);
+        Assertions.assertEquals(expected, result);
+        Mockito.verify(employeeRepository).findAllEmployeeIds();
+    }
+
+    @Test
     void patchAssignment_updatesNameAndWorkingHours() {
         // Given
         Mockito.when(employeeRepository.findById(777L)).thenReturn(Optional.of(employee));
@@ -75,6 +91,6 @@ class EmployeePatchServiceTest {
         Assertions.assertEquals("Updated Name", employee.getName());
         EmployeeJobEmployer eje = employee.getJobEmployers().iterator().next();
         Assertions.assertEquals(25, eje.getWorkingHours());
-        Mockito.verify(employeeRepository).save(employee);
+        Mockito.verify(employeeRepository).saveAndFlush(employee);
     }
 }

@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class JobDTO {
-    private Long id;
+    private Long jobId;
     private String title;
     private Integer workingHours;
 }

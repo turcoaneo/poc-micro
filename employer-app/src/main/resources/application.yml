@@ -1,5 +1,6 @@
 spring:
   config:
-    import: optional:configserver:configserver
+#    import: optional:configserver:configserver
+    import: optional:configserver:http://${HOST}:8888
   application:
     name: em-service

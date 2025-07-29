@@ -13,3 +13,11 @@ eem:
   fallback:
     cache-enabled: true
     cache-path: "target/test-working-hours.csv"
+
+jks:
+  server:
+    filePath: server.jks
+    truststore: server-truststore.jks
+
+grpc:
+  tlsEnabled: false

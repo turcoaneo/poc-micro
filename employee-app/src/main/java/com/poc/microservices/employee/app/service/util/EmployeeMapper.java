@@ -8,6 +8,7 @@ import com.poc.microservices.employee.app.model.dto.EmployeeDTO;
 import com.poc.microservices.employee.app.model.dto.EmployerDTO;
 import com.poc.microservices.employee.app.model.dto.JobDTO;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,12 +25,14 @@ public class EmployeeMapper {
 
         Set<EmployeeJobEmployer> jobEmployers = new HashSet<>();
 
-        if (dto.getEmployers() != null) {
-            for (EmployerDTO employerDTO : dto.getEmployers()) {
-                Employer employer = new Employer(null, employerDTO.getId(), employerDTO.getName(), new HashSet<>());
+        if (dto.getEmployerDTOS() != null) {
+            for (EmployerDTO employerDTO : dto.getEmployerDTOS()) {
+                Employer employer = new Employer(null, employerDTO.getEmployerId(), employerDTO.getName(), new HashSet<>());
 
-                for (JobDTO jobDTO : employerDTO.getJobs()) {
-                    Job job = new Job(null, jobDTO.getId(), jobDTO.getTitle(), new HashSet<>());
+                if (CollectionUtils.isEmpty(employerDTO.getJobDTOS())) break;
+
+                for (JobDTO jobDTO : employerDTO.getJobDTOS()) {
+                    Job job = new Job(null, jobDTO.getJobId(), jobDTO.getTitle(), new HashSet<>());
                     jobEmployers.add(new EmployeeJobEmployer(null, employee, job, employer, jobDTO.getWorkingHours()));
                 }
             }
@@ -52,10 +55,10 @@ public class EmployeeMapper {
 
             employerMap.computeIfAbsent(employer.getEmployerId(), id ->
                     new EmployerDTO(id, employer.getName(),
-                            new ArrayList<>())).getJobs().add(new JobDTO(job.getJobId(), job.getTitle(), jobEmployer.getWorkingHours()));
+                            new ArrayList<>())).getJobDTOS().add(new JobDTO(job.getJobId(), job.getTitle(), jobEmployer.getWorkingHours()));
         }
 
-        dto.setEmployers(new ArrayList<>(employerMap.values()));
+        dto.setEmployerDTOS(new ArrayList<>(employerMap.values()));
         return dto;
     }
 }

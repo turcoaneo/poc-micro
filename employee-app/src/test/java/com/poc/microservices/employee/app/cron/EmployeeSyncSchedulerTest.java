@@ -12,8 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -24,6 +29,19 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+@TestConfiguration
+class TestSchedulerConfig implements SchedulingConfigurer {
+
+    @Autowired
+    private EmployeeSyncScheduler employeeSyncScheduler;
+
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar registrar) {
+        registrar.addCronTask(employeeSyncScheduler::runEmployeeReconciliation, "*/1 * * * * *");
+    }
+}
+
+@Import(TestSchedulerConfig.class)
 @SpringBootTest
 @EnableScheduling
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

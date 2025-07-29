@@ -4,6 +4,7 @@ import com.poc.microservices.employee.app.model.Employee;
 import com.poc.microservices.employee.app.model.EmployeeJobEmployer;
 import com.poc.microservices.employee.app.model.Employer;
 import com.poc.microservices.employee.app.model.Job;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -14,8 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -32,6 +31,26 @@ class EmployeeJobEmployerRepositoryTest {
 
     @Autowired
     private EmployerRepository employerRepository;
+
+    @Test
+    void shouldInsertTwoEmployeesAndFetchTheirIds() {
+        // Create two employees with empty jobEmployers
+        Employee emp1 = new Employee(null, "Alice", new HashSet<>());
+        Employee emp2 = new Employee(null, "Bob", new HashSet<>());
+
+        // Save them
+        employeeRepository.save(emp1);
+        employeeRepository.save(emp2);
+
+        // Fetch all employees IDs
+        List<Long> ids = employeeRepository.findAllEmployeeIds();
+
+        // Print or assert
+        System.out.println("Employee IDs: " + ids);
+        Assertions.assertTrue(ids.contains(emp1.getEmployeeId()));
+        Assertions.assertTrue(ids.contains(emp2.getEmployeeId()));
+    }
+
 
     @Test
     void testReconciliationShouldNotDuplicateMappings() {
@@ -57,10 +76,10 @@ class EmployeeJobEmployerRepositoryTest {
 
         employerRepository.save(employer);
         // Sanity check before update
-        assertEquals(2, employee.getJobEmployers().size());
-        assertEquals(2, employer.getEmployeesJobs().size());
-        assertEquals(1, job1.getJobEmployees().size());
-        assertEquals(1, job2.getJobEmployees().size());
+        Assertions.assertEquals(2, employee.getJobEmployers().size());
+        Assertions.assertEquals(2, employer.getEmployeesJobs().size());
+        Assertions.assertEquals(1, job1.getJobEmployees().size());
+        Assertions.assertEquals(1, job2.getJobEmployees().size());
 
         // Step 2: Fetch fresh instance and simulate name/title patch
         Employee fetched = employeeRepository.findById(employee.getEmployeeId()).orElseThrow();
@@ -76,15 +95,15 @@ class EmployeeJobEmployerRepositoryTest {
         Employee reloaded = employeeRepository.findById(fetched.getEmployeeId()).orElseThrow();
         Set<EmployeeJobEmployer> updatedMappings = reloaded.getJobEmployers();
 
-        assertEquals(2, updatedMappings.size(), "Should still have 2 mappings after update");
+        Assertions.assertEquals(2, updatedMappings.size(), "Should still have 2 mappings after update");
 
         for (EmployeeJobEmployer eje : updatedMappings) {
-            assertEquals("Updated Employer", eje.getEmployer().getName());
-            assertTrue(eje.getJob().getTitle().startsWith("Updated"), "Job title should be updated");
+            Assertions.assertEquals("Updated Employer", eje.getEmployer().getName());
+            Assertions.assertTrue(eje.getJob().getTitle().startsWith("Updated"), "Job title should be updated");
         }
 
         List<EmployeeJobEmployer> all = employeeJobEmployerRepository.findAll();
-        assertEquals(2, all.size(), "No duplicate EJE entries should be created");
+        Assertions.assertEquals(2, all.size(), "No duplicate EJE entries should be created");
     }
 
 
@@ -108,14 +127,14 @@ class EmployeeJobEmployerRepositoryTest {
         List<Employee> employeesAtTechCorpDev = employeeJobEmployerRepository.findEmployeesByJobAndEmployer(devJob.getJobId(), employer1.getEmployerId());
         List<Employee> employeesAtDataLabsData = employeeJobEmployerRepository.findEmployeesByJobAndEmployer(dataJob.getJobId(), employer2.getEmployerId());
 
-        assertEquals(2, employeesAtTechCorpDev.size()); // Alice & Bob work at TechCorp as Developers
-        assertEquals(1, employeesAtDataLabsData.size()); // Only Bob works at DataLabs as a Data Scientist
+        Assertions.assertEquals(2, employeesAtTechCorpDev.size()); // Alice & Bob work at TechCorp as Developers
+        Assertions.assertEquals(1, employeesAtDataLabsData.size()); // Only Bob works at DataLabs as a Data Scientist
 
-        assertEquals("Alice", employeesAtTechCorpDev.getFirst().getName());
-        assertEquals("Bob", employeesAtTechCorpDev.get(1).getName());
+        Assertions.assertEquals("Alice", employeesAtTechCorpDev.getFirst().getName());
+        Assertions.assertEquals("Bob", employeesAtTechCorpDev.get(1).getName());
 
-        assertEquals("Bob", employeesAtDataLabsData.getFirst().getName());
-        assertEquals(1, employeesAtDataLabsData.size()); // Only Bob works at DataLabs
+        Assertions.assertEquals("Bob", employeesAtDataLabsData.getFirst().getName());
+        Assertions.assertEquals(1, employeesAtDataLabsData.size()); // Only Bob works at DataLabs
     }
 
     @Test
@@ -135,6 +154,6 @@ class EmployeeJobEmployerRepositoryTest {
 
         List<Job> bobJobs = employeeJobEmployerRepository.findJobsByEmployeeId(bob.getEmployeeId());
 
-        assertEquals(2, bobJobs.size()); // Bob should have two jobs across two employers
+        Assertions.assertEquals(2, bobJobs.size()); // Bob should have two jobs across two employers
     }
 }

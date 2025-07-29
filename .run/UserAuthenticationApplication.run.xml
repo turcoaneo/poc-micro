@@ -3,6 +3,7 @@
     <option name="ACTIVE_PROFILES" value="local" />
     <envs>
       <env name="SECRET_KEY" value="someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits" />
+      <env name="HOST" value="localhost" />
     </envs>
     <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
     <module name="user-auth" />

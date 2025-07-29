@@ -24,13 +24,13 @@ import java.util.List;
 public class JwtAuthFilterMAS extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthFilterMAS.class);
 
-    @Value("#{'${security.excludedEndpoints:/mas/mas-users/login,/mas/mas-users/register}'.split(',')}")
+    @Value("#{'${security.excludedEndpoints:/mas/mas-users/login,/mas/mas-users/register,/mas/gateway/test}'.split(',')}")
     private List<String> excludedEndpoints = new ArrayList<>();
 
     public JwtAuthFilterMAS() {
         super();
         if (excludedEndpoints.isEmpty() || (excludedEndpoints.size() == 1 && excludedEndpoints.getFirst().isBlank())) {
-            excludedEndpoints.addAll(Arrays.asList("/mas/mas-users/login", "/mas/mas-users/register"));
+            excludedEndpoints.addAll(Arrays.asList("/mas/mas-users/login", "/mas/mas-users/register", "/mas/gateway/test"));
         }
     }
 

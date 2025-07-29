@@ -27,6 +27,7 @@ public class SecurityConfigurationMAS {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .requestMatchers("/mas-users/login", "/mas-users/register", "/mas-users/test").permitAll()
+                        .requestMatchers("/mas-gateway/test").permitAll()
 //                        .requestMatchers("/graphql/employer/**", "/graphql/employers/**").permitAll()
                         .anyRequest().authenticated()
                 );
