@@ -1,0 +1,82 @@
+## docker - mysql
+docker run -p 3307:3306 --name pumi-dev-mysql -e MYSQL_ROOT_PASSWORD=Sky_Dev#*75 -e MYSQL_DATABASE=dev_db -d mysql:8.4.4
+### enter docker mysql bash
+docker exec -it pumi-dev-mysql /bin/bash
+### check version
+docker exec my-mysql bash -c "mysql -V" or docker inspect mysql | grep MYSQL_
+
+docker run -d --name kafka \
+  -p 9092:9092 \
+  -e KAFKA_PROCESS_ROLES=broker,controller \
+  -e KAFKA_NODE_ID=1 \
+  -e KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9096 \  
+  -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9096 \
+  -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+  -e KAFKA_LOG_DIRS=/tmp/kraft-combined-logs \
+  apache/kafka:latest
+
+docker run -d --name kafka \
+  -p 9092:9092 \
+  -e KAFKA_PROCESS_ROLES=broker,controller \
+  -e KAFKA_NODE_ID=1 \
+  -e KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093 \
+  -e KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092 \
+  -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 \
+  -e KAFKA_LOG_DIRS=/tmp/kraft-combined-logs \
+  apache/kafka:latest
+
+./shell/build-monolith.sh
+aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin <aws-user-id>.dkr.ecr.eu-north-1.amazonaws.com
+docker tag monolith-poc:latest <aws-user-id>.dkr.ecr.eu-north-1.amazonaws.com/poc-micro-uat:latest
+docker push <aws-user-id>.dkr.ecr.eu-north-1.amazonaws.com/poc-micro-uat:latest
+  
+docker network create dev-net
+
+# Start MySQL in dev-net
+docker run --network dev-net -p 3307:3306 --name pumi-dev-mysql \
+  -e MYSQL_ROOT_PASSWORD=Sky_Dev#*75 \
+  -e MYSQL_DATABASE=dev_db \
+  -d mysql:8.4.4
+
+# Start your monolith PoC in dev-net
+docker run --network dev-net -it --rm \
+  -p 8761:8761 -p 8090-8095:8090-8095 -p 9093-9095:9093-9095 \
+  monolith-poc sh -c \
+  'DATASOURCE_PASSWORD=Sky_Dev#*75 SECRET_KEY=someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits JKS_KEY=changeit SPRING_PROFILE=docker HOST=localhost /apps/start-env.sh'
+  
+docker run --network dev-net -it --rm \
+  -p 8761:8761 -p 8090-8095:8090-8095 -p 9093-9095:9093-9095 \
+  monolith-poc sh
+  
+DATASOURCE_PASSWORD=Sky_Dev#*75 SECRET_KEY=someUsefulLargeEnoughSecretKeyToBeAtLeast256Bits JKS_KEY=changeit SPRING_PROFILE=docker MAX_WAIT=30 /apps/start-env.sh
+
+
+aws ecs describe-tasks \
+   --cluster cluster-pumi \
+   --tasks arn:aws:ecs:eu-north-1:<aws-user-id>:task/cluster-pumi/7cbdf818a8c04943a1fb8e1138f22db3 \
+   --query "tasks[0].group"
+#"service:service-poc-micro-uat"
+
+default-vpc-09e7103010a36374b
+
+aws ecs update-service \
+  --cluster cluster-pumi \
+  --service service-poc-micro-uat \
+  --task 8c5fdef9ce1d41ff9d0d5a29936333e8 \
+  --enable-execute-command \
+  --force-new-deployment
+
+aws ecs execute-command \
+  --cluster cluster-pumi \
+  --task 8c5fdef9ce1d41ff9d0d5a29936333e8 \
+  --container container-poc-micro-uat \
+  --interactive \
+  --command "/bin/cat /etc/resolv.conf"
+  
+aws ecs describe-tasks \
+  --cluster cluster-pumi \
+  --tasks b60a80a5ea5f4aaa8466642792af769d \
+  --query "tasks[0].attachments[0].details"
+  
+  $ aws ecs list-tasks --cluster cluster-pumi --desired-status STOPPED
+$ nslookup mysql-community-db.cn48a44e27uj.eu-north-1.rds.amazonaws.com

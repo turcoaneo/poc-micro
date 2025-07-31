@@ -93,11 +93,13 @@ launch_app "EEM2" "-Xms512m -Xmx1024m" "eem2.jar" 8095 "--grpc.server.port=9095"
   -Dspring.jpa.hibernate.ddl-auto=update \
   -Dmanagement.tracing.enabled=false \
   -Dkafka.enabled=true \
-  -Deem.scheduler.enabled=false
+  -Deem.scheduler.enabled=false \
+  -Djavax.net.debug=ssl:handshake
 
 launch_app "MAS" "-Xms512m -Xmx1024m" "mas.jar" 8091 "" "/mas/mas-gateway/test" \
   -Dmanagement.tracing.enabled=false \
-  -Dspring.datasource.password="$DATASOURCE_PASSWORD"
+  -Dspring.datasource.password="$DATASOURCE_PASSWORD" \
+  -Djavax.net.debug=ssl:handshake
 
 wait
 

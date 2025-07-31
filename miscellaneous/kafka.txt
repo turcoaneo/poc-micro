@@ -1,0 +1,49 @@
+# Kafka msg
+{
+  "messageId": "abc-123",
+  "employeeId": "emp-777",
+  "jobId": "job-42",
+  "employerId": "em-99",
+  "workingHours": 40
+}
+
+#Read messages
+docker run --rm -it \
+  --network="host" \
+  confluentinc/cp-kafka:7.5.0 \
+  kafka-console-consumer \
+  --bootstrap-server localhost:9092 \
+  --topic eem.employees.linked \
+  --from-beginning \
+  --timeout-ms 3000
+
+#Publish
+docker run --rm -it \
+  --network="host" \
+  confluentinc/cp-kafka:7.5.0 \
+  kafka-console-producer \
+  --broker-list localhost:9092 \
+  --topic eem.employees.linked
+  
+  
+#Purge
+docker run --rm -it \
+  --network="host" \
+  confluentinc/cp-kafka:7.5.0 \
+  kafka-configs \
+  --bootstrap-server localhost:9092 \
+  --alter \
+  --entity-type topics \
+  --entity-name eem.employees.linked \
+  --add-config retention.ms=1000,segment.ms=1000
+
+#Reset purge
+docker run --rm -it \
+  --network="host" \
+  confluentinc/cp-kafka:7.5.0 \
+  kafka-configs \
+  --bootstrap-server localhost:9092 \
+  --alter \
+  --entity-type topics \
+  --entity-name eem.employees.linked \
+  --delete-config retention.ms

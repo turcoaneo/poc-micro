@@ -1,5 +1,6 @@
 package com.poc.microservices.main.app.config;
 
+import com.poc.microservices.main.app.config.helper.JKSFileUtil;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.jetbrains.annotations.NotNull;
@@ -15,10 +16,6 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,9 +32,9 @@ public class KafkaConsumerConfig {
     private String activeProfile;
     @Value("${kafka.security:ssl}")
     String security;
-    @Value("${jks.client.filePath:localDummy}")
+    @Value("${kafka.filePath:localDummy}")
     String filePath;
-    @Value("${jks.client.truststore:localDummy}")
+    @Value("${kafka.truststore:localDummy}")
     String truststore;
 
     public static final String GROUP_NAME = "mas-consumer";
@@ -48,36 +45,36 @@ public class KafkaConsumerConfig {
         logger.info("MAS Kafka bean for listening on {} is enabled on port {}", hostname, port);
         Map<String, Object> props = getKafkaProps();
         if (!"local".equals(activeProfile) && !"plaintext".equals(security)) {
-            setKafkaAdditionalProps(props);
+            setKafkaSSLProps(props);
         }
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
-    private void setKafkaAdditionalProps(Map<String, Object> props) {
+    private void setKafkaSSLProps(Map<String, Object> props) {
+        String keyName = "JKS_KEY";
+        String secretKey = System.getenv(keyName) != null ? System.getenv(keyName) : System.getProperty(keyName);
+        props.put("security.protocol", "SSL");
+        props.put("ssl.key.password", secretKey);
+
         String defaultFolder = "kafka/";
         String keyStoreFile = defaultFolder + filePath;
         String trustStoreFile = defaultFolder + truststore;
 
         File tempClient = getTempJKSFile("client", keyStoreFile);
-        if (tempClient != null) props.put("ssl.keystore.location", tempClient.getAbsolutePath());
+        if (tempClient != null) {
+            props.put("ssl.keystore.password", secretKey);
+            props.put("ssl.keystore.location", tempClient.getAbsolutePath());
+        }
 
         File tempTrustStore = getTempJKSFile("truststore", trustStoreFile);
-        if (tempTrustStore != null) props.put("ssl.truststore.location", tempTrustStore.getAbsolutePath());
+        if (tempTrustStore != null) {
+            props.put("ssl.truststore.password", secretKey);
+            props.put("ssl.truststore.location", tempTrustStore.getAbsolutePath());
+        }
     }
 
     private File getTempJKSFile(String tempFile, String filePath) {
-        try {
-            File temp = File.createTempFile(tempFile, ".jks");
-            try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath)) {
-                if (inputStream == null) return null;
-                Files.copy(inputStream, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                logger.info("Created temp {}", temp);
-                return temp;
-            }
-        } catch (IOException e) {
-            logger.error("Cannot copy input stream for {}", tempFile, e);
-        }
-        return null;
+        return JKSFileUtil.loadTempJKS(tempFile, filePath);
     }
 
     @NotNull
