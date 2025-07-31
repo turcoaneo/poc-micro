@@ -9,6 +9,19 @@ A scheduler that is configured to be enabled through Config Server
 ## A controller method that exposes a simple message to MAS using Kafka /actuator/refresh
 MAS is automatically consuming the message through a listener
 
+## Kafka on AWS using Swagger
+/api/employees/events/publish
+{
+"messageId": "abc-123",
+"employeeId": "emp-777",
+"jobId": "job-42",
+"employerId": "em-99",
+"workingHours": 40
+}
+
+### MAS consumes this automatically but also checks for schema validation, e.g., messageId
+
+
 ## Kafka Docker commands (for local ENV rather)
 ### Read messages
 docker run --rm -it \

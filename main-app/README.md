@@ -31,8 +31,10 @@ Hours are not determined hence they are null
 ### GraphQL - fetch employers from EM plus employees from EEM using feign client /graphql/employer/{id}
 Hours are obtained from EEM for each employee that is correlated with employer - job
 
-### Get in-memory Kafka messages /api/messages/received
+### Get in-memory Kafka messages 
+GET /api/messages/received
 Messages are published in EEM and a permanent listener logs them automatically; they are also stored in app memory
 
-### Delete in-memory Kafka messages /api/messages/received
+### Delete in-memory Kafka messages 
+DELETE /api/messages/received
 Published messages by EEM can be deleted from app memory
