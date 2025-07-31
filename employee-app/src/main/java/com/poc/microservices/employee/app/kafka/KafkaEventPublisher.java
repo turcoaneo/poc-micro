@@ -37,15 +37,16 @@ public class KafkaEventPublisher {
                                @Value("${kafka.enabled}") String enabled,
                                @Value("${kafka.createTopic:false}") String shouldCreateTopic,
                                @Value("${kafka.security:ssl}") String security,
-                               @Value("${jks.client.filePath}") String filePath,
-                               @Value("${jks.client.truststore}") String truststore,
+                               @Value("${kafka.filePath:localDummy}") String filePath,
+                               @Value("${kafka.truststore:localDummy}") String truststore,
                                @Value("${spring.profiles.active:local}") String activeProfile) {
         KafkaProducer<String, String> tempProducer;
         if (Boolean.parseBoolean(enabled)) {
             Properties props = getKafkaProperties(hostname, port);
 
             if (!"local".equals(activeProfile) && !"plaintext".equals(security)) {
-                setKafkaAdditionalProps(props, filePath, truststore);
+                setKafkaSSLProps(props, filePath, truststore);
+                setKafkaExtraProps(props);
             }
             try {
                 logger.info("Trying to create EEM Kafka producer...");
@@ -68,23 +69,14 @@ public class KafkaEventPublisher {
         props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, hostname + ":" + port);
         props.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, "5000");
         props.put(AdminClientConfig.CLIENT_ID_CONFIG, "java-admin-client");
-        int retries = 1;
-        int delay = 3000; // ms
+
         logger.info("Trying to create EEM Kafka topic...");
-        for (int i = 0; i < retries; i++) {
-            try (AdminClient admin = AdminClient.create(props)) {
-                NewTopic topic = new NewTopic(TOPIC, 1, (short) 1);
-                admin.createTopics(Collections.singleton(topic)).all().get();
-                logger.info("Topic created: {}", TOPIC);
-                break;
-            } catch (Exception e) {
-                logger.warn("Attempt {} failed to create topic: {}", i + 1, e.getMessage());
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException ie) {
-                    logger.error("Something crashed the delay", ie);
-                }
-            }
+        try (AdminClient admin = AdminClient.create(props)) {
+            NewTopic topic = new NewTopic(TOPIC, 1, (short) 1);
+            admin.createTopics(Collections.singleton(topic)).all().get();
+            logger.info("Topic created: {}", TOPIC);
+        } catch (Exception e) {
+            logger.warn("Failed to create topic");
         }
     }
 
@@ -97,11 +89,14 @@ public class KafkaEventPublisher {
         return props;
     }
 
-    private void setKafkaAdditionalProps(Properties props, String filePath, String truststore) {
-        props.put("retries", "1");
-        props.put("request.timeout.ms", "10000");
-        props.put("max.block.ms", "15000");
-        props.put("buffer.memory", "33554432"); // 32MB
+    private void setKafkaSSLProps(Properties props, String filePath, String truststore) {
+        String keyName = "JKS_KEY";
+        String secretKey = System.getenv(keyName) != null ? System.getenv(keyName) : System.getProperty(keyName);
+        props.put("security.protocol", "SSL");
+        props.put("ssl.key.password", secretKey);
+        props.put("ssl.keystore.password", secretKey);
+        props.put("ssl.truststore.password", secretKey);
+
         String defaultFolder = "kafka/";
         String keyStoreFile = defaultFolder + filePath;
         String trustStoreFile = defaultFolder + truststore;
@@ -111,6 +106,13 @@ public class KafkaEventPublisher {
 
         File tempTrustStore = getTempJKSFile("truststore", trustStoreFile);
         if (tempTrustStore != null) props.put("ssl.truststore.location", tempTrustStore.getAbsolutePath());
+    }
+
+    private static void setKafkaExtraProps(Properties props) {
+        props.put("retries", "1");
+        props.put("request.timeout.ms", "10000");
+        props.put("max.block.ms", "15000");
+        props.put("buffer.memory", "33554432"); // 32MB
     }
 
     private File getTempJKSFile(String tempFile, String filePath) {

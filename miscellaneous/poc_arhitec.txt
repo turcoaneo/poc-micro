@@ -1,0 +1,22 @@
+PoC: 
+  - MAS (main app service) 8091
+  - UAM (user auth service) 8092
+  - EM (employer service) 8093 - gRPC port 9093
+  - EEM (employee auth service) 8094 - gRPC port 9095
+  - EEM 2 (load balanced EEM) 8095 - gRPC port 9095
+  - Eureka 8761
+  - GTW (Spring Cloud API Gateway) 8090 (management port: 8443)
+  - SCG (Spring Cloud Config Server) 8888
+
+Others:
+  - MySQL 3037
+  - Kafka 9092
+  - Zipkin 9411
+  
+  AWS service
+  
+- Service Connect Service - 1: container on 8091 and port on 8091
+- NLB: container on 8091 listener on 80 target group on 8091
+
+http://poc-alb-1312740255.eu-north-1.elb.amazonaws.com/mas/swagger-ui/index.html
+curl http://poc-alb-1312740255.eu-north-1.elb.amazonaws.com/mas/test
