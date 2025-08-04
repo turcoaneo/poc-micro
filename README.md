@@ -78,7 +78,7 @@ http://poc-alb-1312740255.eu-north-1.elb.amazonaws.com/uam/swagger-ui/index.html
 
 ## How to
 
-### Register user type with '/mas-users/register' (no JWT required), e.g., test - 123 - ADMIN
+### Register user type with '/mas-users/register' (no JWT required), e.g., test - 234 - ADMIN (now already existing in AWS DB)
 select * from user_auth_db.user_account;
 
 ### Login with '/mas-users/login' (no JWT required), e.g., test - 123 to get ADMIN rights JWT
