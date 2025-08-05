@@ -29,7 +29,11 @@ public class JwtAuthFilterEM extends OncePerRequestFilter {
         if (requestUri == null) return;
 
         List<String> excludedEndpoints = Arrays.asList("/em/em-users/login", "/em/em-users/register",
-                "/em/api/employers/test");
+                "/em/api/employers/test", "/em/graphql", "/em/graphiql");
+
+        if (requestUri.contains("graph")) {
+            logger.debug("Graph for endpoint: {}", requestUri);
+        }
 
         // Skip JWT validation for excluded endpoints
         if (excludedEndpoints.contains(requestUri)) {
