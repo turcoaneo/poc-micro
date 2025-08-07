@@ -24,7 +24,8 @@ public class GraphQLSecurityContextInterceptor implements WebGraphQlInterceptor 
         final String secretKey = System.getenv(keyName) != null ? System.getenv(keyName) : System.getProperty(keyName);
 
 
-        if (authHeader.startsWith("Bearer ")) {
+        //noinspection ConstantValue
+        if (authHeader!= null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             String role = new JwtLocalHelperEM().getRoleFromToken(token, secretKey);
 
