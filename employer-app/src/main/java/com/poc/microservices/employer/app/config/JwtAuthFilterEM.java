@@ -26,6 +26,8 @@ public class JwtAuthFilterEM extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String requestUri = request.getRequestURI();
 
+        logger.info("Request URI: {}", requestUri);
+
         if (requestUri == null) return;
 
         List<String> excludedEndpoints = Arrays.asList("/em/em-users/login", "/em/em-users/register",
